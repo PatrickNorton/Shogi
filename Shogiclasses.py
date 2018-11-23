@@ -72,8 +72,17 @@ class color:
 
     def __eq__(self, other): return self.INT == other.INT
 
+
 class ptype:
-    pass
+    with open('shoginames.txt') as namtxt:
+        namelist = namtxt.readlines()
+        for x, y in enumerate(namelist):
+            namelist[x] = y.strip().split(': ')
+        namedict = {x[0]: x[1] for x in namelist}
+
+    def __init__(self, typ):
+        self.TYP = typ
+        self.NAME = self.namedict[self.TYP]
 
 
 class direction:
