@@ -107,6 +107,7 @@ class direction:
             self.DIR = self.make(*direction)
         elif isinstance(direction, int):
             self.DIR = direction
+        self.COORD = coord(*self.invlis[self.DIR])
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
