@@ -26,6 +26,13 @@ class piece:
             self.MOVES = self.MOVES.prom()
             self.prom = True
 
+    def demote(self):
+        if not self.prom:
+            raise DemotedException
+        else:
+            self.PTYPE = self.PTYPE.dem()
+            self.MOVES = self.MOVES.dem()
+
 
 class nopiece(piece):
     def __init__(self):
