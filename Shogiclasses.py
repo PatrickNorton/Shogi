@@ -67,6 +67,14 @@ class moves:
         elif self[vec] == 'T':
             return abs(relloc.x) == 1 and relloc.y == 2
 
+    def prom(self):
+        self.ispromoted = True
+        self.CMOVES = self.MOVES[self.ispromoted]
+
+    def dem(self):
+        self.ispromoted = False
+        self.CMOVES = self.MOVES[self.ispromoted]
+
 
 class color:
     def __init__(self, turnnum):
