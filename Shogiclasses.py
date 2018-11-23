@@ -175,6 +175,7 @@ class board:
         for (x, y) in self.it():
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+        self.CAPTURED = {color(x): [] for x in range(1)}
 
     def __str__(self):
         toreturn = ""
@@ -201,3 +202,6 @@ class board:
         if not isinstance(self[new], nopiece):
             self.capture(new)
         self.PIECES[coord(new)] = self.PIECES.pop(current)
+
+    def capture(self, new):
+
