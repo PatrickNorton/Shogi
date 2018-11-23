@@ -107,8 +107,27 @@ class direction:
             self.DIR = self.make(*direction)
         elif isinstance(direction, int):
             self.DIR = direction
-        self.COORD = coord(*self.invlis[self.DIR])
+        self.COORD = coord(self.invlis[self.DIR])
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
             self.DIR = self.lis[(xvar, yvar)]
+
+
+class coord:
+    def __init__(self, xy):
+        self.x = xy[0]
+        self.y = xy[1]
+        self.TUP = (self.x, self.y)
+
+    def __eq__(self, other): return hash(self) == hash(other)
+
+    def __iter__(self): yield from self.TUP
+
+    def __add__(self, other): return coord((self.x+other.x, self.y+other.y))
+
+    def __sub__(self, other): return coord((self.x-other.x, self.y-other.y))
+
+    def __mul__(self, other): return coord((self.x*other.x, self.y*other.y))
+
+    def __hash__(self): return hash(self.TUP)
