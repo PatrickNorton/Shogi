@@ -84,6 +84,12 @@ class ptype:
         self.TYP = typ
         self.NAME = self.namedict[self.TYP]
 
+    def __str__(self): return self.TYP
+
+    def __repr__(self): return self.NAME
+
+    def __eq__(self, other): return repr(self) == repr(other)
+
 
 class direction:
     pass
