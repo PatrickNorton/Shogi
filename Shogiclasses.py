@@ -68,6 +68,9 @@ class color:
 
     def __str__(self): return self.STR
 
+    def __int__(self): return self.INT
+
+    def __eq__(self, other): return self.INT == other.INT
 
 class ptype:
     pass
