@@ -176,4 +176,17 @@ class board:
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
 
+    def __str__(self):
+        toreturn = ""
+        toreturn += '  '.join('987654321')+'\n'
+        for x, var in enumerate(self):
+            toreturn += 'abcdefghi'[x]
+            toreturn += ' '.join(str(x))
+            toreturn += '\n'
+        return toreturn
+
+    def __iter__(self):
+        yield from [[self[x, y] for x in range(9)] for y in range(9)]
+
+
     def it(): yield from [(x, y) for x in range(9) for y in range(9)]
