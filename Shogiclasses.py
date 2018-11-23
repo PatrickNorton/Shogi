@@ -196,9 +196,7 @@ class board:
         toreturn = ""
         toreturn += '  '.join('987654321')+'\n'
         for x, var in enumerate(self):
-            toreturn += 'abcdefghi'[x]
-            toreturn += ' '.join(str(x))
-            toreturn += '\n'
+            toreturn += f"{'abcdefghi'[x]}{' '.join(str(x))}\n"
         return toreturn
 
     def __iter__(self):
