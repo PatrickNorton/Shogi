@@ -157,6 +157,14 @@ class coord:
     def __hash__(self): return hash(self.TUP)
 
 
+class NotPromotableException(Exception):
+    pass
+
+
+class PromotedException(Exception):
+    pass
+
+
 class board:
     def __init__(self):
         with open('shogiboard.txt') as boardtxt:
