@@ -110,11 +110,11 @@ class ptype:
 
     def __hash__(self): return hash((self.TYP, self.NAME))
 
-    def prom():
+    def prom(self):
         self.TYP = self.TYP.upper()
         self.NAME = ':'+self.NAME
 
-    def dem():
+    def dem(self):
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace(':', '')
 
@@ -155,3 +155,17 @@ class coord:
     def __mul__(self, other): return coord((self.x*other.x, self.y*other.y))
 
     def __hash__(self): return hash(self.TUP)
+
+
+class board:
+    def __init__(self):
+        with open('shogiboard.txt') as boardtxt:
+            boardtxt = boardtxt.readlines()
+            for x, y in enumerate(boardtxt):
+                boardtxt[x] = y.split()
+        self.PIECES = {}
+        for (x, y) in self.it():
+            if boardtxt[y][x] != '--':
+                self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+
+    def it(): yield from [(x, y) for x in range(9) for y in range(9)]
