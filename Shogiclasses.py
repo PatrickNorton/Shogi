@@ -4,7 +4,10 @@ class piece:
         self.MOVES = moves(self.NAME)
         self.COLOR = color(clr)
         self.TUP = (self.PTYPE, self.COLOR)
-        self.prom = False
+        if self.MOVES.PMOVES is None:
+            self.prom = None
+        else:
+            self.prom = False
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
@@ -14,9 +17,14 @@ class piece:
     def __bool__(self): return not isinstance(self, nopiece)
 
     def promote(self):
-        self.PTYPE = self.PTYPE.prom()
-        self.MOVES = self.MOVES.prom()
-        self.prom = True
+        if self.prom is None:
+            raise NotPromotableException
+        elif self.prom:
+            raise PromotedException
+        else:
+            self.PTYPE = self.PTYPE.prom()
+            self.MOVES = self.MOVES.prom()
+            self.prom = True
 
 
 class nopiece(piece):
@@ -93,6 +101,14 @@ class ptype:
     def __eq__(self, other): return repr(self) == repr(other)
 
     def __hash__(self): return hash((self.TYP, self.NAME))
+
+    def prom():
+        self.TYP = self.TYP.upper()
+        self.NAME = ':'+self.NAME
+
+    def dem():
+        self.TYP = self.TYP.lower()
+        self.NAME = self.NAME.replace(':', '')
 
 
 class direction:
