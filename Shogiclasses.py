@@ -72,6 +72,8 @@ class color:
 
     def __eq__(self, other): return self.INT == other.INT
 
+    def __hash__(self): return hash((self.INT, self.NAME))
+
 
 class ptype:
     with open('shoginames.txt') as namtxt:
@@ -90,6 +92,20 @@ class ptype:
 
     def __eq__(self, other): return repr(self) == repr(other)
 
+    def __hash__(self): return hash((self.TYP, self.NAME))
+
 
 class direction:
-    pass
+    def __init__(self, direction):
+        if isinstance(direction, coord):
+            self.DIR = self.make(direction.x, direction.y)
+        elif isinstance(direction, tuple):
+            self.DIR = self.make(*direction)
+        elif isinstance(direction, int):
+            self.DIR = direction
+
+    def make(self, xvar, yvar):
+        from numpy import sin, cos, pi
+        lis = {(round(sin(pi*x/2)), round(cos(pi*x/2))): x for x in range(8)}
+        if not xvar == yvar == 0:
+            self.DIR = lis[(xvar, yvar)]
