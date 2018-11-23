@@ -33,6 +33,9 @@ class piece:
             self.PTYPE = self.PTYPE.dem()
             self.MOVES = self.MOVES.dem()
 
+    def flipsides(self):
+        self.COLOR = color(self.COLOR.OTHER)
+
 
 class nopiece(piece):
     def __init__(self):
@@ -187,6 +190,7 @@ class board:
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
         self.CAPTURED = {color(x): [] for x in range(1)}
+        self.currplyr = color(0)
 
     def __str__(self):
         toreturn = ""
@@ -215,4 +219,8 @@ class board:
         self.PIECES[coord(new)] = self.PIECES.pop(current)
 
     def capture(self, new):
-
+        piece = self[new]
+        piece.demote()
+        piece.flipsides()
+        self.captured[self.currplyr] = piece
+        del self.PIECES[new]
