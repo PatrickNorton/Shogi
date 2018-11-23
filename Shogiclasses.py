@@ -165,6 +165,10 @@ class PromotedException(Exception):
     pass
 
 
+class DemotedException(Exception):
+    pass
+
+
 class board:
     def __init__(self):
         with open('shogiboard.txt') as boardtxt:
