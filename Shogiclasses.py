@@ -96,6 +96,10 @@ class ptype:
 
 
 class direction:
+    from numpy import sin, cos, pi
+    lis = {(round(sin(pi*x/2)), round(cos(pi*x/2))): x for x in range(8)}
+    invls = {lis[x]: x for x in lis.keys}
+
     def __init__(self, direction):
         if isinstance(direction, coord):
             self.DIR = self.make(direction.x, direction.y)
@@ -105,7 +109,5 @@ class direction:
             self.DIR = direction
 
     def make(self, xvar, yvar):
-        from numpy import sin, cos, pi
-        lis = {(round(sin(pi*x/2)), round(cos(pi*x/2))): x for x in range(8)}
         if not xvar == yvar == 0:
-            self.DIR = lis[(xvar, yvar)]
+            self.DIR = self.lis[(xvar, yvar)]
