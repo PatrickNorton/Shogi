@@ -65,7 +65,7 @@ class color:
         self.INT = turnnum
         self.NAME = 'wb'[self.INT]
         self.OTHER = 'bw'[self.INT]
-    
+
     def __str__(self): return self.STR
 
 
