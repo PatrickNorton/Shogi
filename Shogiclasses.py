@@ -1,3 +1,9 @@
+import os
+import sys
+cpath = sys.path[0]
+def pjoin(path): return os.path.join(cpath, path)
+
+
 class piece:
     def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
@@ -43,7 +49,7 @@ class nopiece(piece):
 
 
 class moves:
-    with open('shogimoves.txt') as movef:
+    with open(pjoin('shogimoves.txt')) as movef:
         movelist = movef.readlines()
         movedict = {}
         for line in movelist:
@@ -102,7 +108,7 @@ class color:
 
 
 class ptype:
-    with open('shoginames.txt') as namtxt:
+    with open(pjoin('shoginames.txt')) as namtxt:
         namelist = namtxt.readlines()
         for x, y in enumerate(namelist):
             namelist[x] = y.strip().split(': ')
@@ -181,7 +187,7 @@ class DemotedException(Exception):
 
 class board:
     def __init__(self):
-        with open('shogiboard.txt') as boardtxt:
+        with open(pjoin('shogiboard.txt')) as boardtxt:
             boardtxt = boardtxt.readlines()
             for x, y in enumerate(boardtxt):
                 boardtxt[x] = y.split()
