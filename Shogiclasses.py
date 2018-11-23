@@ -188,5 +188,16 @@ class board:
     def __iter__(self):
         yield from [[self[x, y] for x in range(9)] for y in range(9)]
 
+    def __getitem__(self, coords):
+        coords = coord(coords)
+        if coords in self.PIECES:
+            return self.PIECES[coords]
+        else:
+            return nopiece()
 
-    def it(): yield from [(x, y) for x in range(9) for y in range(9)]
+    def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
+
+    def move(self, current, new):
+        if not isinstance(self[new], nopiece):
+            self.capture(new)
+        self.PIECES[coord(new)] = self.PIECES.pop(current)
