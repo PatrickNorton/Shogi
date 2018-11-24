@@ -100,8 +100,11 @@ class color:
         self.INT = turnnum
         self.NAME = 'wb'[self.INT]
         self.OTHER = 'bw'[self.INT]
+        self.FULLNM = ['White', 'Black'][self.INT]
 
     def __str__(self): return self.STR
+
+    def __repr__(self): return self.FULLNM
 
     def __int__(self): return self.INT
 
