@@ -203,9 +203,11 @@ class board:
 
     def __str__(self):
         toreturn = ""
+        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}"
         toreturn += '  '.join('987654321')+'\n'
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]}{' '.join(str(x))}\n"
+        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}"
         return toreturn
 
     def __iter__(self):
