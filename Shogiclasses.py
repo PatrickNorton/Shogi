@@ -112,6 +112,8 @@ class color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
+    def flip(self): return color(int(not self.INT))
+
 
 class ptype:
     with open(pathjoin('shoginames.txt')) as namtxt:
