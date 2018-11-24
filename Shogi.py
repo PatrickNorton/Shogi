@@ -32,6 +32,7 @@ def piececheck():
             pieceloc = inp2loc(pieceloc)
             if theboard[pieceloc].color == theboard.currplyr:
                 quitting = movecheck(pieceloc)
+    return not quitting and game
 
 
 def movecheck(current):
