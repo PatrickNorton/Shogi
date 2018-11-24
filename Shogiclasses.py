@@ -158,6 +158,8 @@ class direction:
         elif isinstance(direction, int):
             self.DIR = direction
 
+    def __eq__(self, other): return self.DIR == other.DIR
+
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
             self.DIR = self.lis[(xvar, yvar)]
