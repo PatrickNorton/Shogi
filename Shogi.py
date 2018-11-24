@@ -1,4 +1,5 @@
-from Shogiclasses import board, pathjoin
+from Shogiclasses import board, direction, pathjoin
+from copy import deepcopy
 
 
 def playgame():
@@ -47,6 +48,32 @@ def movecheck(current):
                 if topromote.lower().startswith('y'):
                     board[moveloc].promote()
     return quitting
+
+
+def movecheck2(current, new):
+    global theboard, captlist, error
+    newboard = deepcopy(theboard)
+    piece = newboard[current]
+    move = new-current
+    movedir = direction(move)
+    magicvar = piece.MOVES[movedir]
+    error = 0
+    if movedir == direction(8):
+        error = 3
+    elif board[new].COLOR == board.currplyr:
+        error = 4
+    elif not piece.canmove(move):
+        error = 1
+    elif magicvar == 'T':
+        error = 0
+    else:
+        obscheck(current, new, move)
+    if not error:
+        newboard.move(current, new)
+    topromote = board[new].PROMOTABLE and board.canpromote(new)
+    return topromote and not error, theboard
+
+
 
 
 def checkcheck():
