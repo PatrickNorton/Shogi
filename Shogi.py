@@ -41,6 +41,12 @@ def movecheck(current):
         if inputpiece(moveloc, quitting):
             test = True
             moveloc = inp2loc(moveloc)
+            promote, theboard = movecheck2(current, moveloc)
+            if promote:
+                topromote = input('Would you like to promote this piece? ')
+                if topromote.lower().startswith('y'):
+                    board[moveloc].promote()
+    return quitting
 
 
 def checkcheck():
