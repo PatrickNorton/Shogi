@@ -118,7 +118,7 @@ class ptype:
         namedict = {x[0]: x[1] for x in namelist}
 
     def __init__(self, typ):
-        self.TYP = typ
+        self.TYP = typ.lower()
         self.NAME = self.namedict[self.TYP]
 
     def __str__(self): return self.TYP
@@ -131,11 +131,11 @@ class ptype:
 
     def prom(self):
         self.TYP = self.TYP.upper()
-        self.NAME = ':'+self.NAME
+        self.NAME = '+'+self.NAME
 
     def dem(self):
         self.TYP = self.TYP.lower()
-        self.NAME = self.NAME.replace(':', '')
+        self.NAME = self.NAME.replace('+', '')
 
 
 class direction:
