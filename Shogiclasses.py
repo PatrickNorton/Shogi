@@ -15,8 +15,10 @@ class piece:
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
             self.prom = None
+            self.PROMOTABLE = False
         else:
             self.prom = False
+            self.PROMOTABLE = True
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
@@ -44,6 +46,8 @@ class piece:
 
     def flipsides(self):
         self.COLOR = color(self.COLOR.OTHER)
+
+    def canmove(self, relloc): return self.MOVES.canmove(relloc)
 
 
 class nopiece(piece):
