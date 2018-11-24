@@ -83,8 +83,6 @@ def obscheck(current, new, move):
             error = 2
 
 
-
-
 def checkcheck():
     pass
 
