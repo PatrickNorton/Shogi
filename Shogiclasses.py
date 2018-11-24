@@ -63,11 +63,13 @@ class moves:
         pcmvlist = self.movedict[piecenm]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
+        self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
         if mvlist == 'None':
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
+            self.PMOVES[direction(8)] = '-'
         self.MOVES = [self.DMOVES, self.PMOVES]
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
@@ -147,7 +149,9 @@ class direction:
     lis = {(round(sin(pi*x/4)), round(cos(pi*x/4))): x for x in range(8)}
 
     def __init__(self, direction):
-        if isinstance(direction, coord):
+        if direction == (0, 0):
+            self.DIR = 8
+        elif isinstance(direction, coord):
             self.DIR = self.make(direction.x, direction.y)
         elif isinstance(direction, tuple):
             self.DIR = self.make(*direction)
