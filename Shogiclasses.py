@@ -245,3 +245,7 @@ class board:
         piece.flipsides()
         self.captured[self.currplyr] = piece
         del self.PIECES[new]
+
+    def canpromote(self, space):
+        zonevar = [[6, 7, 8], [0, 1, 2]]
+        return space.y in zonevar[int(board.currplyr)]
