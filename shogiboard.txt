@@ -1,0 +1,9 @@
+lb nb sb gb kb gb sb nb lb
+-- rb -- -- -- -- -- bb --
+pb pb pb pb pb pb pb pb pb
+-- -- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- -- --
+pw pw pw pw pw pw pw pw pw
+-- bw -- -- -- -- -- rw --
+lw nw sw gw kw gw sw nw lw
