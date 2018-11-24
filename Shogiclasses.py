@@ -1,3 +1,4 @@
+from numpy import sin, cos, pi
 import os
 import sys
 cpath = sys.path[0]
@@ -138,9 +139,7 @@ class ptype:
 
 
 class direction:
-    from numpy import sin, cos, pi
-    lis = {(round(sin(pi*x/2)), round(cos(pi*x/2))): x for x in range(8)}
-    invls = {lis[x]: x for x in lis.keys}
+    lis = {(round(sin(pi*x/4)), round(cos(pi*x/4))): x for x in range(8)}
 
     def __init__(self, direction):
         if isinstance(direction, coord):
@@ -149,7 +148,6 @@ class direction:
             self.DIR = self.make(*direction)
         elif isinstance(direction, int):
             self.DIR = direction
-        self.COORD = coord(self.invlis[self.DIR])
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
