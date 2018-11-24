@@ -1,4 +1,4 @@
-from Shogiclasses import board, direction, pathjoin
+from Shogiclasses import board, direction, coord, pathjoin
 from copy import deepcopy
 
 
@@ -72,6 +72,15 @@ def movecheck2(current, new):
         newboard.move(current, new)
     topromote = board[new].PROMOTABLE and board.canpromote(new)
     return topromote and not error, theboard
+
+
+def obscheck(current, new, move):
+    global error
+    movedir = direction(move)
+    for x in range(1, max(abs(move))):
+        testpos = current+coord((x*z for z in movedir))
+        if board[current+testpos]:
+            error = 2
 
 
 
