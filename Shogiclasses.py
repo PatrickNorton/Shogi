@@ -151,6 +151,7 @@ class ptype:
 
 class direction:
     lis = {(round(sin(pi*x/4)), round(cos(pi*x/4))): x for x in range(8)}
+    invlis = [(round(sin(pi*x/4)), round(cos(pi*x/4))) for x in range(8)]
 
     def __init__(self, direction):
         if direction == (0, 0):
@@ -161,8 +162,13 @@ class direction:
             self.DIR = self.make(*direction)
         elif isinstance(direction, int):
             self.DIR = direction
+        else:
+            raise TypeError
+        self.TUP = self.invlis[self.DIR]
 
     def __eq__(self, other): return self.DIR == other.DIR
+
+    def __iter__(self): yield from self.TUP
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
