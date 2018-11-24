@@ -193,6 +193,8 @@ class coord:
 
     def __hash__(self): return hash(self.TUP)
 
+    def __abs__(self): return coord((abs(self.x), abs(self.y)))
+
 
 class NotPromotableException(Exception):
     pass
