@@ -174,6 +174,8 @@ class direction:
 
     def __iter__(self): yield from self.TUP
 
+    def __getitem__(self, index): return self.TUP[index]
+
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
             self.DIR = self.lis[(xvar, yvar)]
