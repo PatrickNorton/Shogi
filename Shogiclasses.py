@@ -187,6 +187,8 @@ class coord:
 
     def __iter__(self): yield from self.TUP
 
+    def __getitem__(self, index): return self.TUP[index]
+
     def __add__(self, other): return coord((self.x+other.x, self.y+other.y))
 
     def __sub__(self, other): return coord((self.x-other.x, self.y-other.y))
@@ -236,9 +238,12 @@ class board:
     def __iter__(self):
         yield from [[self[x, y] for x in range(9)] for y in range(9)]
 
-    def __getitem__(self, coords):
-        coords = coord(coords)
-        return self.PIECES.get(coords, nopiece())
+    def __getitem__(self, index):
+        if isinstance(index, (tuple, coord)):
+            coords = coord(index)
+            return self.PIECES.get(coords, nopiece())
+        elif isinstance(index, piece):
+            return self.INVPIECES.get(index)
 
     def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
 
