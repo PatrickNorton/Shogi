@@ -1,5 +1,6 @@
 from Shogiclasses import piece, board, direction, coord, pathjoin
 from copy import deepcopy
+from itertools import product
 
 
 def playgame():
@@ -84,7 +85,7 @@ def obscheck(current, new, move):
             error = 2
 
 
-def checkcheck():
+def checkcheck(earlybreak=False):
     global theboard
     check, checklist = False, []
     oldboard = deepcopy(theboard)
@@ -96,7 +97,7 @@ def checkcheck():
             if movecheck2(loc, kingpos)[0]:
                 check = True
                 checklist.append(loc)
-                if len(checklist) >= 2:
+                if len(checklist) >= 2 or earlybreak:
                     theboard = deepcopy(oldboard)
                     break
         theboard = deepcopy(oldboard)
@@ -112,7 +113,7 @@ def matecheck(kingpos, checklist):
         if tuple(newpos) in theboard.it():
             legal = movecheck2(kingpos, newpos)[0]
             board = deepcopy(oldboard)
-            if legal and not checkcheck()[0]:
+            if legal and not checkcheck(True)[0]:
                 return False
     if len(checklist) == 1:
         checklist = checklist[0]
@@ -121,14 +122,26 @@ def matecheck(kingpos, checklist):
         hasspace = not all(x in (-1, 0, 1) for x in newpos)
         if haspieces and notknight and hasspace:
             return False
-        for loc in board.it():
-            enemypc = board[loc].COLOR != theboard.currplyr.OTHER
-            legal = movecheck2(loc, checklist)
-            if enemypc and legal:
-                board = deepcopy(oldboard)
-                return False
-            board = deepcopy(oldboard)
+        for loc in theboard.occupied():
+            enemypc = theboard[loc].COLOR == theboard.currplyr.flip()
+            if enemypc:
+                legal = movecheck2(loc, checklist)
+                if legal:
+                    board = deepcopy(oldboard)
+                    return False
+                theboard = deepcopy(oldboard)
         move = kingpos-checklist
+        movedir = direction(move)
+        for pos, z in product(theboard.occupied(), range(abs(max(move)))):
+            enemypc = theboard[pos].COLOR == theboard.currplyr.flip()
+            if enemypc:
+                newpos = z*checklist*coord(movedir)
+                legal = movecheck2(pos, newpos)
+                if legal:
+                    board = deepcopy(oldboard)
+                    return False
+                board = deepcopy(oldboard)
+    return True
 
 
 def inputpiece(pieceloc, quitting):
