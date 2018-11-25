@@ -148,5 +148,5 @@ def inputpiece(pieceloc, quitting):
     pass
 
 
-def inp2loc(pieceplocd):
+def inp2loc(pieceloc):
     pass
