@@ -43,7 +43,7 @@ def movecheck(current):
         if inputpiece(moveloc, quitting):
             test = True
             moveloc = inp2loc(moveloc)
-            promote, theboard = movecheck2(current, moveloc)
+            legal, promote, theboard = movecheck2(current, moveloc)
             if promote:
                 topromote = input('Would you like to promote this piece? ')
                 if topromote.lower().startswith('y'):
@@ -72,7 +72,7 @@ def movecheck2(current, new):
     if not error:
         newboard.move(current, new)
     topromote = board[new].PROMOTABLE and board.canpromote(new)
-    return topromote and not error, theboard
+    return not error, topromote and not error, theboard
 
 
 def obscheck(current, new, move):
@@ -86,7 +86,7 @@ def obscheck(current, new, move):
 
 def checkcheck():
     global theboard
-    check, checklist = False, set()
+    check, checklist = False, []
     oldboard = deepcopy(theboard)
     toget = piece('k', str(oldboard.currplyr))
     kingpos = oldboard[toget]
@@ -104,7 +104,31 @@ def checkcheck():
 
 
 def matecheck(kingpos, checklist):
-    pass
+    global theboard, error
+    oldboard = deepcopy(theboard)
+    kingmovepos = [coord(direction(x)) for x in range(8)]
+    for kmpiter in kingmovepos:
+        newpos = kmpiter+kingpos
+        if tuple(newpos) in theboard.it():
+            legal = movecheck2(kingpos, newpos)[0]
+            board = deepcopy(oldboard)
+            if legal and not checkcheck()[0]:
+                return False
+    if len(checklist) == 1:
+        checklist = checklist[0]
+        haspieces = captlist[int(board.currplyr)]
+        notknight = str(board[checklist].PTYPE) != 'n'
+        hasspace = not all(x in (-1, 0, 1) for x in newpos)
+        if haspieces and notknight and hasspace:
+            return False
+        for loc in board.it():
+            enemypc = board[loc].COLOR != theboard.currplyr.OTHER
+            legal = movecheck2(loc, checklist)
+            if enemypc and legal:
+                board = deepcopy(oldboard)
+                return False
+            board = deepcopy(oldboard)
+        move = kingpos-checklist
 
 
 def inputpiece(pieceloc, quitting):
