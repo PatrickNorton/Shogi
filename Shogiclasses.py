@@ -82,6 +82,8 @@ class moves:
 
     def __getitem__(self, attr): return self.CMOVES[attr]
 
+    def __iter__(self): yield from self.CMOVES
+
     def canmove(self, relloc):  # Takes coord object
         vec = direction(relloc)
         dist = max(relloc)
