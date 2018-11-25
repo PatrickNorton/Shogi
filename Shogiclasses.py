@@ -27,6 +27,8 @@ class piece:
 
     def __bool__(self): return not isinstance(self, nopiece)
 
+    def __hash__(self): return hash(self.TUP)
+
     def promote(self):
         if self.prom is None:
             raise NotPromotableException
@@ -218,6 +220,7 @@ class board:
         for (x, y) in self.it():
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+        self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(1)}
         self.currplyr = color(0)
 
