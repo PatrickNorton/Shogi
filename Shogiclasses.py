@@ -251,6 +251,8 @@ class board:
 
     def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
 
+    def occupied(self): yield from self.PIECES
+
     def move(self, current, new):
         if not isinstance(self[new], nopiece):
             self.capture(new)
