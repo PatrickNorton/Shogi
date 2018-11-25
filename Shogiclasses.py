@@ -235,10 +235,7 @@ class board:
 
     def __getitem__(self, coords):
         coords = coord(coords)
-        if coords in self.PIECES:
-            return self.PIECES[coords]
-        else:
-            return nopiece()
+        return self.PIECES.get(coords, nopiece())
 
     def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
 
