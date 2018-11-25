@@ -168,7 +168,10 @@ class direction:
             self.DIR = direction
         else:
             raise TypeError
-        self.TUP = self.invlis[self.DIR]
+        if self.DIR != 8:
+            self.TUP = self.invlis[self.DIR]
+        else:
+            self.TUP = (0, 0)
 
     def __eq__(self, other): return self.DIR == other.DIR
 
