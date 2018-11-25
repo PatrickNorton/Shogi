@@ -186,8 +186,12 @@ class direction:
 
 class coord:
     def __init__(self, xy):
-        self.x = xy[0]
-        self.y = xy[1]
+        if isinstance(xy, str):
+            self.x = '987654321'.index(xy[0])
+            self.y = 'abcdefghi'.index(xy[1])
+        else:
+            self.x = xy[0]
+            self.y = xy[1]
         self.TUP = (self.x, self.y)
 
     def __eq__(self, other): return hash(self) == hash(other)
