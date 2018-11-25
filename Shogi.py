@@ -1,4 +1,4 @@
-from Shogiclasses import board, direction, coord, pathjoin
+from Shogiclasses import piece, board, direction, coord, pathjoin
 from copy import deepcopy
 
 
@@ -36,7 +36,7 @@ def piececheck():
 
 
 def movecheck(current):
-    global board
+    global theboard
     test, quitting = False, False
     while not test:
         moveloc = input('Where do you want to move this piece?')
@@ -85,7 +85,22 @@ def obscheck(current, new, move):
 
 
 def checkcheck():
-    pass
+    global theboard
+    check, checklist = False, set()
+    oldboard = deepcopy(theboard)
+    toget = piece('k', str(oldboard.currplyr))
+    kingpos = oldboard[toget]
+    for loc in theboard.it():
+        loc = coord(loc)
+        if theboard[loc].COLOR == theboard.currplyr:
+            if movecheck2(loc, kingpos)[0]:
+                check = True
+                checklist.append(loc)
+                if len(checklist) >= 2:
+                    theboard = deepcopy(oldboard)
+                    break
+        theboard = deepcopy(oldboard)
+    return check, kingpos, checklist
 
 
 def matecheck(kingpos, checklist):
@@ -93,4 +108,8 @@ def matecheck(kingpos, checklist):
 
 
 def inputpiece(pieceloc, quitting):
+    pass
+
+
+def inp2loc(pieceplocd):
     pass
