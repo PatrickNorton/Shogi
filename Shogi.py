@@ -162,18 +162,7 @@ def inputpiece(pieceloc):
 def otherconditions(var):
     global theboard
     if var == 'captured':
-        moved = input('Which piece would you like put in play? ')
-        try:
-            thepiece = piece(moved[0], theboard.currplyr)
-            if thepiece in theboard.CAPTURED[theboard.currplyr]:
-                moveto = input('Where do you want it moved? ')
-            try:
-                moveto = piece(moveto)
-                theboard.putinplay(piece, moveto)
-            except IndexError:
-                pass
-        except IndexError:
-            pass
+        droppiece()
     if var == 'quit':
         willquit = input('Are you sure you want to quit? (y/n) ')
         if willquit.startswith('y'):
