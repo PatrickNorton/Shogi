@@ -275,3 +275,13 @@ class board:
     def canpromote(self, space):
         zonevar = [[6, 7, 8], [0, 1, 2]]
         return space.y in zonevar[int(board.currplyr)]
+
+    def putinplay(self, piece, movedto):
+        player = self.currplyr
+        self.CAPTURED[player].remove(piece)
+        if not isinstance(self[movedto], nopiece):
+            raise IllegalMove
+
+
+class IllegalMove(Exception):
+    pass
