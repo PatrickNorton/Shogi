@@ -36,7 +36,7 @@ def piececheck():
     while not error:
         pieceloc = input('Where is the piece you want to move?')
         if inputpiece(pieceloc, quitting):
-            pieceloc = inp2loc(pieceloc)
+            pieceloc = coord(pieceloc)
             if theboard[pieceloc].color == theboard.currplyr:
                 quitting = movecheck(pieceloc)
     return not quitting and game
@@ -49,7 +49,7 @@ def movecheck(current):
         moveloc = input('Where do you want to move this piece?')
         if inputpiece(moveloc, quitting):
             test = True
-            moveloc = inp2loc(moveloc)
+            moveloc = coord(moveloc)
             legal, promote, theboard = movecheck2(current, moveloc)
             if promote:
                 topromote = input('Would you like to promote this piece? ')
@@ -183,7 +183,3 @@ def droppiece():
                     pass
     except IndexError:
         pass
-
-
-def inp2loc(pieceloc):
-    pass
