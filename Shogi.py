@@ -2,7 +2,7 @@ from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
 from copy import deepcopy
 from itertools import product
 
-# TODO: Change quitting to an exception, not a var
+# TODO: Fix what to do when input is not a piece
 
 
 class PlayerExit(Exception):
