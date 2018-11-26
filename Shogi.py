@@ -1,6 +1,8 @@
-from Shogiclasses import piece, board, direction, coord, pathjoin
+from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
 from copy import deepcopy
 from itertools import product
+
+#TODO: Change quitting to an exception, not a var
 
 
 def playgame():
@@ -145,7 +147,38 @@ def matecheck(kingpos, checklist):
 
 
 def inputpiece(pieceloc, quitting):
-    pass
+    try:
+        pieceloc = coord(pieceloc)
+        return True
+    except IndexError:
+        isother = otherconditions(var, quitting)
+        return isother
+
+
+def otherconditions(var, quitting):
+    global theboard
+    if var = 'captured':
+        moved = input('Which piece would you like put in play? ')
+        try:
+            thepiece = piece(moved[0], theboard.currplyr)
+            if thepiece in theboard.CAPTURED[currplyr]:
+                moveto = input('Where do you want it moved? ')
+
+                theboard.putinplay(theboard.currplyr, piece, )
+
+
+def droppiece():
+    global theboard
+    moved = input('Which piece do you want put in play? ')
+    try:
+        thepiece = piece(moved[0], theboard.currplyr)
+        if thepiece in theboard.CAPTURED[currplyr]:
+            moveto = input('Where do you want it moved? ')
+            if inputpiece(moveto, quitting):
+                try:
+                    theboard.putinplay(moveto, quitting)
+                except IllegalMove:
+                    pass
 
 
 def inp2loc(pieceloc):
