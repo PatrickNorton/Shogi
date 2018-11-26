@@ -2,7 +2,11 @@ from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
 from copy import deepcopy
 from itertools import product
 
-#TODO: Change quitting to an exception, not a var
+# TODO: Change quitting to an exception, not a var
+
+
+class PlayerExit(Exception):
+    pass
 
 
 def playgame():
@@ -146,22 +150,22 @@ def matecheck(kingpos, checklist):
     return True
 
 
-def inputpiece(pieceloc, quitting):
+def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
     except IndexError:
-        isother = otherconditions(var, quitting)
+        isother = otherconditions(pieceloc)
         return isother
 
 
-def otherconditions(var, quitting):
+def otherconditions(var):
     global theboard
     if var == 'captured':
         moved = input('Which piece would you like put in play? ')
         try:
             thepiece = piece(moved[0], theboard.currplyr)
-            if thepiece in theboard.CAPTURED[currplyr]:
+            if thepiece in theboard.CAPTURED[theboard.currplyr]:
                 moveto = input('Where do you want it moved? ')
             try:
                 moveto = piece(moveto)
@@ -170,6 +174,10 @@ def otherconditions(var, quitting):
                 pass
         except IndexError:
             pass
+    if var == 'quit':
+        willquit = input('Are you sure you want to quit? (y/n) ')
+        if willquit.startswith('y'):
+            raise PlayerExit
 
 
 def droppiece():
@@ -177,11 +185,11 @@ def droppiece():
     moved = input('Which piece do you want put in play? ')
     try:
         thepiece = piece(moved[0], theboard.currplyr)
-        if thepiece in theboard.CAPTURED[currplyr]:
+        if thepiece in theboard.CAPTURED[theboard.currplyr]:
             moveto = input('Where do you want it moved? ')
-            if inputpiece(moveto, quitting):
+            if inputpiece(moveto):
                 try:
-                    theboard.putinplay(moveto, quitting)
+                    theboard.putinplay(moveto)
                 except IllegalMove:
                     pass
     except IndexError:
