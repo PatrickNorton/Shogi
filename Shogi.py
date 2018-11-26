@@ -157,14 +157,19 @@ def inputpiece(pieceloc, quitting):
 
 def otherconditions(var, quitting):
     global theboard
-    if var = 'captured':
+    if var == 'captured':
         moved = input('Which piece would you like put in play? ')
         try:
             thepiece = piece(moved[0], theboard.currplyr)
             if thepiece in theboard.CAPTURED[currplyr]:
                 moveto = input('Where do you want it moved? ')
-
-                theboard.putinplay(theboard.currplyr, piece, )
+            try:
+                moveto = piece(moveto)
+                theboard.putinplay(piece, moveto)
+            except IndexError:
+                pass
+        except IndexError:
+            pass
 
 
 def droppiece():
@@ -179,6 +184,8 @@ def droppiece():
                     theboard.putinplay(moveto, quitting)
                 except IllegalMove:
                     pass
+    except IndexError:
+        pass
 
 
 def inp2loc(pieceloc):
