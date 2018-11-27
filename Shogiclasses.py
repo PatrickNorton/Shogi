@@ -235,6 +235,13 @@ class board:
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(1)}
+        self.PCSBYCLR = {}
+        for x in range(1):
+            theclr = color(x)
+            self.PCSBYCLR[theclr] = {}
+            for x, y in enumerate(self.PIECES):
+                if y.COLOR == self.currplyr:
+                    self.PCSBYCLR[theclr][x] = y
         self.currplyr = color(0)
 
     def __str__(self):
