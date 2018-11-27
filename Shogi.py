@@ -46,11 +46,10 @@ def piececheck():
     while not validpiece:
         pieceloc = input('Where is the piece you want to move?')
         validpiece = inputpiece(pieceloc, quitting)
-        if validpiece:
-            pieceloc = coord(pieceloc)
-            if theboard[pieceloc].color == theboard.currplyr:
-                quitting = movecheck(pieceloc)
-        return not quitting and game
+    pieceloc = coord(pieceloc)
+    if theboard[pieceloc].color == theboard.currplyr:
+        quitting = movecheck(pieceloc)
+    return not quitting and game
 
 
 def movecheck(current):
