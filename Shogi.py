@@ -204,7 +204,11 @@ def droppiece():
         pass
 
 
-try:
-    playgame()
-except PlayerExit:
-    pass
+while True:
+    try:
+        playgame()
+        again = input('Would you like to play again? ')
+        if not again.startswith('y'):
+            break
+    except PlayerExit:
+        break
