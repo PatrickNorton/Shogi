@@ -282,6 +282,9 @@ class board:
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove
 
+    def enemypcs(self):
+        yield from [x for x in self if x.COLOR != self.currplyr.other()]
+
 
 class IllegalMove(Exception):
     pass
