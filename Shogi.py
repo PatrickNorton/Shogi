@@ -9,6 +9,10 @@ class PlayerExit(Exception):
     pass
 
 
+class OtherMove(Exception):
+    pass
+
+
 def playgame():
     global theboard
     theboard = board()
@@ -169,13 +173,17 @@ def inputpiece(pieceloc):
         return True
     except IndexError:
         isother = otherconditions(pieceloc)
-        return isother
+        if isother:
+            raise OtherMove
+        else:
+            return False
 
 
 def otherconditions(var):
     global theboard
-    if var == 'captured':
+    if var == 'drop':
         droppiece()
+        return True
     if var == 'quit':
         willquit = input('Are you sure you want to quit? (y/n) ')
         if willquit.startswith('y'):
