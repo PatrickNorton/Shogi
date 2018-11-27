@@ -19,7 +19,11 @@ def playgame():
     while game:
         print(board)
         print(f"{repr(theboard.currplyr)}'s turn")
-        game = piececheck()
+        try:
+            game = piececheck()
+        except IllegalMove as e:
+            var = int(str(e))
+            print(errorlist[var])
         check, kingpos, checklist = checkcheck()
         if check and game:
             mate = matecheck(kingpos, checklist)
@@ -50,10 +54,7 @@ def movecheck(current):
         if inputpiece(moveloc, quitting):
             test = True
             moveloc = coord(moveloc)
-            try:
-                promote, theboard = movecheck2(current, moveloc)
-            except IllegalMove:
-                print('Illegal Move!')
+            promote, theboard = movecheck2(current, moveloc)
             if promote:
                 topromote = input('Would you like to promote this piece? ')
                 if topromote.lower().startswith('y'):
