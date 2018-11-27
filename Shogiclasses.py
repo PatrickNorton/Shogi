@@ -63,7 +63,7 @@ class moves:
         movedict = {}
         for n, line in enumerate(movelist):
             movelist[n] = line.split()
-            movedict[movelist[0]] = movelist[1:]
+            movedict[line[0]] = line[1:]
 
     def __init__(self, piecenm):
         pcmvlist = self.movedict[piecenm]
