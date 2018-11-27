@@ -42,13 +42,12 @@ def playgame():
 
 def piececheck():
     global theboard
-    game, quitting, error = True, False, 1
-    while not error:
-        pieceloc = input('Where is the piece you want to move?')
-        if inputpiece(pieceloc, quitting):
-            pieceloc = coord(pieceloc)
-            if theboard[pieceloc].color == theboard.currplyr:
-                quitting = movecheck(pieceloc)
+    game, quitting = True, False
+    pieceloc = input('Where is the piece you want to move?')
+    if inputpiece(pieceloc, quitting):
+        pieceloc = coord(pieceloc)
+        if theboard[pieceloc].color == theboard.currplyr:
+            quitting = movecheck(pieceloc)
     return not quitting and game
 
 
