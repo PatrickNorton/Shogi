@@ -143,29 +143,25 @@ def matecheck(kingpos, checklist):
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
         return False
-    for loc in theboard.occupied():
-        enemypc = theboard[loc].COLOR == theboard.currplyr.flip()
-        if enemypc:
-            try:
-                movecheck2(loc, checklist)
-            except IllegalMove:
-                theboard = deepcopy(oldboard)
-                continue
+    for loc in theboard.enemypcs():
+        try:
+            movecheck2(loc, checklist)
+        except IllegalMove:
             theboard = deepcopy(oldboard)
-            return False
+            continue
+        theboard = deepcopy(oldboard)
+        return False
     move = kingpos-checklist
     movedir = direction(move)
-    for pos, z in product(theboard.occupied(), range(abs(max(move)))):
-        enemypc = theboard[pos].COLOR == theboard.currplyr.flip()
-        if enemypc:
-            newpos = z*checklist*coord(movedir)
-            try:
-                movecheck2(pos, newpos)
-            except IllegalMove:
-                theboard = deepcopy(oldboard)
-                continue
+    for pos, z in product(theboard.enemypcs(), range(abs(max(move)))):
+        newpos = z*checklist*coord(movedir)
+        try:
+            movecheck2(pos, newpos)
+        except IllegalMove:
             theboard = deepcopy(oldboard)
-            return False
+            continue
+        theboard = deepcopy(oldboard)
+        return False
     return True
 
 
