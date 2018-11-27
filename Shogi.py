@@ -28,6 +28,8 @@ def playgame():
         except IllegalMove as e:
             var = int(str(e))
             print(errorlist[var])
+        except OtherMove:
+            board.currplyr = board.currplyr.flip()
         check, kingpos, checklist = checkcheck()
         if check and game:
             mate = matecheck(kingpos, checklist)
