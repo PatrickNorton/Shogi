@@ -136,35 +136,36 @@ def matecheck(kingpos, checklist):
             if not checkcheck(True)[0]:
                 return False
     if len(checklist) == 1:
-        checklist = checklist[0]
-        haspieces = captlist[int(board.currplyr)]
-        notknight = str(theboard[checklist].PTYPE) != 'n'
-        hasspace = not all(x in (-1, 0, 1) for x in newpos)
-        if haspieces and notknight and hasspace:
+        return True
+    checklist = checklist[0]
+    haspieces = captlist[int(board.currplyr)]
+    notknight = str(theboard[checklist].PTYPE) != 'n'
+    hasspace = not all(x in (-1, 0, 1) for x in newpos)
+    if haspieces and notknight and hasspace:
+        return False
+    for loc in theboard.occupied():
+        enemypc = theboard[loc].COLOR == theboard.currplyr.flip()
+        if enemypc:
+            try:
+                movecheck2(loc, checklist)
+            except IllegalMove:
+                theboard = deepcopy(oldboard)
+                continue
+            theboard = deepcopy(oldboard)
             return False
-        for loc in theboard.occupied():
-            enemypc = theboard[loc].COLOR == theboard.currplyr.flip()
-            if enemypc:
-                try:
-                    movecheck2(loc, checklist)
-                except IllegalMove:
-                    theboard = deepcopy(oldboard)
-                    continue
+    move = kingpos-checklist
+    movedir = direction(move)
+    for pos, z in product(theboard.occupied(), range(abs(max(move)))):
+        enemypc = theboard[pos].COLOR == theboard.currplyr.flip()
+        if enemypc:
+            newpos = z*checklist*coord(movedir)
+            try:
+                movecheck2(pos, newpos)
+            except IllegalMove:
                 theboard = deepcopy(oldboard)
-                return False
-        move = kingpos-checklist
-        movedir = direction(move)
-        for pos, z in product(theboard.occupied(), range(abs(max(move)))):
-            enemypc = theboard[pos].COLOR == theboard.currplyr.flip()
-            if enemypc:
-                newpos = z*checklist*coord(movedir)
-                try:
-                    movecheck2(pos, newpos)
-                except IllegalMove:
-                    theboard = deepcopy(oldboard)
-                    continue
-                theboard = deepcopy(oldboard)
-                return False
+                continue
+            theboard = deepcopy(oldboard)
+            return False
     return True
 
 
