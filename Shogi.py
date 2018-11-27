@@ -193,6 +193,6 @@ def droppiece():
                 try:
                     theboard.putinplay(moveto)
                 except IllegalMove:
-                    print('Illegal Move!')
+                    print('Illegal move!')
     except IndexError:
         pass
