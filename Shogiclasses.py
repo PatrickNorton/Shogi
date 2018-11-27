@@ -289,6 +289,8 @@ class board:
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove
 
+    def playerpcs(self): yield from self.PCSBYCLR[self.currplyr]
+
     def enemypcs(self): yield from self.PCSBYCLR[self.currplyr.other()]
 
 
