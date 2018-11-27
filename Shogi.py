@@ -54,17 +54,16 @@ def piececheck():
 
 def movecheck(current):
     global theboard
-    test, quitting = False, False
-    while not test:
+    validpiece, quitting = False, False
+    while not validpiece:
         moveloc = input('Where do you want to move this piece?')
-        if inputpiece(moveloc, quitting):
-            test = True
-            moveloc = coord(moveloc)
-            promote, theboard = movecheck2(current, moveloc)
-            if promote:
-                topromote = input('Would you like to promote this piece? ')
-                if topromote.lower().startswith('y'):
-                    board[moveloc].promote()
+        validpiece = inputpiece(moveloc, quitting)
+    moveloc = coord(moveloc)
+    promote, theboard = movecheck2(current, moveloc)
+    if promote:
+        topromote = input('Would you like to promote this piece? ')
+        if topromote.lower().startswith('y'):
+            board[moveloc].promote()
     return quitting
 
 
