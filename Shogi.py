@@ -204,3 +204,9 @@ def droppiece():
                     print('Illegal move!')
     except IndexError:
         pass
+
+
+try:
+    playgame()
+except PlayerExit:
+    pass
