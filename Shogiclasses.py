@@ -61,8 +61,8 @@ class moves:
     with open(pathjoin('shogimoves.txt')) as movef:
         movelist = movef.readlines()
         movedict = {}
-        for line in movelist:
-            movelist = movelist.split()
+        for n, line in enumerate(movelist):
+            movelist[n] = line.split()
             movedict[movelist[0]] = movelist[1:]
 
     def __init__(self, piecenm):
