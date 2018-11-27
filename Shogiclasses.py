@@ -15,8 +15,10 @@ class piece:
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
             self.prom = None
+            self.PROMOTABLE = False
         else:
             self.prom = False
+            self.PROMOTABLE = True
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
@@ -24,6 +26,8 @@ class piece:
     def __eq__(self, other): self.TUP = other.TUP
 
     def __bool__(self): return not isinstance(self, nopiece)
+
+    def __hash__(self): return hash(self.TUP)
 
     def promote(self):
         if self.prom is None:
@@ -45,6 +49,8 @@ class piece:
     def flipsides(self):
         self.COLOR = color(self.COLOR.OTHER)
 
+    def canmove(self, relloc): return self.MOVES.canmove(relloc)
+
 
 class nopiece(piece):
     def __init__(self):
@@ -63,16 +69,20 @@ class moves:
         pcmvlist = self.movedict[piecenm]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
+        self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
         if mvlist == 'None':
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
+            self.PMOVES[direction(8)] = '-'
         self.MOVES = [self.DMOVES, self.PMOVES]
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
 
     def __getitem__(self, attr): return self.CMOVES[attr]
+
+    def __iter__(self): yield from self.CMOVES
 
     def canmove(self, relloc):  # Takes coord object
         vec = direction(relloc)
@@ -100,14 +110,19 @@ class color:
         self.INT = turnnum
         self.NAME = 'wb'[self.INT]
         self.OTHER = 'bw'[self.INT]
+        self.FULLNM = ['White', 'Black'][self.INT]
 
     def __str__(self): return self.STR
+
+    def __repr__(self): return self.FULLNM
 
     def __int__(self): return self.INT
 
     def __eq__(self, other): return self.INT == other.INT
 
     def __hash__(self): return hash((self.INT, self.NAME))
+
+    def flip(self): return color(int(not self.INT))
 
 
 class ptype:
@@ -140,14 +155,29 @@ class ptype:
 
 class direction:
     lis = {(round(sin(pi*x/4)), round(cos(pi*x/4))): x for x in range(8)}
+    invlis = [(round(sin(pi*x/4)), round(cos(pi*x/4))) for x in range(8)]
 
     def __init__(self, direction):
-        if isinstance(direction, coord):
+        if direction == (0, 0):
+            self.DIR = 8
+        elif isinstance(direction, coord):
             self.DIR = self.make(direction.x, direction.y)
         elif isinstance(direction, tuple):
             self.DIR = self.make(*direction)
         elif isinstance(direction, int):
             self.DIR = direction
+        else:
+            raise TypeError
+        if self.DIR != 8:
+            self.TUP = self.invlis[self.DIR]
+        else:
+            self.TUP = (0, 0)
+
+    def __eq__(self, other): return self.DIR == other.DIR
+
+    def __iter__(self): yield from self.TUP
+
+    def __getitem__(self, index): return self.TUP[index]
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
@@ -156,13 +186,19 @@ class direction:
 
 class coord:
     def __init__(self, xy):
-        self.x = xy[0]
-        self.y = xy[1]
+        if isinstance(xy, str):
+            self.x = '987654321'.index(xy[0])
+            self.y = 'abcdefghi'.index(xy[1])
+        else:
+            self.x = xy[0]
+            self.y = xy[1]
         self.TUP = (self.x, self.y)
 
     def __eq__(self, other): return hash(self) == hash(other)
 
     def __iter__(self): yield from self.TUP
+
+    def __getitem__(self, index): return self.TUP[index]
 
     def __add__(self, other): return coord((self.x+other.x, self.y+other.y))
 
@@ -171,6 +207,8 @@ class coord:
     def __mul__(self, other): return coord((self.x*other.x, self.y*other.y))
 
     def __hash__(self): return hash(self.TUP)
+
+    def __abs__(self): return coord((abs(self.x), abs(self.y)))
 
 
 class NotPromotableException(Exception):
@@ -195,27 +233,32 @@ class board:
         for (x, y) in self.it():
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+        self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(1)}
         self.currplyr = color(0)
 
     def __str__(self):
         toreturn = ""
+        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}"
         toreturn += '  '.join('987654321')+'\n'
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]}{' '.join(str(x))}\n"
+        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}"
         return toreturn
 
     def __iter__(self):
         yield from [[self[x, y] for x in range(9)] for y in range(9)]
 
-    def __getitem__(self, coords):
-        coords = coord(coords)
-        if coords in self.PIECES:
-            return self.PIECES[coords]
-        else:
-            return nopiece()
+    def __getitem__(self, index):
+        if isinstance(index, (tuple, coord)):
+            coords = coord(index)
+            return self.PIECES.get(coords, nopiece())
+        elif isinstance(index, piece):
+            return self.INVPIECES.get(index)
 
     def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
+
+    def occupied(self): yield from self.PIECES
 
     def move(self, current, new):
         if not isinstance(self[new], nopiece):
@@ -228,3 +271,17 @@ class board:
         piece.flipsides()
         self.captured[self.currplyr] = piece
         del self.PIECES[new]
+
+    def canpromote(self, space):
+        zonevar = [[6, 7, 8], [0, 1, 2]]
+        return space.y in zonevar[int(board.currplyr)]
+
+    def putinplay(self, piece, movedto):
+        player = self.currplyr
+        self.CAPTURED[player].remove(piece)
+        if not isinstance(self[movedto], nopiece):
+            raise IllegalMove
+
+
+class IllegalMove(Exception):
+    pass
