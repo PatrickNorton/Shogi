@@ -50,7 +50,10 @@ def movecheck(current):
         if inputpiece(moveloc, quitting):
             test = True
             moveloc = coord(moveloc)
-            promote, theboard = movecheck2(current, moveloc)
+            try:
+                promote, theboard = movecheck2(current, moveloc)
+            except IllegalMove:
+                print('Illegal Move!')
             if promote:
                 topromote = input('Would you like to promote this piece? ')
                 if topromote.lower().startswith('y'):
