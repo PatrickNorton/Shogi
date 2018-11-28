@@ -1,4 +1,5 @@
 from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
+from Shogiclasses import NotPromotableException, PromotedException
 from copy import deepcopy
 from itertools import product
 
@@ -66,7 +67,12 @@ def movecheck(current):
     if promote:
         topromote = input('Would you like to promote this piece? ')
         if topromote.lower().startswith('y'):
-            board[moveloc].promote()
+            try:
+                board[moveloc].promote()
+            except NotPromotableException:
+                print('This piece cannot be promoted!')
+            except PromotedException:
+                print('This piece is already promoted!')
     return quitting
 
 
