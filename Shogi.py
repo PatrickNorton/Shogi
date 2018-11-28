@@ -101,7 +101,7 @@ def checkcheck(earlybreak=False):
     global theboard
     check, checklist = False, []
     oldboard = deepcopy(theboard)
-    toget = piece('k', str(oldboard.currplyr))
+    toget = piece('k', oldboard.currplyr)
     kingpos = oldboard[toget]
     for loc in theboard.it():
         loc = coord(loc)
