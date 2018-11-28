@@ -68,7 +68,7 @@ def movecheck(current):
 
 
 def movecheck2(current, new):
-    global theboard, captlist
+    global theboard
     newboard = deepcopy(theboard)
     piece = newboard[current]
     move = new-current
@@ -90,7 +90,6 @@ def movecheck2(current, new):
 
 
 def obscheck(current, new, move):
-    global error
     movedir = direction(move)
     for x in range(1, max(abs(move))):
         testpos = current+coord((x*z for z in movedir))
@@ -121,7 +120,7 @@ def checkcheck(earlybreak=False):
 
 
 def matecheck(kingpos, checklist):
-    global theboard, error
+    global theboard, captlist
     oldboard = deepcopy(theboard)
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
