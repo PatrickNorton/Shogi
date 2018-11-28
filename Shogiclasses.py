@@ -189,7 +189,7 @@ class coord:
         if isinstance(xy, str):
             self.x = 'abcdefghi'.index(xy[0])
             self.y = '987654321'.index(xy[1])
-        elif all(x in range(8) for x in xy):
+        elif all(x in range(9) for x in xy):
             self.x = xy[0]
             self.y = xy[1]
         else:
