@@ -134,7 +134,7 @@ def matecheck(kingpos, checklist):
             theboard = deepcopy(oldboard)
             if not checkcheck(True)[0]:
                 return False
-    if len(checklist) == 1:
+    if len(checklist) > 1:
         return True
     checklist = checklist[0]
     haspieces = captlist[int(board.currplyr)]
