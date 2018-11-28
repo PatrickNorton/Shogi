@@ -200,7 +200,7 @@ def droppiece():
                     theboard.putinplay(moveto)
                 except IllegalMove:
                     print('Illegal move!')
-    except IndexError:
+    except ValueError:
         pass
 
 
