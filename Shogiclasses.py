@@ -70,11 +70,11 @@ class moves:
         pcmvlist = self.movedict[piecenm]
         mvlist = pcmvlist[0]
         if clr == color(1):
-            mvlist.reverse()
+            mvlist = [x[::-1] for x in mvlist]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
-        if mvlist == 'None':
+        if mvlist in ('None', 'enoN'):
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
