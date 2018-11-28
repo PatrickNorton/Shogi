@@ -68,9 +68,9 @@ class moves:
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
         pcmvlist = self.movedict[piecenm]
-        mvlist = pcmvlist[0]
         if clr == color(1):
-            mvlist = [x[::-1] for x in mvlist]
+            pcmvlist = [x[::-1] for x in pcmvlist]
+        mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
