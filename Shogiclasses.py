@@ -66,6 +66,7 @@ class moves:
             movedict[line[0]] = line[1:]
 
     def __init__(self, piecenm):
+        piecenm = str(piecenm)
         pcmvlist = self.movedict[piecenm]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
@@ -112,7 +113,7 @@ class color:
         self.OTHER = 'bw'[self.INT]
         self.FULLNM = ['White', 'Black'][self.INT]
 
-    def __str__(self): return self.STR
+    def __str__(self): return self.NAME
 
     def __repr__(self): return self.FULLNM
 
@@ -133,6 +134,7 @@ class ptype:
         namedict = {x[0]: x[1] for x in namelist}
 
     def __init__(self, typ):
+        typ = str(typ)
         self.TYP = typ.lower()
         self.NAME = self.namedict[self.TYP]
 
