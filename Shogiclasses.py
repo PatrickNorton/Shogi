@@ -10,7 +10,7 @@ def pathjoin(path): return os.path.join(cpath, path)
 class piece:
     def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
-        self.MOVES = moves(self.NAME)
+        self.MOVES = moves(self.NAME, color(clr))
         self.COLOR = color(clr)
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
@@ -65,10 +65,12 @@ class moves:
             movelist[n] = line.split()
             movedict[line[0]] = line[1:]
 
-    def __init__(self, piecenm):
+    def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
         pcmvlist = self.movedict[piecenm]
         mvlist = pcmvlist[0]
+        if clr == color(1):
+            mvlist.reverse()
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
