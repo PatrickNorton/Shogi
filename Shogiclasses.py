@@ -225,7 +225,7 @@ class coord:
         self.XSTR = '987654321'[self.x]
         self.YSTR = 'abcdefghi'[self.y]
 
-    def __str__(self): return self.XSTR+self.YSTR
+    def __str__(self): return self.YSTR+self.XSTR
 
     def __eq__(self, other): return hash(self) == hash(other)
 
