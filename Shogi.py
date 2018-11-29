@@ -21,7 +21,7 @@ def playgame():
         etxt = etxt.readlines()
         errorlist = [x.strip() for x in etxt]
     while game:
-        print(board)
+        print(theboard)
         print(f"{repr(theboard.currplyr)}'s turn")
         try:
             game = piececheck()
@@ -29,19 +29,19 @@ def playgame():
             var = int(str(e))
             print(errorlist[var])
         except OtherMove:
-            board.currplyr = board.currplyr.flip()
+            theboard.currplyr = theboard.currplyr.flip()
         check, kingpos, checklist = checkcheck()
         if check and game:
             mate = matecheck(kingpos, checklist)
             game = not mate
             if mate:
-                print(board)
-                print(f"Checkmate! {repr(board.currplyr)} wins!")
+                print(theboard)
+                print(f"Checkmate! {repr(theboard.currplyr)} wins!")
                 game = False
                 break
             else:
                 print('Check!')
-        board.currplyr = board.currplyr.flip()
+        theboard.currplyr = theboard.currplyr.flip()
 
 
 def piececheck():
@@ -82,7 +82,7 @@ def movecheck2(current, new):
     magicvar = piece.MOVES[movedir]
     if movedir == direction(8):
         raise IllegalMove(3)
-    elif board[new].COLOR == board.currplyr:
+    elif theboard[new].COLOR == theboard.currplyr:
         raise IllegalMove(4)
     elif not piece.canmove(move):
         raise IllegalMove(1)
@@ -91,7 +91,7 @@ def movecheck2(current, new):
     else:
         obscheck(current, new, move)
     newboard.move(current, new)
-    topromote = board[new].PROMOTABLE and board.canpromote(new)
+    topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
     return topromote, theboard
 
 
@@ -144,7 +144,7 @@ def matecheck(kingpos, checklist):
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
-    haspieces = captlist[int(board.currplyr)]
+    haspieces = captlist[int(theboard.currplyr)]
     notknight = str(theboard[checklist].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
