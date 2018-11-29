@@ -55,9 +55,6 @@ def piececheck():
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         quitting = movecheck(pieceloc)
-    else:
-        var1 = theboard[pieceloc].COLOR
-        var2 = theboard.currplyr
     return not quitting and game
 
 
