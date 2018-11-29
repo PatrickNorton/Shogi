@@ -245,7 +245,7 @@ class board:
         for x in range(1):
             theclr = color(x)
             self.PCSBYCLR[theclr] = {}
-            for x, y in enumerate(self.PIECES):
+            for x, y in self.PIECES.items():
                 if y.COLOR == self.currplyr:
                     self.PCSBYCLR[theclr][x] = y
         self.currplyr = color(0)
