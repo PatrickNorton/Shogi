@@ -50,11 +50,14 @@ def piececheck():
     global theboard
     game, quitting, validpiece = True, False, False
     while not validpiece:
-        pieceloc = input('Where is the piece you want to move?')
-        validpiece = inputpiece(pieceloc, quitting)
+        pieceloc = input('Where is the piece you want to move? ')
+        validpiece = inputpiece(pieceloc)
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         quitting = movecheck(pieceloc)
+    else:
+        var1 = theboard[pieceloc].COLOR
+        var2 = theboard.currplyr
     return not quitting and game
 
 
@@ -62,8 +65,8 @@ def movecheck(current):
     global theboard
     validpiece, quitting = False, False
     while not validpiece:
-        moveloc = input('Where do you want to move this piece?')
-        validpiece = inputpiece(moveloc, quitting)
+        moveloc = input('Where do you want to move this piece? ')
+        validpiece = inputpiece(moveloc)
     moveloc = coord(moveloc)
     promote, theboard = movecheck2(current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE

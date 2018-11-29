@@ -1,4 +1,4 @@
-from numpy import sin, cos, pi
+from numpy import sin, cos, pi, sign
 import os
 import sys
 cpath = sys.path[0]
@@ -23,7 +23,7 @@ class piece:
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
 
-    def __eq__(self, other): self.TUP = other.TUP
+    def __eq__(self, other): return self.TUP == other.TUP
 
     def __bool__(self): return not isinstance(self, nopiece)
 
@@ -91,14 +91,15 @@ class moves:
 
     def canmove(self, relloc):  # Takes coord object
         vec = direction(relloc)
-        dist = max(relloc)
-        if self[vec] == '-':
+        dist = max(abs(relloc))
+        magicvar = self[vec]
+        if magicvar == '-':
             return False
-        elif self[vec] == '1':
+        elif magicvar == '1':
             return dist == 1
-        elif self[vec] == '+':
+        elif magicvar == '+':
             return True
-        elif self[vec] == 'T':
+        elif magicvar == 'T':
             return abs(relloc.x) == 1 and relloc.y == 2
 
     def prom(self):
@@ -122,6 +123,11 @@ class color:
             else:
                 self.NAME = turnnum
                 self.INT = 'wb'.index(turnnum)
+        elif isinstance(turnnum, color):
+            self.INT = turnnum.INT
+            self.NAME = 'wb'[self.INT]
+        else:
+            raise TypeError
         self.OTHER = 'bw'[self.INT]
         self.FULLNM = ['White', 'Black'][self.INT]
 
@@ -168,8 +174,8 @@ class ptype:
 
 
 class direction:
-    lis = {(round(sin(pi*x/4)), round(cos(pi*x/4))): x for x in range(8)}
-    invlis = [(round(sin(pi*x/4)), round(cos(pi*x/4))) for x in range(8)]
+    lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
+    invlis = [(round(sin(pi*x/4)), -round(cos(pi*x/4))) for x in range(8)]
 
     def __init__(self, direction):
         if direction == (0, 0):
@@ -197,19 +203,19 @@ class direction:
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
-            self.DIR = self.lis[(xvar, yvar)]
+            return self.lis[(sign(xvar), sign(yvar))]
 
 
 class coord:
     def __init__(self, xy):
         if isinstance(xy, str):
-            self.x = 'abcdefghi'.index(xy[0])
-            self.y = '987654321'.index(xy[1])
-        elif all(x in range(9) for x in xy):
+            self.y = 'abcdefghi'.index(xy[0])
+            self.x = '987654321'.index(xy[1])
+        elif all(abs(x) in range(9) for x in xy):
             self.x = xy[0]
             self.y = xy[1]
         else:
-            raise ValueError
+            raise ValueError(xy)
         self.TUP = (self.x, self.y)
 
     def __eq__(self, other): return hash(self) == hash(other)
@@ -264,7 +270,7 @@ class board:
 
     def __str__(self):
         toreturn = ""
-        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n"
+        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n\n"
         toreturn += '  '.join('987654321')+'\n'
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
@@ -279,7 +285,7 @@ class board:
             coords = coord(index)
             return self.PIECES.get(coords, nopiece())
         elif isinstance(index, piece):
-            return self.INVPIECES.get(index)
+            return self.INVPIECES[index]
 
     def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
 
@@ -299,7 +305,7 @@ class board:
 
     def canpromote(self, space):
         zonevar = [[6, 7, 8], [0, 1, 2]]
-        return space.y in zonevar[int(board.currplyr)]
+        return space.y in zonevar[int(self.currplyr)]
 
     def putinplay(self, piece, movedto):
         player = self.currplyr
