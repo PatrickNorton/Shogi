@@ -10,7 +10,7 @@ def pathjoin(path): return os.path.join(cpath, path)
 class piece:
     def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
-        self.MOVES = moves(self.NAME)
+        self.MOVES = moves(self.NAME, color(clr))
         self.COLOR = color(clr)
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
@@ -65,13 +65,16 @@ class moves:
             movelist[n] = line.split()
             movedict[line[0]] = line[1:]
 
-    def __init__(self, piecenm):
+    def __init__(self, piecenm, clr):
+        piecenm = str(piecenm)
         pcmvlist = self.movedict[piecenm]
+        if clr == color(1):
+            pcmvlist = [x[::-1] for x in pcmvlist]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
-        if mvlist == 'None':
+        if mvlist in ('None', 'enoN'):
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
@@ -112,7 +115,7 @@ class color:
         self.OTHER = 'bw'[self.INT]
         self.FULLNM = ['White', 'Black'][self.INT]
 
-    def __str__(self): return self.STR
+    def __str__(self): return self.NAME
 
     def __repr__(self): return self.FULLNM
 
@@ -133,6 +136,7 @@ class ptype:
         namedict = {x[0]: x[1] for x in namelist}
 
     def __init__(self, typ):
+        typ = str(typ)
         self.TYP = typ.lower()
         self.NAME = self.namedict[self.TYP]
 
@@ -187,11 +191,13 @@ class direction:
 class coord:
     def __init__(self, xy):
         if isinstance(xy, str):
-            self.x = '987654321'.index(xy[0])
-            self.y = 'abcdefghi'.index(xy[1])
-        else:
+            self.x = 'abcdefghi'.index(xy[0])
+            self.y = '987654321'.index(xy[1])
+        elif all(x in range(9) for x in xy):
             self.x = xy[0]
             self.y = xy[1]
+        else:
+            raise ValueError
         self.TUP = (self.x, self.y)
 
     def __eq__(self, other): return hash(self) == hash(other)
@@ -235,6 +241,13 @@ class board:
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(1)}
+        self.PCSBYCLR = {}
+        for x in range(1):
+            theclr = color(x)
+            self.PCSBYCLR[theclr] = {}
+            for x, y in enumerate(self.PIECES):
+                if y.COLOR == self.currplyr:
+                    self.PCSBYCLR[theclr][x] = y
         self.currplyr = color(0)
 
     def __str__(self):
@@ -281,6 +294,10 @@ class board:
         self.CAPTURED[player].remove(piece)
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove
+
+    def playerpcs(self): yield from self.PCSBYCLR[self.currplyr]
+
+    def enemypcs(self): yield from self.PCSBYCLR[self.currplyr.other()]
 
 
 class IllegalMove(Exception):

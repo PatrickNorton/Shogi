@@ -28,6 +28,8 @@ def playgame():
         except IllegalMove as e:
             var = int(str(e))
             print(errorlist[var])
+        except OtherMove:
+            board.currplyr = board.currplyr.flip()
         check, kingpos, checklist = checkcheck()
         if check and game:
             mate = matecheck(kingpos, checklist)
@@ -35,39 +37,43 @@ def playgame():
             if mate:
                 print(board)
                 print(f"Checkmate! {repr(board.currplyr)} wins!")
+                game = False
+            else:
+                print('Check!')
         board.currplyr = board.currplyr.flip()
 
 
 def piececheck():
     global theboard
-    game, quitting, error = True, False, 1
-    while not error:
+    game, quitting, validpiece = True, False, False
+    while not validpiece:
         pieceloc = input('Where is the piece you want to move?')
-        if inputpiece(pieceloc, quitting):
-            pieceloc = coord(pieceloc)
-            if theboard[pieceloc].color == theboard.currplyr:
-                quitting = movecheck(pieceloc)
+        validpiece = inputpiece(pieceloc, quitting)
+    pieceloc = coord(pieceloc)
+    if theboard[pieceloc].COLOR == theboard.currplyr:
+        quitting = movecheck(pieceloc)
     return not quitting and game
 
 
 def movecheck(current):
     global theboard
-    test, quitting = False, False
-    while not test:
+    validpiece, quitting = False, False
+    while not validpiece:
         moveloc = input('Where do you want to move this piece?')
-        if inputpiece(moveloc, quitting):
-            test = True
-            moveloc = coord(moveloc)
-            promote, theboard = movecheck2(current, moveloc)
-            if promote:
-                topromote = input('Would you like to promote this piece? ')
-                if topromote.lower().startswith('y'):
-                    board[moveloc].promote()
+        validpiece = inputpiece(moveloc, quitting)
+    moveloc = coord(moveloc)
+    promote, theboard = movecheck2(current, moveloc)
+    canpromote = theboard[moveloc].PROMOTABLE
+    ispromoted = theboard[moveloc].prom
+    if promote and canpromote and not ispromoted:
+        topromote = input('Would you like to promote this piece? ')
+        if topromote.lower().startswith('y'):
+            theboard[moveloc].promote()
     return quitting
 
 
 def movecheck2(current, new):
-    global theboard, captlist
+    global theboard
     newboard = deepcopy(theboard)
     piece = newboard[current]
     move = new-current
@@ -89,7 +95,6 @@ def movecheck2(current, new):
 
 
 def obscheck(current, new, move):
-    global error
     movedir = direction(move)
     for x in range(1, max(abs(move))):
         testpos = current+coord((x*z for z in movedir))
@@ -101,7 +106,7 @@ def checkcheck(earlybreak=False):
     global theboard
     check, checklist = False, []
     oldboard = deepcopy(theboard)
-    toget = piece('k', str(oldboard.currplyr))
+    toget = piece('k', oldboard.currplyr)
     kingpos = oldboard[toget]
     for loc in theboard.it():
         loc = coord(loc)
@@ -120,7 +125,7 @@ def checkcheck(earlybreak=False):
 
 
 def matecheck(kingpos, checklist):
-    global theboard, error
+    global theboard, captlist
     oldboard = deepcopy(theboard)
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
@@ -134,36 +139,33 @@ def matecheck(kingpos, checklist):
             theboard = deepcopy(oldboard)
             if not checkcheck(True)[0]:
                 return False
-    if len(checklist) == 1:
-        checklist = checklist[0]
-        haspieces = captlist[int(board.currplyr)]
-        notknight = str(theboard[checklist].PTYPE) != 'n'
-        hasspace = not all(x in (-1, 0, 1) for x in newpos)
-        if haspieces and notknight and hasspace:
-            return False
-        for loc in theboard.occupied():
-            enemypc = theboard[loc].COLOR == theboard.currplyr.flip()
-            if enemypc:
-                try:
-                    movecheck2(loc, checklist)
-                except IllegalMove:
-                    theboard = deepcopy(oldboard)
-                    continue
-                theboard = deepcopy(oldboard)
-                return False
-        move = kingpos-checklist
-        movedir = direction(move)
-        for pos, z in product(theboard.occupied(), range(abs(max(move)))):
-            enemypc = theboard[pos].COLOR == theboard.currplyr.flip()
-            if enemypc:
-                newpos = z*checklist*coord(movedir)
-                try:
-                    movecheck2(pos, newpos)
-                except IllegalMove:
-                    theboard = deepcopy(oldboard)
-                    continue
-                theboard = deepcopy(oldboard)
-                return False
+    if len(checklist) > 1:
+        return True
+    checklist = checklist[0]
+    haspieces = captlist[int(board.currplyr)]
+    notknight = str(theboard[checklist].PTYPE) != 'n'
+    hasspace = not all(x in (-1, 0, 1) for x in newpos)
+    if haspieces and notknight and hasspace:
+        return False
+    for loc in theboard.enemypcs():
+        try:
+            movecheck2(loc, checklist)
+        except IllegalMove:
+            theboard = deepcopy(oldboard)
+            continue
+        theboard = deepcopy(oldboard)
+        return False
+    move = kingpos-checklist
+    movedir = direction(move)
+    for pos, z in product(theboard.enemypcs(), range(abs(max(move)))):
+        newpos = z*checklist*coord(movedir)
+        try:
+            movecheck2(pos, newpos)
+        except IllegalMove:
+            theboard = deepcopy(oldboard)
+            continue
+        theboard = deepcopy(oldboard)
+        return False
     return True
 
 
@@ -202,11 +204,15 @@ def droppiece():
                     theboard.putinplay(moveto)
                 except IllegalMove:
                     print('Illegal move!')
-    except IndexError:
+    except ValueError:
         pass
 
 
-try:
-    playgame()
-except PlayerExit:
-    pass
+while True:
+    try:
+        playgame()
+        again = input('Would you like to play again? ')
+        if not again.startswith('y'):
+            break
+    except PlayerExit:
+        break
