@@ -201,6 +201,8 @@ class direction:
 
     def __hash__(self): return hash(self.TUP)
 
+    def __repr__(self): return f"direction({self.DIR})"
+
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
             return self.lis[(sign(xvar), sign(yvar))]
@@ -233,6 +235,8 @@ class coord:
     def __hash__(self): return hash(self.TUP)
 
     def __abs__(self): return coord((abs(self.x), abs(self.y)))
+
+    def __repr__(self): return f"coord('{self.x}{self.y}')"
 
 
 class NotPromotableException(Exception):
