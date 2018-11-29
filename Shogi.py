@@ -38,6 +38,7 @@ def playgame():
                 print(board)
                 print(f"Checkmate! {repr(board.currplyr)} wins!")
                 game = False
+                break
             else:
                 print('Check!')
         board.currplyr = board.currplyr.flip()
