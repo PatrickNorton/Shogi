@@ -1,3 +1,4 @@
+-: none
 p: pawn
 l: lance
 n: knight

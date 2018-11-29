@@ -10,7 +10,7 @@ def pathjoin(path): return os.path.join(cpath, path)
 class piece:
     def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
-        self.MOVES = moves(self.NAME, color(clr))
+        self.MOVES = moves(self.PTYPE, color(clr))
         self.COLOR = color(clr)
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
@@ -62,8 +62,10 @@ class moves:
         movelist = movef.readlines()
         movedict = {}
         for n, line in enumerate(movelist):
-            movelist[n] = line.split()
-            movedict[line[0]] = line[1:]
+            line = line.strip()
+            var = line.split(' ')
+            movelist[n] = var
+            movedict[line[0]] = tuple(var[1:])
 
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
@@ -110,8 +112,16 @@ class moves:
 
 class color:
     def __init__(self, turnnum):
-        self.INT = turnnum
-        self.NAME = 'wb'[self.INT]
+        if isinstance(turnnum, int):
+            self.INT = turnnum
+            self.NAME = 'wb'[self.INT]
+        elif isinstance(turnnum, str):
+            if turnnum == '-':
+                self.NAME = turnnum
+                self.INT = -1
+            else:
+                self.NAME = turnnum
+                self.INT = 'wb'.index(turnnum)
         self.OTHER = 'bw'[self.INT]
         self.FULLNM = ['White', 'Black'][self.INT]
 
@@ -183,6 +193,8 @@ class direction:
 
     def __getitem__(self, index): return self.TUP[index]
 
+    def __hash__(self): return hash(self.TUP)
+
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
             self.DIR = self.lis[(xvar, yvar)]
@@ -240,23 +252,23 @@ class board:
             if boardtxt[y][x] != '--':
                 self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
-        self.CAPTURED = {color(x): [] for x in range(1)}
+        self.CAPTURED = {color(x): [] for x in range(2)}
         self.PCSBYCLR = {}
+        self.currplyr = color(0)
         for x in range(1):
             theclr = color(x)
             self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
                 if y.COLOR == self.currplyr:
                     self.PCSBYCLR[theclr][x] = y
-        self.currplyr = color(0)
 
     def __str__(self):
         toreturn = ""
-        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}"
+        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n"
         toreturn += '  '.join('987654321')+'\n'
         for x, var in enumerate(self):
-            toreturn += f"{'abcdefghi'[x]}{' '.join(str(x))}\n"
-        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}"
+            toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
+        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}\n"
         return toreturn
 
     def __iter__(self):
