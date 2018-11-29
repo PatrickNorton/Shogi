@@ -71,9 +71,10 @@ class moves:
 
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
-        pcmvlist = self.movedict[piecenm]
+        pcmvlist = list(self.movedict[piecenm])
         if clr == color(1):
-            pcmvlist = [x[::-1] for x in pcmvlist]
+            for y, var in enumerate(pcmvlist):
+                pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
@@ -277,7 +278,7 @@ class board:
     def __str__(self):
         toreturn = ""
         toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n\n"
-        toreturn += '  '.join('987654321')+'\n'
+        toreturn += f"  {'  '.join('987654321')}\n"
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
         toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}\n"
