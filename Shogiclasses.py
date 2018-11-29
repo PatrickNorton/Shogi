@@ -214,14 +214,18 @@ class direction:
 class coord:
     def __init__(self, xy):
         if isinstance(xy, str):
-            self.y = 'abcdefghi'.index(xy[0])
             self.x = '987654321'.index(xy[1])
+            self.y = 'abcdefghi'.index(xy[0])
         elif all(abs(x) in range(9) for x in xy):
             self.x = xy[0]
             self.y = xy[1]
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
+        self.XSTR = '987654321'.index(self.x)
+        self.YSTR = 'abcdefghi'.index(self.y)
+
+    def __str__(self): return self.XSTR+self.YSTR
 
     def __eq__(self, other): return hash(self) == hash(other)
 
@@ -239,7 +243,7 @@ class coord:
 
     def __abs__(self): return coord((abs(self.x), abs(self.y)))
 
-    def __repr__(self): return f"coord('{self.x}{self.y}')"
+    def __repr__(self): return f"coord('{self}')"
 
 
 class NotPromotableException(Exception):
