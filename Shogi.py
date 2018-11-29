@@ -92,7 +92,7 @@ def movecheck2(current, new):
         pass
     else:
         obscheck(current, new, move)
-    newboard.move(current, new)
+    theboard.move(current, new)
     topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
     return topromote, theboard
 
