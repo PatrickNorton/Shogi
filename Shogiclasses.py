@@ -222,8 +222,8 @@ class coord:
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
-        self.XSTR = '987654321'.index(self.x)
-        self.YSTR = 'abcdefghi'.index(self.y)
+        self.XSTR = '987654321'[self.x]
+        self.YSTR = 'abcdefghi'[self.y]
 
     def __str__(self): return self.XSTR+self.YSTR
 
