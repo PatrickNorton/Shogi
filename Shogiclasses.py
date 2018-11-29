@@ -29,6 +29,8 @@ class piece:
 
     def __hash__(self): return hash(self.TUP)
 
+    def __repr__(self): return f"{repr(self.PTYPE)} {repr(self.COLOR)}"
+
     def promote(self):
         if self.prom is None:
             raise NotPromotableException
