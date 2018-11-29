@@ -96,10 +96,11 @@ def movecheck2(current, new):
 
 
 def obscheck(current, new, move):
+    global theboard
     movedir = direction(move)
     for x in range(1, max(abs(move))):
         testpos = current+coord((x*z for z in movedir))
-        if board[current+testpos]:
+        if theboard[current+testpos]:
             raise IllegalMove(2)
 
 
