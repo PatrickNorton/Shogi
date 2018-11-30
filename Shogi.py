@@ -112,26 +112,57 @@ def obscheck(current, new, move):
             raise IllegalMove(2)
 
 
-def checkcheck(earlybreak=False):
+def checkcheck(oldloc, newloc, earlybreak=False):
     global theboard
     check, checklist = False, []
     oldboard = deepcopy(theboard)
     toget = piece('k', oldboard.currplyr)
     kingpos = oldboard[toget]
-    for loc in theboard.it():
-        loc = coord(loc)
-        if theboard[loc].COLOR == theboard.currplyr:
-            try:
-                movecheck2(loc, kingpos)[0]
-            except IllegalMove:
-                continue
+    try:
+        movecheck2(newloc, kingpos)
+    except IllegalMove:
+        check = checkcheck2(oldloc, kingpos, earlybreak)
+    else:
+        if earlybreak:
+            checklist.append(newloc)
             check = True
-            checklist.append(loc)
-            if len(checklist) >= 2 or earlybreak:
-                theboard = deepcopy(oldboard)
-                break
-        theboard = deepcopy(oldboard)
+        else:
+            check = True
+            checklist.append(newloc)
+            check = checkcheck2(oldloc, kingpos, earlybreak)
+    theboard = deepcopy(oldboard)
     return check, kingpos, checklist
+
+
+def checkcheck2(oldloc, kingpos, earlybreak):
+    global theboard
+    relcoord = kingpos-oldloc
+    mvmt = abs(relcoord)
+    if mvmt.x != mvmt.y:
+        return False
+    toking = direction(relcoord)
+    try:
+        obscheck(oldloc, kingpos, relcoord)
+    except IllegalMove:
+        return False
+    fromking = direction((4-int(toking)) % 8)
+    for x in range(8):
+        try:
+            relcoord = coord(x, x)*fromking
+        except ValueError:
+            return False
+        if min(relcoord) < 0:
+            return False
+        abscoord = oldloc+relcoord
+        if not board[abscoord]:
+            continue
+        if str(board[abscoord].COLOR) == theboard.currplyr.OTHER:
+            return False
+        try:
+            movecheck2(oldloc, abscoord)
+            return True
+        except IllegalMove:
+            return False
 
 
 def matecheck(kingpos, checklist):
