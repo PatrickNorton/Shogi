@@ -151,9 +151,9 @@ def checkcheck2(oldloc, kingpos, earlybreak):
             relcoord = coord(x, x)*fromking
         except ValueError:
             return False
-        if min(relcoord) < 0:
-            return False
         abscoord = oldloc+relcoord
+        if min(abscoord) < 0:
+            return False
         if not board[abscoord]:
             continue
         if str(board[abscoord].COLOR) == theboard.currplyr.OTHER:
