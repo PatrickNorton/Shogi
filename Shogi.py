@@ -2,7 +2,11 @@ from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
 from copy import deepcopy
 from itertools import product
 
-# TODO: Fix what to do when input is not a piece
+# TODO: Split checkcheck into 2 parts:
+# TODO: First, check if current piece checks opp. king
+# TODO: Second, check if any piece in line btwn. king
+# TODO:  and original loc. can attack king
+# TODO: Add fn for not moving king into check
 
 
 class PlayerExit(Exception):
