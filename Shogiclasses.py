@@ -146,6 +146,8 @@ class color:
 
     def flip(self): return color(int(not self.INT))
 
+    def other(self): return color(self.OTHER)
+
 
 class ptype:
     with open(pathjoin('shoginames.txt')) as namtxt:
@@ -182,8 +184,8 @@ class coord:
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
         elif all(abs(x) in range(9) for x in xy):
-            self.x = xy[0]
-            self.y = xy[1]
+            self.x = int(xy[0])
+            self.y = int(xy[1])
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
@@ -230,11 +232,13 @@ class direction(coord):
             self.TUP = self.invlis[self.DIR]
         else:
             self.TUP = (0, 0)
-        super().__init__(self, self.TUP)
+        super().__init__(self.TUP)
 
     def __eq__(self, other): return self.DIR == other.DIR
 
     def __repr__(self): return f"direction({self.DIR})"
+
+    def __hash__(self): return hash(self.TUP)
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
@@ -306,7 +310,7 @@ class board:
         piece = self[new]
         piece.demote()
         piece.flipsides()
-        self.captured[self.currplyr] = piece
+        self.CAPTURED[self.currplyr] = piece
         del self.PIECES[new]
 
     def canpromote(self, space):
