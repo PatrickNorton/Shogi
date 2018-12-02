@@ -144,7 +144,7 @@ class color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
-    def flip(self): return color(int(not self.INT))
+    def other(self): return color(self.OTHER)
 
 
 class ptype:
@@ -311,7 +311,7 @@ class board:
         piece = self[new]
         piece.demote()
         piece.flipsides()
-        self.captured[self.currplyr] = piece
+        self.CAPTURED[self.currplyr] = piece
         del self.PIECES[new]
 
     def canpromote(self, space):
