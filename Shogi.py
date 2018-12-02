@@ -30,7 +30,7 @@ def playgame():
             print(errorlist[var])
             continue
         except OtherMove:
-            theboard.currplyr = theboard.currplyr.flip()
+            theboard.currplyr = theboard.currplyr.other()
             continue
         check, kingpos, checklist = checkcheck()
         if check and game:
@@ -43,7 +43,7 @@ def playgame():
                 break
             else:
                 print('Check!')
-        theboard.currplyr = theboard.currplyr.flip()
+        theboard.currplyr = theboard.currplyr.other()
 
 
 def piececheck():
