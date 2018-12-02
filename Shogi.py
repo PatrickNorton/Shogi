@@ -131,7 +131,7 @@ def checkcheck(earlybreak=False):
 
 
 def matecheck(kingpos, checklist):
-    global theboard, captlist
+    global theboard
     oldboard = deepcopy(theboard)
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
@@ -148,7 +148,7 @@ def matecheck(kingpos, checklist):
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
-    haspieces = captlist[int(theboard.currplyr)]
+    haspieces = theboard.CAPTURED[theboard.currplyr]
     notknight = str(theboard[checklist].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
