@@ -331,3 +331,19 @@ class board:
 
 class IllegalMove(Exception):
     pass
+
+
+class Shogi:
+    def __init__(self):
+        self.piece = piece
+        self.board = board
+        self.nopiece = nopiece
+        self.color = color
+        self.moves = moves
+        self.ptype = ptype
+        self.direction = direction
+        self.coord = coord
+        self.NotPromotableException = NotPromotableException
+        self.PromotedException = PromotedException
+        self.DemotedException = DemotedException
+        self.IllegalMove = IllegalMove
