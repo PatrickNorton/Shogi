@@ -148,15 +148,15 @@ def checkcheck2(oldloc, kingpos, earlybreak):
     fromking = direction((4-int(toking)) % 8)
     for x in range(8):
         try:
-            relcoord = coord(x, x)*fromking
+            relcoord = coord((x, x))*fromking
         except ValueError:
             return False
         abscoord = oldloc+relcoord
         if min(abscoord) < 0:
             return False
-        if not board[abscoord]:
+        if not theboard[abscoord]:
             continue
-        if str(board[abscoord].COLOR) == theboard.currplyr.OTHER:
+        if str(theboard[abscoord].COLOR) == theboard.currplyr.OTHER:
             return False
         try:
             movecheck2(oldloc, abscoord)
