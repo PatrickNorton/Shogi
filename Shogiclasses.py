@@ -176,7 +176,7 @@ class ptype:
         self.NAME = self.NAME.replace('+', '')
 
 
-class direction:
+class direction(coord):
     lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
     invlis = [(round(sin(pi*x/4)), -round(cos(pi*x/4))) for x in range(8)]
 
