@@ -48,10 +48,12 @@ def playgame():
 
 def piececheck():
     global theboard
-    game, quitting, validpiece = True, False, False
-    while not validpiece:
+    game, quitting = True, False
+    while True:
         pieceloc = input('Where is the piece you want to move? ')
-        validpiece = inputpiece(pieceloc)
+        if inputpiece(pieceloc):
+            break
+        print('That is not a valid piece!')
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         quitting = movecheck(pieceloc)
@@ -62,10 +64,12 @@ def piececheck():
 
 def movecheck(current):
     global theboard
-    validpiece, quitting = False, False
-    while not validpiece:
+    quitting = False
+    while True:
         moveloc = input('Where do you want to move this piece? ')
-        validpiece = inputpiece(moveloc)
+        if inputpiece(moveloc):
+            break
+        print('That is not a valid piece!')
     moveloc = coord(moveloc)
     promote, theboard = movecheck2(current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
@@ -179,7 +183,7 @@ def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
-    except IndexError:
+    except (ValueError, IndexError):
         isother = otherconditions(pieceloc)
         if isother:
             raise OtherMove
