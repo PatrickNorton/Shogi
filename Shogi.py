@@ -137,7 +137,7 @@ def checkcheck(earlybreak=False):
 def matecheck(kingpos, checklist):
     global theboard
     oldboard = deepcopy(theboard)
-    kingmovepos = [coord(direction(x)) for x in range(8)]
+    kingmovepos = [direction(x) for x in range(8)]
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
