@@ -183,8 +183,8 @@ class coord:
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
         elif all(abs(x) in range(9) for x in xy):
-            self.x = xy[0]
-            self.y = xy[1]
+            self.x = int(xy[0])
+            self.y = int(xy[1])
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
