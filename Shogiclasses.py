@@ -176,40 +176,6 @@ class ptype:
         self.NAME = self.NAME.replace('+', '')
 
 
-class direction(coord):
-    lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
-    invlis = [(round(sin(pi*x/4)), -round(cos(pi*x/4))) for x in range(8)]
-
-    def __init__(self, direction):
-        if direction == (0, 0):
-            self.DIR = 8
-        elif isinstance(direction, coord):
-            self.DIR = self.make(direction.x, direction.y)
-        elif isinstance(direction, tuple):
-            self.DIR = self.make(*direction)
-        elif isinstance(direction, int):
-            self.DIR = direction
-        else:
-            raise TypeError
-        if self.DIR != 8:
-            self.TUP = self.invlis[self.DIR]
-        else:
-            self.TUP = (0, 0)
-
-    def __eq__(self, other): return self.DIR == other.DIR
-
-    def __iter__(self): yield from self.TUP
-
-    def __getitem__(self, index): return self.TUP[index]
-
-    def __hash__(self): return hash(self.TUP)
-
-    def __repr__(self): return f"direction({self.DIR})"
-
-    def make(self, xvar, yvar):
-        if not xvar == yvar == 0:
-            return self.lis[(sign(xvar), sign(yvar))]
-
 
 class coord:
     def __init__(self, xy):
@@ -244,6 +210,35 @@ class coord:
     def __abs__(self): return coord((abs(self.x), abs(self.y)))
 
     def __repr__(self): return f"coord('{self}')"
+
+class direction(coord):
+    lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
+    invlis = [(round(sin(pi*x/4)), -round(cos(pi*x/4))) for x in range(8)]
+
+    def __init__(self, direction):
+        if direction == (0, 0):
+            self.DIR = 8
+        elif isinstance(direction, coord):
+            self.DIR = self.make(direction.x, direction.y)
+        elif isinstance(direction, tuple):
+            self.DIR = self.make(*direction)
+        elif isinstance(direction, int):
+            self.DIR = direction
+        else:
+            raise TypeError
+        if self.DIR != 8:
+            self.TUP = self.invlis[self.DIR]
+        else:
+            self.TUP = (0, 0)
+        super().__init__(self.TUP)
+
+    def __hash__(self): return hash(self.TUP)
+
+    def __repr__(self): return f"direction({self.DIR})"
+
+    def make(self, xvar, yvar):
+        if not xvar == yvar == 0:
+            return self.lis[(sign(xvar), sign(yvar))]
 
 
 class NotPromotableException(Exception):
