@@ -330,3 +330,20 @@ class board:
 
 class IllegalMove(Exception):
     pass
+
+
+class row:
+    def __init__(self, loc, vect):
+        loc = coord(loc)
+        vect = direction(vect)
+        self.SPACES = set()
+        for x in range(8):
+            if any(abs(x+z) > 8 for z in loc):
+                break
+            self.SPACES.add(loc+x*vect)
+        for x in range(-8, 0, -1):
+            if any(abs(x+z) > 8 for z in loc):
+                break
+            self.SPACES.add(loc+x*vect)
+
+    def __iter__(self): yield from self.SPACES
