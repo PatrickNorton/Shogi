@@ -28,8 +28,10 @@ def playgame():
         except IllegalMove as e:
             var = int(str(e))
             print(errorlist[var])
+            continue
         except OtherMove:
-            theboard.currplyr = theboard.currplyr.flip()
+            theboard.currplyr = theboard.currplyr.other()
+            continue
         check, kingpos, checklist = checkcheck()
         if check and game:
             mate = matecheck(kingpos, checklist)
@@ -41,27 +43,33 @@ def playgame():
                 break
             else:
                 print('Check!')
-        theboard.currplyr = theboard.currplyr.flip()
+        theboard.currplyr = theboard.currplyr.other()
 
 
 def piececheck():
     global theboard
-    game, quitting, validpiece = True, False, False
-    while not validpiece:
-        pieceloc = input('Where is the piece you want to move?')
-        validpiece = inputpiece(pieceloc, quitting)
+    game, quitting = True, False
+    while True:
+        pieceloc = input('Where is the piece you want to move? ')
+        if inputpiece(pieceloc):
+            break
+        print('That is not a valid piece!')
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         quitting = movecheck(pieceloc)
+    else:
+        raise IllegalMove(5)
     return not quitting and game
 
 
 def movecheck(current):
     global theboard
-    validpiece, quitting = False, False
-    while not validpiece:
-        moveloc = input('Where do you want to move this piece?')
-        validpiece = inputpiece(moveloc, quitting)
+    quitting = False
+    while True:
+        moveloc = input('Where do you want to move this piece? ')
+        if inputpiece(moveloc):
+            break
+        print('That is not a valid piece!')
     moveloc = coord(moveloc)
     promote, theboard = movecheck2(current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
@@ -90,7 +98,7 @@ def movecheck2(current, new):
         pass
     else:
         obscheck(current, new, move)
-    newboard.move(current, new)
+    theboard.move(current, new)
     topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
     return topromote, theboard
 
@@ -127,9 +135,9 @@ def checkcheck(earlybreak=False):
 
 
 def matecheck(kingpos, checklist):
-    global theboard, captlist
+    global theboard
     oldboard = deepcopy(theboard)
-    kingmovepos = [coord(direction(x)) for x in range(8)]
+    kingmovepos = [direction(x) for x in range(8)]
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
@@ -144,7 +152,7 @@ def matecheck(kingpos, checklist):
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
-    haspieces = captlist[int(theboard.currplyr)]
+    haspieces = theboard.CAPTURED[theboard.currplyr]
     notknight = str(theboard[checklist].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
@@ -175,7 +183,7 @@ def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
-    except IndexError:
+    except (ValueError, IndexError):
         isother = otherconditions(pieceloc)
         if isother:
             raise OtherMove
