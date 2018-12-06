@@ -1,4 +1,4 @@
-from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
+from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove, row
 from copy import deepcopy
 from itertools import product
 
@@ -138,31 +138,19 @@ def checkcheck2(oldloc, kingpos, earlybreak):
     global theboard
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)
-    if mvmt.x != mvmt.y:
+    if mvmt.x != mvmt.y and min(mvmt):
         return False
     toking = direction(relcoord)
-    try:
-        obscheck(oldloc, kingpos, relcoord)
-    except IllegalMove:
-        return False
-    fromking = direction((4-int(toking)) % 8)
-    for x in range(8):
+    doa = row(oldloc, toking)
+    currpieces = theboard.playerpcs()
+    pieces = [x for x in doa if x in currpieces]
+    for x in pieces:
         try:
-            relcoord = coord((x, x))*fromking
-        except ValueError:
-            return False
-        abscoord = oldloc+relcoord
-        if min(abscoord) < 0:
-            return False
-        if not theboard[abscoord]:
-            continue
-        if str(theboard[abscoord].COLOR) == theboard.currplyr.OTHER:
-            return False
-        try:
-            movecheck2(oldloc, abscoord)
-            return True
+            movecheck2(x, kingpos)
         except IllegalMove:
-            return False
+            continue
+        else:
+            return True
 
 
 def matecheck(kingpos, checklist):
