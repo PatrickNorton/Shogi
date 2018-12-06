@@ -36,7 +36,7 @@ def playgame():
         except OtherMove:
             theboard.currplyr = theboard.currplyr.flip()
             continue
-        check, kingpos, checklist = checkcheck()
+        check, kingpos, checklist = checkcheck(*(theboard.lastmove))
         if check and game:
             mate = matecheck(kingpos, checklist)
             game = not mate
@@ -48,37 +48,38 @@ def playgame():
             else:
                 print('Check!')
         theboard.currplyr = theboard.currplyr.flip()
+        theboard.lastmove = theboard.nextmove
 
 
 def piececheck():
     global theboard
-    game, quitting, validpiece = True, False, False
+    game, validpiece = True, False
     while not validpiece:
         pieceloc = input('Where is the piece you want to move? ')
         validpiece = inputpiece(pieceloc)
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
-        quitting = movecheck(pieceloc)
+        movecheck(pieceloc)
     else:
         raise IllegalMove(5)
-    return not quitting and game
+    return game
 
 
 def movecheck(current):
     global theboard
-    validpiece, quitting = False, False
+    validpiece = False
     while not validpiece:
         moveloc = input('Where do you want to move this piece? ')
         validpiece = inputpiece(moveloc)
     moveloc = coord(moveloc)
     promote, theboard = movecheck2(current, moveloc)
+    theboard.nextmove = (current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
         topromote = input('Would you like to promote this piece? ')
         if topromote.lower().startswith('y'):
             theboard[moveloc].promote()
-    return quitting
 
 
 def movecheck2(current, new):
@@ -134,7 +135,7 @@ def checkcheck(oldloc, newloc, earlybreak=False):
     return check, kingpos, checklist
 
 
-def checkcheck2(oldloc, kingpos, checklist, earlybreak):
+def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     global theboard
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)

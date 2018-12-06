@@ -277,6 +277,8 @@ class board:
             for x, y in self.PIECES.items():
                 if y.COLOR == self.currplyr:
                     self.PCSBYCLR[theclr][x] = y
+        self.lastmove = (None, None)
+        self.nextmove = (None, None)
 
     def __str__(self):
         toreturn = ""
