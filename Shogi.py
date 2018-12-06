@@ -121,7 +121,7 @@ def checkcheck(oldloc, newloc, earlybreak=False):
     try:
         movecheck2(newloc, kingpos)
     except IllegalMove:
-        check = checkcheck2(oldloc, kingpos, earlybreak)
+        check, checklist = checkcheck2(oldloc, kingpos, [], earlybreak)
     else:
         if earlybreak:
             checklist.append(newloc)
@@ -129,12 +129,12 @@ def checkcheck(oldloc, newloc, earlybreak=False):
         else:
             check = True
             checklist.append(newloc)
-            check = checkcheck2(oldloc, kingpos, earlybreak)
+            check, checklist = checkcheck2(oldloc, kingpos, checklist, earlybreak)
     theboard = deepcopy(oldboard)
     return check, kingpos, checklist
 
 
-def checkcheck2(oldloc, kingpos, earlybreak):
+def checkcheck2(oldloc, kingpos, checklist, earlybreak):
     global theboard
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)
@@ -150,7 +150,11 @@ def checkcheck2(oldloc, kingpos, earlybreak):
         except IllegalMove:
             continue
         else:
-            return True
+            checklist.append(x)
+            if earlybreak or len(checklist) > 1:
+                return True
+            else:
+                continue
 
 
 def matecheck(kingpos, checklist):
