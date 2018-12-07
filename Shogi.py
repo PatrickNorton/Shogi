@@ -92,7 +92,9 @@ def movecheck2(current, new):
     elif magicvar == 'T':
         pass
     elif str(piece.PTYPE) == 'k':
+        oldboard = deepcopy(theboard)
         kingcheck(current, new)
+        theboard = deepcopy(oldboard)
     else:
         obscheck(current, new, move)
     theboard.move(current, new)
@@ -197,12 +199,14 @@ def matecheck(kingpos, checklist):
                 theboard = deepcopy(oldboard)
                 continue
             try:
+                oldboard = deepcopy(theboard)
                 kingcheck(kingpos, newpos)
             except IllegalMove:
                 continue
             else:
                 return False
-            theboard = deepcopy(oldboard)
+            finally:
+                theboard = deepcopy(oldboard)
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
