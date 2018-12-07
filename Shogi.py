@@ -159,6 +159,23 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     return False, checklist
 
 
+def kingcheck(oldloc, newloc):
+    rowlist = set(direction(x) for x in range(8))
+    for x in rowlist:
+        for dist in range(9):
+            dist = coord(dist)
+            loctotest = newloc+x*dist
+            try:
+                movecheck2(loctotest, newloc)
+            except IllegalMove as e:
+                if str(e) == '2':
+                    return True
+                else:
+                    continue
+            return False
+    #TODO: Knights
+
+
 def matecheck(kingpos, checklist):
     global theboard, captlist
     oldboard = deepcopy(theboard)

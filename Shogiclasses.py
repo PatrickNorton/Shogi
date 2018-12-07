@@ -183,14 +183,17 @@ class coord:
         if isinstance(xy, str):
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
+        elif isinstance(xy, int) and abs(xy) in range(9):
+            self.x = xy
+            self.y = xy
         elif all(abs(x) in range(9) for x in xy):
             self.x = int(xy[0])
             self.y = int(xy[1])
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
-        self.XSTR = '987654321'[self.x]
-        self.YSTR = 'abcdefghi'[self.y]
+        self.XSTR = '987654321'[abs(self.x)]
+        self.YSTR = 'abcdefghi'[abs(self.y)]
 
     def __str__(self): return self.YSTR+self.XSTR
 
