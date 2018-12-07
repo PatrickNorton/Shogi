@@ -29,7 +29,7 @@ class piece:
 
     def __hash__(self): return hash(self.TUP)
 
-    def __repr__(self): return f"{repr(self.PTYPE)} {repr(self.COLOR)}"
+    def __repr__(self): return f"{repr(self.COLOR)} {repr(self.PTYPE)}"
 
     def promote(self):
         if self.prom is None:
