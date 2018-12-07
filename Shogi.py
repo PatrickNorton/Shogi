@@ -28,7 +28,7 @@ def playgame():
             print(errorlist[var])
             continue
         except OtherMove:
-            theboard.currplyr = theboard.currplyr.flip()
+            theboard.currplyr = theboard.currplyr.other()
             continue
         theboard.lastmove = theboard.nextmove
         check, kingpos, checklist = checkcheck(*(theboard.lastmove))
@@ -42,7 +42,7 @@ def playgame():
                 break
             else:
                 print('Check!')
-        theboard.currplyr = theboard.currplyr.flip()
+        theboard.currplyr = theboard.currplyr.other()
 
 
 def piececheck():
@@ -174,7 +174,7 @@ def kingcheck(oldloc, newloc):
 
 
 def matecheck(kingpos, checklist):
-    global theboard, captlist
+    global theboard
     oldboard = deepcopy(theboard)
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
@@ -195,7 +195,7 @@ def matecheck(kingpos, checklist):
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
-    haspieces = captlist[int(theboard.currplyr)]
+    haspieces = theboard.CAPTURED[int(theboard.currplyr)]
     notknight = str(theboard[checklist].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
@@ -226,7 +226,7 @@ def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
-    except IndexError:
+    except (ValueError,IndexError):
         isother = otherconditions(pieceloc)
         if isother:
             raise OtherMove

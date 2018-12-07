@@ -352,3 +352,19 @@ class row:
             self.SPACES.add(loc+x*vect)
 
     def __iter__(self): yield from self.SPACES
+
+
+class Shogi:
+    def __init__(self):
+        self.piece = piece
+        self.board = board
+        self.nopiece = nopiece
+        self.color = color
+        self.moves = moves
+        self.ptype = ptype
+        self.direction = direction
+        self.coord = coord
+        self.NotPromotableException = NotPromotableException
+        self.PromotedException = PromotedException
+        self.DemotedException = DemotedException
+        self.IllegalMove = IllegalMove
