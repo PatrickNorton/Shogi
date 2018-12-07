@@ -170,7 +170,18 @@ def kingcheck(oldloc, newloc):
                 else:
                     continue
             raise IllegalMove(6)
-    #TODO: Knights
+    for delx in (-1, 1):
+        for dely in (-1, 1):
+            relcoord = coord((delx, 2*dely))
+            try:
+                abscoord = newloc+relcoord
+                movecheck2(abscoord, newloc)
+            except ValueError:
+                continue
+            except IllegalMove:
+                continue
+            else:
+                raise IllegalMove(6)
 
 
 def matecheck(kingpos, checklist):
