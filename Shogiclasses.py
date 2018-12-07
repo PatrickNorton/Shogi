@@ -234,8 +234,6 @@ class direction(coord):
             self.TUP = (0, 0)
         super().__init__(self.TUP)
 
-    def __eq__(self, other): return self.DIR == other.DIR
-
     def __repr__(self): return f"direction({self.DIR})"
 
     def __hash__(self): return hash(self.TUP)
@@ -342,10 +340,12 @@ class row:
         for x in range(8):
             if any(abs(x+z) > 8 for z in loc):
                 break
+            x = coord((x, x))
             self.SPACES.add(loc+x*vect)
         for x in range(-8, 0, -1):
             if any(abs(x+z) > 8 for z in loc):
                 break
+            x = coord((x, x))
             self.SPACES.add(loc+x*vect)
 
     def __iter__(self): yield from self.SPACES

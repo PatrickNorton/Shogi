@@ -36,6 +36,7 @@ def playgame():
         except OtherMove:
             theboard.currplyr = theboard.currplyr.flip()
             continue
+        theboard.lastmove = theboard.nextmove
         check, kingpos, checklist = checkcheck(*(theboard.lastmove))
         if check and game:
             mate = matecheck(kingpos, checklist)
@@ -48,7 +49,6 @@ def playgame():
             else:
                 print('Check!')
         theboard.currplyr = theboard.currplyr.flip()
-        theboard.lastmove = theboard.nextmove
 
 
 def piececheck():
@@ -126,11 +126,11 @@ def checkcheck(oldloc, newloc, earlybreak=False):
     else:
         if earlybreak:
             checklist.append(newloc)
-            check = True
+            return True, checklist
         else:
-            check = True
             checklist.append(newloc)
             check, checklist = checkcheck2(oldloc, kingpos, checklist, earlybreak)
+            return True, checklist
     theboard = deepcopy(oldboard)
     return check, kingpos, checklist
 
@@ -140,7 +140,7 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)
     if mvmt.x != mvmt.y and min(mvmt):
-        return False
+        return False, checklist
     toking = direction(relcoord)
     doa = row(oldloc, toking)
     currpieces = theboard.playerpcs()
@@ -153,9 +153,10 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
         else:
             checklist.append(x)
             if earlybreak or len(checklist) > 1:
-                return True
+                return True, checklist
             else:
                 continue
+    return False, checklist
 
 
 def matecheck(kingpos, checklist):
