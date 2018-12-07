@@ -272,7 +272,7 @@ class board:
         self.CAPTURED = {color(x): [] for x in range(2)}
         self.PCSBYCLR = {}
         self.currplyr = color(0)
-        for x in range(1):
+        for x in range(2):
             theclr = color(x)
             self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
