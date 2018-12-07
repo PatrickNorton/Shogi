@@ -129,7 +129,8 @@ def checkcheck(oldloc, newloc, earlybreak=False):
             return True, checklist
         else:
             checklist.append(newloc)
-            check, checklist = checkcheck2(oldloc, kingpos, checklist, earlybreak)
+            tocc2 = (oldloc, kingpos, checklist, earlybreak)
+            check, checklist = checkcheck2(*tocc2)
             return True, checklist
     theboard = deepcopy(oldboard)
     return check, kingpos, checklist
