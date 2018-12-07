@@ -97,6 +97,8 @@ def movecheck2(current, new):
         raise IllegalMove(1)
     elif magicvar == 'T':
         pass
+    elif str(piece.PTYPE) == 'k':
+        kingcheck(current, new)
     else:
         obscheck(current, new, move)
     theboard.move(current, new)
@@ -170,10 +172,10 @@ def kingcheck(oldloc, newloc):
                 movecheck2(loctotest, newloc)
             except IllegalMove as e:
                 if str(e) == '2':
-                    return True
+                    break
                 else:
                     continue
-            return False
+            raise IllegalMove(6)
     #TODO: Knights
 
 
@@ -190,7 +192,11 @@ def matecheck(kingpos, checklist):
                 theboard = deepcopy(oldboard)
                 continue
             theboard = deepcopy(oldboard)
-            if not checkcheck(True)[0]:
+            try:
+                kingcheck(kingpos, newpos)
+            except IllegalMove:
+                continue
+            else:
                 return False
     if len(checklist) > 1:
         return True
