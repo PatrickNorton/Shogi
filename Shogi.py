@@ -196,13 +196,13 @@ def matecheck(kingpos, checklist):
             except IllegalMove:
                 theboard = deepcopy(oldboard)
                 continue
-            theboard = deepcopy(oldboard)
             try:
                 kingcheck(kingpos, newpos)
             except IllegalMove:
                 continue
             else:
                 return False
+            theboard = deepcopy(oldboard)
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
