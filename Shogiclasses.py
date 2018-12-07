@@ -144,6 +144,8 @@ class color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
+    def flip(self): return color(int(not self.INT))
+
     def other(self): return color(self.OTHER)
 
 
@@ -176,20 +178,22 @@ class ptype:
         self.NAME = self.NAME.replace('+', '')
 
 
-
 class coord:
     def __init__(self, xy):
         if isinstance(xy, str):
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
+        elif isinstance(xy, int) and abs(xy) in range(9):
+            self.x = xy
+            self.y = xy
         elif all(abs(x) in range(9) for x in xy):
             self.x = int(xy[0])
             self.y = int(xy[1])
         else:
             raise ValueError(xy)
         self.TUP = (self.x, self.y)
-        self.XSTR = '987654321'[self.x]
-        self.YSTR = 'abcdefghi'[self.y]
+        self.XSTR = '987654321'[abs(self.x)]
+        self.YSTR = 'abcdefghi'[abs(self.y)]
 
     def __str__(self): return self.YSTR+self.XSTR
 
@@ -210,6 +214,7 @@ class coord:
     def __abs__(self): return coord((abs(self.x), abs(self.y)))
 
     def __repr__(self): return f"coord('{self}')"
+
 
 class direction(coord):
     lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
@@ -232,9 +237,9 @@ class direction(coord):
             self.TUP = (0, 0)
         super().__init__(self.TUP)
 
-    def __hash__(self): return hash(self.TUP)
-
     def __repr__(self): return f"direction({self.DIR})"
+
+    def __hash__(self): return hash(self.TUP)
 
     def make(self, xvar, yvar):
         if not xvar == yvar == 0:
@@ -273,6 +278,8 @@ class board:
             for x, y in self.PIECES.items():
                 if y.COLOR == self.currplyr:
                     self.PCSBYCLR[theclr][x] = y
+        self.lastmove = (None, None)
+        self.nextmove = (None, None)
 
     def __str__(self):
         toreturn = ""
@@ -328,17 +335,20 @@ class IllegalMove(Exception):
     pass
 
 
-class Shogi:
-    def __init__(self):
-        self.piece = piece
-        self.board = board
-        self.nopiece = nopiece
-        self.color = color
-        self.moves = moves
-        self.ptype = ptype
-        self.direction = direction
-        self.coord = coord
-        self.NotPromotableException = NotPromotableException
-        self.PromotedException = PromotedException
-        self.DemotedException = DemotedException
-        self.IllegalMove = IllegalMove
+class row:
+    def __init__(self, loc, vect):
+        loc = coord(loc)
+        vect = direction(vect)
+        self.SPACES = set()
+        for x in range(8):
+            if any(abs(x+z) > 8 for z in loc):
+                break
+            x = coord((x, x))
+            self.SPACES.add(loc+x*vect)
+        for x in range(-8, 0, -1):
+            if any(abs(x+z) > 8 for z in loc):
+                break
+            x = coord((x, x))
+            self.SPACES.add(loc+x*vect)
+
+    def __iter__(self): yield from self.SPACES

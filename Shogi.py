@@ -1,8 +1,12 @@
-from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove
+from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove, row
 from copy import deepcopy
 from itertools import product
 
-# TODO: Fix what to do when input is not a piece
+# TODO: Split checkcheck into 2 parts:
+# TODO: First, check if current piece checks opp. king
+# TODO: Second, check if any piece in line btwn. king
+# TODO:  and original loc. can attack king
+# TODO: Add fn for not moving king into check
 
 
 class PlayerExit(Exception):
@@ -30,9 +34,10 @@ def playgame():
             print(errorlist[var])
             continue
         except OtherMove:
-            theboard.currplyr = theboard.currplyr.other()
+            theboard.currplyr = theboard.currplyr.flip()
             continue
-        check, kingpos, checklist = checkcheck()
+        theboard.lastmove = theboard.nextmove
+        check, kingpos, checklist = checkcheck(*(theboard.lastmove))
         if check and game:
             mate = matecheck(kingpos, checklist)
             game = not mate
@@ -43,42 +48,38 @@ def playgame():
                 break
             else:
                 print('Check!')
-        theboard.currplyr = theboard.currplyr.other()
+        theboard.currplyr = theboard.currplyr.flip()
 
 
 def piececheck():
     global theboard
-    game, quitting = True, False
-    while True:
+    game, validpiece = True, False
+    while not validpiece:
         pieceloc = input('Where is the piece you want to move? ')
-        if inputpiece(pieceloc):
-            break
-        print('That is not a valid piece!')
+        validpiece = inputpiece(pieceloc)
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
-        quitting = movecheck(pieceloc)
+        movecheck(pieceloc)
     else:
         raise IllegalMove(5)
-    return not quitting and game
+    return game
 
 
 def movecheck(current):
     global theboard
-    quitting = False
-    while True:
+    validpiece = False
+    while not validpiece:
         moveloc = input('Where do you want to move this piece? ')
-        if inputpiece(moveloc):
-            break
-        print('That is not a valid piece!')
+        validpiece = inputpiece(moveloc)
     moveloc = coord(moveloc)
     promote, theboard = movecheck2(current, moveloc)
+    theboard.nextmove = (current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
         topromote = input('Would you like to promote this piece? ')
         if topromote.lower().startswith('y'):
             theboard[moveloc].promote()
-    return quitting
 
 
 def movecheck2(current, new):
@@ -96,6 +97,8 @@ def movecheck2(current, new):
         raise IllegalMove(1)
     elif magicvar == 'T':
         pass
+    elif str(piece.PTYPE) == 'k':
+        kingcheck(current, new)
     else:
         obscheck(current, new, move)
     theboard.move(current, new)
@@ -112,32 +115,74 @@ def obscheck(current, new, move):
             raise IllegalMove(2)
 
 
-def checkcheck(earlybreak=False):
+def checkcheck(oldloc, newloc, earlybreak=False):
     global theboard
     check, checklist = False, []
     oldboard = deepcopy(theboard)
     toget = piece('k', oldboard.currplyr)
     kingpos = oldboard[toget]
-    for loc in theboard.it():
-        loc = coord(loc)
-        if theboard[loc].COLOR == theboard.currplyr:
-            try:
-                movecheck2(loc, kingpos)[0]
-            except IllegalMove:
-                continue
-            check = True
-            checklist.append(loc)
-            if len(checklist) >= 2 or earlybreak:
-                theboard = deepcopy(oldboard)
-                break
-        theboard = deepcopy(oldboard)
+    try:
+        movecheck2(newloc, kingpos)
+    except IllegalMove:
+        check, checklist = checkcheck2(oldloc, kingpos, [], earlybreak)
+    else:
+        if earlybreak:
+            checklist.append(newloc)
+            return True, checklist
+        else:
+            checklist.append(newloc)
+            tocc2 = (oldloc, kingpos, checklist, earlybreak)
+            check, checklist = checkcheck2(*tocc2)
+            return True, checklist
+    theboard = deepcopy(oldboard)
     return check, kingpos, checklist
 
 
-def matecheck(kingpos, checklist):
+def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     global theboard
+    relcoord = kingpos-oldloc
+    mvmt = abs(relcoord)
+    if mvmt.x != mvmt.y and min(mvmt):
+        return False, checklist
+    toking = direction(relcoord)
+    doa = row(oldloc, toking)
+    currpieces = theboard.playerpcs()
+    pieces = [x for x in doa if x in currpieces]
+    for x in pieces:
+        try:
+            movecheck2(x, kingpos)
+        except IllegalMove:
+            continue
+        else:
+            checklist.append(x)
+            if earlybreak or len(checklist) > 1:
+                return True, checklist
+            else:
+                continue
+    return False, checklist
+
+
+def kingcheck(oldloc, newloc):
+    rowlist = set(direction(x) for x in range(8))
+    for x in rowlist:
+        for dist in range(9):
+            dist = coord(dist)
+            loctotest = newloc+x*dist
+            try:
+                movecheck2(loctotest, newloc)
+            except IllegalMove as e:
+                if str(e) == '2':
+                    break
+                else:
+                    continue
+            raise IllegalMove(6)
+    #TODO: Knights
+
+
+def matecheck(kingpos, checklist):
+    global theboard, captlist
     oldboard = deepcopy(theboard)
-    kingmovepos = [direction(x) for x in range(8)]
+    kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
@@ -147,12 +192,16 @@ def matecheck(kingpos, checklist):
                 theboard = deepcopy(oldboard)
                 continue
             theboard = deepcopy(oldboard)
-            if not checkcheck(True)[0]:
+            try:
+                kingcheck(kingpos, newpos)
+            except IllegalMove:
+                continue
+            else:
                 return False
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
-    haspieces = theboard.CAPTURED[theboard.currplyr]
+    haspieces = captlist[int(theboard.currplyr)]
     notknight = str(theboard[checklist].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
@@ -183,7 +232,7 @@ def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
-    except (ValueError, IndexError):
+    except IndexError:
         isother = otherconditions(pieceloc)
         if isother:
             raise OtherMove
