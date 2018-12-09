@@ -239,6 +239,8 @@ class direction(coord):
 
     def __repr__(self): return f"direction({self.DIR})"
 
+    def __abs__(self): return direction(abs(self.DIR))
+
     def __hash__(self): return hash(self.TUP)
 
     def make(self, xvar, yvar):
@@ -366,7 +368,9 @@ class row:
 
     def __eq__(self, other):
         if isinstance(other, row):
-            return other.FIRSTSPACE in self and self.VECT == other.VECT
+            if other.FIRSTSPACE in self:
+                return abs(self.VECT) == abs(other.VECT)
+            else: return False
         else: return False
 
     def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
