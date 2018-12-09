@@ -364,6 +364,11 @@ class row:
 
     def __iter__(self): yield from self.SPACES
 
+    def __eq__(self, other):
+        if isinstance(other, row):
+            return other.FIRSTSPACE in self and self.VECT == other.VECT
+        else: return False
+
     def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
 
 
