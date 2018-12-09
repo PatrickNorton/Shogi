@@ -251,6 +251,8 @@ def otherconditions(var):
 
 def droppiece():
     global theboard
+    if not theboard.CAPTURED[theboard.currplyr]:
+        raise IllegalMove(7)
     moved = input('Which piece do you want put in play? ')
     try:
         thepiece = piece(moved[0], theboard.currplyr)

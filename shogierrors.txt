@@ -5,3 +5,4 @@ You can't move a piece to where it already is!
 You can't capture your own piece!
 That is not your piece!
 You cannot move into check!
+You have no pieces to drop!
