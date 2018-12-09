@@ -265,11 +265,12 @@ def droppiece():
         pass
 
 
-while True:
-    try:
-        playgame()
-        again = input('Would you like to play again? ')
-        if not again.startswith('y'):
+if __name__ == "__main__":
+    while True:
+        try:
+            playgame()
+            again = input('Would you like to play again? ')
+            if not again.startswith('y'):
+                break
+        except PlayerExit:
             break
-    except PlayerExit:
-        break
