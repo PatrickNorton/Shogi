@@ -308,6 +308,8 @@ class board:
         if not isinstance(self[new], nopiece):
             self.capture(new)
         self.PIECES[coord(new)] = self.PIECES.pop(current)
+        self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
+        del self.PCSBYCLR[self[new].COLOR][coord(current)]
 
     def capture(self, new):
         piece = self[new]
@@ -315,6 +317,7 @@ class board:
         piece.flipsides()
         self.CAPTURED[self.currplyr] = piece
         del self.PIECES[new]
+        del self.PCSBYCLR[piece.COLOR][coord(new)]
 
     def canpromote(self, space):
         zonevar = [[6, 7, 8], [0, 1, 2]]
@@ -325,6 +328,7 @@ class board:
         self.CAPTURED[player].remove(piece)
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove
+        self.PCSBYCLR[piece.COLOR][movedto] = piece
 
     def playerpcs(self): yield from self.PCSBYCLR[self.currplyr]
 
