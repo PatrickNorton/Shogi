@@ -348,6 +348,8 @@ class row:
     def __init__(self, loc, vect):
         loc = coord(loc)
         vect = direction(vect)
+        self.FIRSTSPACE = loc
+        self.VECT = vect
         self.SPACES = set()
         for x in range(9):
             if any(y*x+z not in range(8) for y,z in zip(vect, loc)):
@@ -361,6 +363,8 @@ class row:
             self.SPACES.add(loc+x*vect)
 
     def __iter__(self): yield from self.SPACES
+
+    def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
 
 
 class Shogi:
