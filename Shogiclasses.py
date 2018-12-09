@@ -276,7 +276,7 @@ class board:
             theclr = color(x)
             self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
-                if y.COLOR == self.currplyr:
+                if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y
         self.lastmove = (None, None)
         self.nextmove = (None, None)
