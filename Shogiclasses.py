@@ -283,11 +283,13 @@ class board:
 
     def __str__(self):
         toreturn = ""
-        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n\n"
+        captostr = [str(x) for x in self.CAPTURED[color(1)]]
+        toreturn += f"Black pieces: {' '.join(captostr)}\n\n"
         toreturn += f"  {'  '.join('987654321')}\n"
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
-        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}\n"
+        captostr = [str(x) for x in self.CAPTURED[color(0)]]
+        toreturn += f"White pieces: {' '.join(captostr)}\n"
         return toreturn
 
     def __iter__(self):
@@ -313,11 +315,14 @@ class board:
 
     def capture(self, new):
         piece = self[new]
-        piece.demote()
+        try:
+            piece.demote()
+        except DemotedException:
+            pass
         piece.flipsides()
-        self.CAPTURED[self.currplyr] = piece
+        self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
-        del self.PCSBYCLR[piece.COLOR][coord(new)]
+        del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
 
     def canpromote(self, space):
         zonevar = [[6, 7, 8], [0, 1, 2]]
@@ -330,9 +335,9 @@ class board:
             raise IllegalMove
         self.PCSBYCLR[piece.COLOR][movedto] = piece
 
-    def playerpcs(self): yield from self.PCSBYCLR[self.currplyr]
+    def playerpcs(self): return self.PCSBYCLR[self.currplyr]
 
-    def enemypcs(self): yield from self.PCSBYCLR[self.currplyr.other()]
+    def enemypcs(self): return self.PCSBYCLR[self.currplyr.other()]
 
 
 class IllegalMove(Exception):
@@ -344,13 +349,13 @@ class row:
         loc = coord(loc)
         vect = direction(vect)
         self.SPACES = set()
-        for x in range(8):
-            if any(abs(x+z) > 8 for z in loc):
+        for x in range(9):
+            if any(y*x+z not in range(8) for y,z in zip(vect, loc)):
                 break
             x = coord((x, x))
             self.SPACES.add(loc+x*vect)
-        for x in range(-8, 0, -1):
-            if any(abs(x+z) > 8 for z in loc):
+        for x in range(0, -9, -1):
+            if any(y*x+z not in range(8) for y,z in zip(vect, loc)):
                 break
             x = coord((x, x))
             self.SPACES.add(loc+x*vect)

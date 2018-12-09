@@ -85,7 +85,7 @@ def movecheck2(current, new):
     magicvar = piece.MOVES[movedir]
     if movedir == direction(8):
         raise IllegalMove(3)
-    elif theboard[new].COLOR == theboard.currplyr:
+    elif theboard[new].COLOR == theboard[current].COLOR:
         raise IllegalMove(4)
     elif not piece.canmove(move):
         raise IllegalMove(1)
@@ -103,15 +103,16 @@ def obscheck(current, new, move):
     global theboard
     movedir = direction(move)
     for x in range(1, max(abs(move))):
-        testpos = current+coord((x*z for z in movedir))
-        if theboard[current+testpos]:
+        relcoord = [x*k for k in movedir]
+        testpos = current+coord(relcoord)
+        if theboard[testpos]:
             raise IllegalMove(2)
 
 
 def checkcheck(oldloc, newloc, earlybreak=False):
     global theboard
     check, checklist = False, []
-    toget = piece('k', theboard.currplyr)
+    toget = piece('k', theboard.currplyr.other())
     kingpos = theboard[toget]
     try:
         movecheck2(newloc, kingpos)
@@ -120,12 +121,12 @@ def checkcheck(oldloc, newloc, earlybreak=False):
     else:
         if earlybreak:
             checklist.append(newloc)
-            return True, checklist
+            return True, kingpos, checklist
         else:
             checklist.append(newloc)
             tocc2 = (oldloc, kingpos, checklist, earlybreak)
             check, checklist = checkcheck2(*tocc2)
-            return True, checklist
+            return True, kingpos, checklist
     return check, kingpos, checklist
 
 
@@ -158,9 +159,11 @@ def kingcheck(oldloc, newloc):
     for x in rowlist:
         for dist in range(9):
             dist = coord(dist)
-            loctotest = newloc+x*dist
             try:
+                loctotest = newloc+x*dist
                 movecheck2(loctotest, newloc)
+            except ValueError:
+                continue
             except IllegalMove as e:
                 if str(e) == '2':
                     break
