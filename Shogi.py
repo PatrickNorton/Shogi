@@ -22,7 +22,7 @@ def playgame():
         print(theboard)
         print(f"{repr(theboard.currplyr)}'s turn")
         try:
-            game = piececheck()
+            piececheck()
         except IllegalMove as e:
             var = int(str(e))
             print(errorlist[var])
@@ -48,7 +48,7 @@ def playgame():
 
 def piececheck():
     global theboard
-    game, validpiece = True, False
+    validpiece = False
     while not validpiece:
         pieceloc = input('Where is the piece you want to move? ')
         validpiece = inputpiece(pieceloc)
@@ -57,7 +57,6 @@ def piececheck():
         movecheck(pieceloc)
     else:
         raise IllegalMove(5)
-    return game
 
 
 def movecheck(current):
