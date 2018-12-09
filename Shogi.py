@@ -30,6 +30,7 @@ def playgame():
         except OtherMove:
             theboard.currplyr = theboard.currplyr.other()
             continue
+        theboard.move(*theboard.nextmove)
         theboard.lastmove = theboard.nextmove
         check, kingpos, checklist = checkcheck(*(theboard.lastmove))
         if check and game:
@@ -66,7 +67,7 @@ def movecheck(current):
         moveloc = input('Where do you want to move this piece? ')
         validpiece = inputpiece(moveloc)
     moveloc = coord(moveloc)
-    promote, theboard = movecheck2(current, moveloc)
+    promote = movecheck2(current, moveloc)
     theboard.nextmove = (current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
@@ -78,8 +79,7 @@ def movecheck(current):
 
 def movecheck2(current, new):
     global theboard
-    newboard = deepcopy(theboard)
-    piece = newboard[current]
+    piece = theboard[current]
     move = new-current
     movedir = direction(move)
     magicvar = piece.MOVES[movedir]
@@ -92,14 +92,11 @@ def movecheck2(current, new):
     elif magicvar == 'T':
         pass
     elif str(piece.PTYPE) == 'k':
-        oldboard = deepcopy(theboard)
         kingcheck(current, new)
-        theboard = deepcopy(oldboard)
     else:
         obscheck(current, new, move)
-    theboard.move(current, new)
     topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
-    return topromote, theboard
+    return topromote
 
 
 def obscheck(current, new, move):
@@ -114,9 +111,8 @@ def obscheck(current, new, move):
 def checkcheck(oldloc, newloc, earlybreak=False):
     global theboard
     check, checklist = False, []
-    oldboard = deepcopy(theboard)
-    toget = piece('k', oldboard.currplyr)
-    kingpos = oldboard[toget]
+    toget = piece('k', theboard.currplyr)
+    kingpos = theboard[toget]
     try:
         movecheck2(newloc, kingpos)
     except IllegalMove:
@@ -130,7 +126,6 @@ def checkcheck(oldloc, newloc, earlybreak=False):
             tocc2 = (oldloc, kingpos, checklist, earlybreak)
             check, checklist = checkcheck2(*tocc2)
             return True, checklist
-    theboard = deepcopy(oldboard)
     return check, kingpos, checklist
 
 
@@ -188,7 +183,6 @@ def kingcheck(oldloc, newloc):
 
 def matecheck(kingpos, checklist):
     global theboard
-    oldboard = deepcopy(theboard)
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
@@ -196,17 +190,13 @@ def matecheck(kingpos, checklist):
             try:
                 movecheck2(kingpos, newpos)
             except IllegalMove:
-                theboard = deepcopy(oldboard)
                 continue
             try:
-                oldboard = deepcopy(theboard)
                 kingcheck(kingpos, newpos)
             except IllegalMove:
                 continue
             else:
                 return False
-            finally:
-                theboard = deepcopy(oldboard)
     if len(checklist) > 1:
         return True
     checklist = checklist[0]
@@ -219,9 +209,7 @@ def matecheck(kingpos, checklist):
         try:
             movecheck2(loc, checklist)
         except IllegalMove:
-            theboard = deepcopy(oldboard)
             continue
-        theboard = deepcopy(oldboard)
         return False
     move = kingpos-checklist
     movedir = direction(move)
@@ -230,9 +218,7 @@ def matecheck(kingpos, checklist):
         try:
             movecheck2(pos, newpos)
         except IllegalMove:
-            theboard = deepcopy(oldboard)
             continue
-        theboard = deepcopy(oldboard)
         return False
     return True
 
@@ -269,7 +255,7 @@ def droppiece():
             moveto = input('Where do you want it moved? ')
             if inputpiece(moveto):
                 try:
-                    theboard.putinplay(moveto)
+                    theboard.putinplay(thepiece, moveto)
                 except IllegalMove:
                     print('Illegal move!')
     except ValueError:
