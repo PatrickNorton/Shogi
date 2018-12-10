@@ -49,7 +49,7 @@ class piece:
             self.MOVES = self.MOVES.dem()
 
     def flipsides(self):
-        self.COLOR = color(self.COLOR.OTHER)
+        return piece(str(self.PTYPE), self.COLOR.OTHER)
 
     def canmove(self, relloc): return self.MOVES.canmove(relloc)
 
@@ -57,6 +57,8 @@ class piece:
 class nopiece(piece):
     def __init__(self):
         super().__init__('-', '-')
+
+    def __repr__(self): return 'nopiece()'
 
 
 class moves:
@@ -321,7 +323,7 @@ class board:
             piece.demote()
         except DemotedException:
             pass
-        piece.flipsides()
+        piece = piece.flipsides()
         self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
         del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
@@ -332,10 +334,12 @@ class board:
 
     def putinplay(self, piece, movedto):
         player = self.currplyr
-        self.CAPTURED[player].remove(piece)
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove
+        print('success')
+        self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece
+        self.PIECES[movedto] = piece
 
     def currpcs(self): return self.PCSBYCLR[self.currplyr]
 
