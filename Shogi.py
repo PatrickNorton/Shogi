@@ -233,7 +233,7 @@ def inputpiece(pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
-    except (ValueError,IndexError):
+    except (ValueError, IndexError):
         isother = otherconditions(pieceloc)
         if isother:
             raise OtherMove
