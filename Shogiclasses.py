@@ -29,7 +29,7 @@ class piece:
 
     def __hash__(self): return hash(self.TUP)
 
-    def __repr__(self): return f"{repr(self.PTYPE)} {repr(self.COLOR)}"
+    def __repr__(self): return f"{repr(self.COLOR)} {repr(self.PTYPE)}"
 
     def promote(self):
         if self.prom is None:
@@ -49,7 +49,7 @@ class piece:
             self.MOVES = self.MOVES.dem()
 
     def flipsides(self):
-        self.COLOR = color(self.COLOR.OTHER)
+        return piece(str(self.PTYPE), self.COLOR.OTHER)
 
     def canmove(self, relloc): return self.MOVES.canmove(relloc)
 
@@ -57,6 +57,8 @@ class piece:
 class nopiece(piece):
     def __init__(self):
         super().__init__('-', '-')
+
+    def __repr__(self): return 'nopiece()'
 
 
 class moves:
@@ -239,6 +241,8 @@ class direction(coord):
 
     def __repr__(self): return f"direction({self.DIR})"
 
+    def __abs__(self): return direction(abs(self.DIR))
+
     def __hash__(self): return hash(self.TUP)
 
     def make(self, xvar, yvar):
@@ -272,22 +276,24 @@ class board:
         self.CAPTURED = {color(x): [] for x in range(2)}
         self.PCSBYCLR = {}
         self.currplyr = color(0)
-        for x in range(1):
+        for x in range(2):
             theclr = color(x)
             self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
-                if y.COLOR == self.currplyr:
+                if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y
         self.lastmove = (None, None)
         self.nextmove = (None, None)
 
     def __str__(self):
         toreturn = ""
-        toreturn += f"Black pieces: {' '.join(self.CAPTURED[color(1)])}\n\n"
+        captostr = [str(x) for x in self.CAPTURED[color(1)]]
+        toreturn += f"Black pieces: {' '.join(captostr)}\n\n"
         toreturn += f"  {'  '.join('987654321')}\n"
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
-        toreturn += f"White pieces: {' '.join(self.CAPTURED[color(1)])}\n"
+        captostr = [str(x) for x in self.CAPTURED[color(0)]]
+        toreturn += f"White pieces: {' '.join(captostr)}\n"
         return toreturn
 
     def __iter__(self):
@@ -308,13 +314,19 @@ class board:
         if not isinstance(self[new], nopiece):
             self.capture(new)
         self.PIECES[coord(new)] = self.PIECES.pop(current)
+        self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
+        del self.PCSBYCLR[self[new].COLOR][coord(current)]
 
     def capture(self, new):
         piece = self[new]
-        piece.demote()
-        piece.flipsides()
-        self.CAPTURED[self.currplyr] = piece
+        try:
+            piece.demote()
+        except DemotedException:
+            pass
+        piece = piece.flipsides()
+        self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
+        del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
 
     def canpromote(self, space):
         zonevar = [[6, 7, 8], [0, 1, 2]]
@@ -322,13 +334,22 @@ class board:
 
     def putinplay(self, piece, movedto):
         player = self.currplyr
-        self.CAPTURED[player].remove(piece)
         if not isinstance(self[movedto], nopiece):
-            raise IllegalMove
+            raise IllegalMove(8)
+        if piece.PTYPE == ptype('p'):
+            rowtotest = row(movedto, 0)
+            for loc in rowtotest.notoriginal():
+                if self[loc] == piece('p', player):
+                    raise IllegalMove(9)
+        self.CAPTURED[player].remove(piece)
+        self.PCSBYCLR[piece.COLOR][movedto] = piece
+        self.PIECES[movedto] = piece
 
-    def playerpcs(self): yield from self.PCSBYCLR[self.currplyr]
+    def currpcs(self): return self.PCSBYCLR[self.currplyr]
 
-    def enemypcs(self): yield from self.PCSBYCLR[self.currplyr.other()]
+    def enemypcs(self): return self.PCSBYCLR[self.currplyr.other()]
+
+    def playerpcs(self, player): return self.PCSBYCLR[player]
 
 
 class IllegalMove(Exception):
@@ -339,16 +360,45 @@ class row:
     def __init__(self, loc, vect):
         loc = coord(loc)
         vect = direction(vect)
+        self.FIRSTSPACE = loc
+        self.VECT = vect
         self.SPACES = set()
-        for x in range(8):
-            if any(abs(x+z) > 8 for z in loc):
+        for x in range(9):
+            if any(y*x+z not in range(8) for y,z in zip(vect, loc)):
                 break
-            x = coord((x, x))
+            x = coord(x)
             self.SPACES.add(loc+x*vect)
-        for x in range(-8, 0, -1):
-            if any(abs(x+z) > 8 for z in loc):
+        for x in range(0, -9, -1):
+            if any(y*x+z not in range(8) for y,z in zip(vect, loc)):
                 break
-            x = coord((x, x))
+            x = coord(x)
             self.SPACES.add(loc+x*vect)
 
     def __iter__(self): yield from self.SPACES
+
+    def __eq__(self, other):
+        if isinstance(other, row):
+            if other.FIRSTSPACE in self:
+                return abs(self.VECT) == abs(other.VECT)
+            else: return False
+        else: return False
+
+    def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
+
+    def notoriginal(self): return (x for x in self if x != self.FIRSTSPACE)
+
+
+class Shogi:
+    def __init__(self):
+        self.piece = piece
+        self.board = board
+        self.nopiece = nopiece
+        self.color = color
+        self.moves = moves
+        self.ptype = ptype
+        self.direction = direction
+        self.coord = coord
+        self.NotPromotableException = NotPromotableException
+        self.PromotedException = PromotedException
+        self.DemotedException = DemotedException
+        self.IllegalMove = IllegalMove
