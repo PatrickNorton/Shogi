@@ -246,6 +246,8 @@ def otherconditions(var):
         willquit = input('Are you sure you want to quit? (y/n) ')
         if willquit.startswith('y'):
             raise PlayerExit
+    if var == 'help':
+        return False
 
 
 def droppiece():
