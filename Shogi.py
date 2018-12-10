@@ -166,7 +166,7 @@ def kingcheck(oldloc, newloc):
         try:
             loctotest = newloc+x*dist
             movecheck2(loctotest, newloc)
-        except ValueError:
+        except (ValueError, IndexError):
             continue
         except IllegalMove as e:
             if str(e) == '2':
@@ -179,7 +179,7 @@ def kingcheck(oldloc, newloc):
         try:
             abscoord = newloc+relcoord
             movecheck2(abscoord, newloc)
-        except ValueError:
+        except (ValueError, IndexError):
             continue
         except IllegalMove:
             continue
@@ -195,10 +195,6 @@ def matecheck(kingpos, checklist):
         if tuple(newpos) in theboard.it():
             try:
                 movecheck2(kingpos, newpos)
-            except IllegalMove:
-                continue
-            try:
-                kingcheck(kingpos, newpos)
             except IllegalMove:
                 continue
             else:
