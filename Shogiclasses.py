@@ -335,8 +335,12 @@ class board:
     def putinplay(self, piece, movedto):
         player = self.currplyr
         if not isinstance(self[movedto], nopiece):
-            raise IllegalMove
-        print('success')
+            raise IllegalMove(8)
+        if piece.PTYPE == ptype('p'):
+            rowtotest = row(movedto, 0)
+            for loc in rowtotest.notoriginal():
+                if self[loc] == piece('p', player):
+                    raise IllegalMove(9)
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece
         self.PIECES[movedto] = piece
@@ -380,6 +384,8 @@ class row:
         else: return False
 
     def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
+
+    def notoriginal(self): return (x for x in self if x != self.FIRSTSPACE)
 
 
 class Shogi:
