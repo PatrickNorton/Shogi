@@ -1,4 +1,5 @@
-from Shogiclasses import piece, board, direction, coord, pathjoin, IllegalMove, row
+from Shogiclasses import piece, board, direction, coord
+from Shogiclasses import pathjoin, IllegalMove, row, color
 from copy import deepcopy
 from itertools import product
 
@@ -23,6 +24,9 @@ def playgame():
         print(f"{repr(theboard.currplyr)}'s turn")
         try:
             piececheck()
+            ccvars = checkcheck(*(theboard.nextmove), theboard.currplyr, True)
+            if ccvars:
+                raise IllegalMove(6)
         except IllegalMove as e:
             var = int(str(e))
             print(errorlist[var])
@@ -32,7 +36,8 @@ def playgame():
             continue
         theboard.move(*theboard.nextmove)
         theboard.lastmove = theboard.nextmove
-        check, kingpos, checklist = checkcheck(*(theboard.lastmove))
+        clr = theboard.currplyr.other()
+        check, kingpos, checklist = checkcheck(*(theboard.lastmove), clr)
         if check and game:
             mate = matecheck(kingpos, checklist)
             game = not mate
@@ -108,10 +113,10 @@ def obscheck(current, new, move):
             raise IllegalMove(2)
 
 
-def checkcheck(oldloc, newloc, earlybreak=False):
+def checkcheck(oldloc, newloc, color, earlybreak=False):
     global theboard
     check, checklist = False, []
-    toget = piece('k', theboard.currplyr.other())
+    toget = piece('k', color)
     kingpos = theboard[toget]
     try:
         movecheck2(newloc, kingpos)
