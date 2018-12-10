@@ -142,7 +142,7 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
         return False, checklist
     toking = direction(relcoord)
     doa = row(oldloc, toking)
-    currpieces = theboard.playerpcs(theboard[kingpos].COLOR)
+    currpieces = theboard.playerpcs(theboard[kingpos].COLOR.other())
     pieces = [x for x in doa if x in currpieces]
     for x in pieces:
         try:
