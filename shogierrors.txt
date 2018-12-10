@@ -8,3 +8,4 @@ You cannot move into check!
 You have no pieces to drop!
 You cannot capture with a drop!
 You cannot put two pawns in the same column!
+You don't have this piece!

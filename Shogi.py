@@ -266,6 +266,8 @@ def droppiece():
             if inputpiece(moveto):
                 moveto = coord(moveto)
                 theboard.putinplay(thepiece, moveto)
+        else:
+            raise IllegalMove(10)
     except ValueError:
         pass
 
