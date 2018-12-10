@@ -25,7 +25,8 @@ def playgame():
         try:
             piececheck()
             ccvars = checkcheck(*(theboard.nextmove), theboard.currplyr, True)
-            if ccvars:
+            check = ccvars[0]
+            if check:
                 raise IllegalMove(6)
         except IllegalMove as e:
             var = int(str(e))
