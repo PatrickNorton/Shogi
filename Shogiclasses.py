@@ -337,9 +337,11 @@ class board:
             raise IllegalMove
         self.PCSBYCLR[piece.COLOR][movedto] = piece
 
-    def playerpcs(self): return self.PCSBYCLR[self.currplyr]
+    def currpcs(self): return self.PCSBYCLR[self.currplyr]
 
     def enemypcs(self): return self.PCSBYCLR[self.currplyr.other()]
+
+    def playerpcs(self, player): return self.PCSBYCLR[player]
 
 
 class IllegalMove(Exception):
