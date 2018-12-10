@@ -161,32 +161,30 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
 
 def kingcheck(oldloc, newloc):
     rowlist = set(direction(x) for x in range(8))
-    for x in rowlist:
-        for dist in range(9):
-            dist = coord(dist)
-            try:
-                loctotest = newloc+x*dist
-                movecheck2(loctotest, newloc)
-            except ValueError:
-                continue
-            except IllegalMove as e:
-                if str(e) == '2':
-                    break
-                else:
-                    continue
-            raise IllegalMove(6)
-    for delx in (-1, 1):
-        for dely in (-1, 1):
-            relcoord = coord((delx, 2*dely))
-            try:
-                abscoord = newloc+relcoord
-                movecheck2(abscoord, newloc)
-            except ValueError:
-                continue
-            except IllegalMove:
-                continue
+    for x, dist in product(rowlist, range(9)):
+        dist = coord(dist)
+        try:
+            loctotest = newloc+x*dist
+            movecheck2(loctotest, newloc)
+        except ValueError:
+            continue
+        except IllegalMove as e:
+            if str(e) == '2':
+                break
             else:
-                raise IllegalMove(6)
+                continue
+        raise IllegalMove(6)
+    for delx, dely in product((-1, 1), (-1, 1)):
+        relcoord = coord((delx, 2*dely))
+        try:
+            abscoord = newloc+relcoord
+            movecheck2(abscoord, newloc)
+        except ValueError:
+            continue
+        except IllegalMove:
+            continue
+        else:
+            raise IllegalMove(6)
 
 
 def matecheck(kingpos, checklist):
