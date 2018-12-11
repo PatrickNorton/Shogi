@@ -2,9 +2,6 @@ from Shogiclasses import piece, board, direction, coord
 from Shogiclasses import pathjoin, IllegalMove, row, color
 from copy import deepcopy
 from itertools import product
-import os
-import sys
-os.chdir(sys.path[0])
 
 
 class PlayerExit(Exception):
@@ -328,6 +325,9 @@ def ltrtoname(filenm):
 
 
 if __name__ == "__main__":
+    import os
+    import sys
+    os.chdir(sys.path[0])
     while True:
         try:
             playgame()
