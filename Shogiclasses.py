@@ -329,7 +329,7 @@ class board:
         del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
 
     def canpromote(self, space):
-        zonevar = [[6, 7, 8], [0, 1, 2]]
+        zonevar = ((0, 1, 2), (6, 7, 8))
         return space.y in zonevar[int(self.currplyr)]
 
     def putinplay(self, piece, movedto):
