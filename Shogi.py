@@ -320,7 +320,7 @@ def ltrtoname(filenm):
         if filenm.islower():
             filenm = namedict[filenm]
         elif filenm.isupper():
-            filenm = '+'+namedict[filenm]
+            filenm = '+'+namedict[filenm.lower()]
     return filenm
 
 
