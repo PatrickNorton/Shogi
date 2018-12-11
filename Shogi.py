@@ -277,6 +277,7 @@ def helpdesk(filenm=None):
     with open('shogihelp.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
+        filenm = ltrtoname(filenm)
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
@@ -297,23 +298,28 @@ def helpdesk(filenm=None):
             if willquit.startswith('y'):
                 raise PlayerExit
         else:
-            with open('shoginames.txt') as f:
-                namelist = f.readlines()
-            for x, y in enumerate(namelist):
-                namelist[x] = y.strip().split(': ')
-            namedict = {x[0]: x[1] for x in namelist}
-            if filenm.lower() in namedict:
-                if filenm.islower():
-                    filenm = namedict[filenm]
-                elif filenm.isupper():
-                    filenm = '+'+namedict[filenm]
-        filenm = filelwr
+            filenm = ltrtoname(filenm)
+        filenm = filenm.lower()
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
             print(thefile)
         except FileNotFoundError:
             print('Invalid help command')
+
+
+def ltrtoname(filenm):
+    with open('shoginames.txt') as f:
+        namelist = f.readlines()
+    for x, y in enumerate(namelist):
+        namelist[x] = y.strip().split(': ')
+    namedict = {x[0]: x[1] for x in namelist}
+    if filenm.lower() in namedict:
+        if filenm.islower():
+            filenm = namedict[filenm]
+        elif filenm.isupper():
+            filenm = '+'+namedict[filenm]
+    return filenm
 
 
 if __name__ == "__main__":
