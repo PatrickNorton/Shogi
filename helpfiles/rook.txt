@@ -1,0 +1,5 @@
+Moves for the rook:
+
+X | X
+- r -
+X | X

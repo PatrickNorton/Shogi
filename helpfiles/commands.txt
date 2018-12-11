@@ -1,0 +1,22 @@
+List of shogi commands:
+
+Gameplay-based commands:
+drop
+    Command to drop a piece from your hand
+
+For input prompts asking for a location, put in the 2-letter location, e.g. e3.
+
+Other commands:
+quit
+    Command to quit the game. Brings up a secondary prompt.
+
+Help commands:
+help
+    Brings up this window
+help [piece name]
+    Brings up that piece's info
+help rules
+    Brings up rules page
+help play
+help commands
+    Brings up commands list

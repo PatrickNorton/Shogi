@@ -1,0 +1,5 @@
+Moves for the knight:
+
+X T X
+X n X
+X X X

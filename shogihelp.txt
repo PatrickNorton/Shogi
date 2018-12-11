@@ -1,0 +1,28 @@
+This is shogi.
+You are in the interactive help mode.
+
+If you wish to learn the rules of shogi, type 'rules'.
+
+If you wish to know the full list of commands, type 'commands'.
+
+If you want to know what a piece does, type either the first letter of it, or its full name. For promoted pieces, type an uppercase letter, or the name of the unpromoted piece preceded by a '+'.
+For example, if you wanted to know the rules of a pawn, you would type 'p' or
+'pawn'. For the promoted pawn, type 'P' or '+pawn'.
+
+To exit help mode, type 'exit'.
+
+Help mode commands:
+
+help
+    Brings up this window
+help [piece name]
+    Brings up that piece's info
+help rules
+    Brings up rules page
+help play
+help commands
+    Brings up commands list
+
+These commands should work for any input within the game
+
+Found a bug? Tell me at https://github.com/PatrickNorton/Shogi
