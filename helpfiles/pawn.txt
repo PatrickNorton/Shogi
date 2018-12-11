@@ -1,0 +1,5 @@
+Moves for the pawn:
+
+X 1 X
+X p X
+X X X

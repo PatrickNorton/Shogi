@@ -1,0 +1,5 @@
+Moves for the gold general:
+
+1 1 1
+1 g 1
+X 1 X

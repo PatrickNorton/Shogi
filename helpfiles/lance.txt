@@ -1,0 +1,5 @@
+Moves for the lance:
+
+X | X
+X l X
+X X X

@@ -1,0 +1,5 @@
+Moves for the bishop:
+
+\ X /
+X b X
+/ X \
