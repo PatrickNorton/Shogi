@@ -247,7 +247,8 @@ def otherconditions(var):
         if willquit.startswith('y'):
             raise PlayerExit
     if var == 'help':
-        return False
+        helpdesk()
+        raise IllegalMove(0)
 
 
 def droppiece():
@@ -266,6 +267,31 @@ def droppiece():
             raise IllegalMove(10)
     except ValueError:
         pass
+
+
+def helpdesk(filenm=None):
+    with open('shogihelp.txt') as helpf:
+        filetxt = helpf.read()
+        print(filetxt)
+        if filenm is not None:
+            try:
+                with open(f"helpfiles/{filenm}.txt") as f:
+                    thefile = f.read()
+                print(thefile)
+            except FileNotFoundError:
+                print('Invalid help command')
+        while True:
+            filenm = input('help: ')
+            filenm = filenm.lower().strip()
+            if filenm == 'exit':
+                print('Returning to game')
+                break
+            try:
+                with open(f"helpfiles/{filenm}.txt") as f:
+                    thefile = f.read()
+                print(thefile)
+            except FileNotFoundError:
+                print('Invalid help command')
 
 
 if __name__ == "__main__":
