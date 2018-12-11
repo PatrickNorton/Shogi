@@ -291,6 +291,10 @@ def helpdesk(filenm=None):
         if filenm == 'exit':
             print('Returning to game')
             break
+        elif filenm == 'quit':
+            willquit = input('Are you sure you want to quit? (y/n) ')
+            if willquit.startswith('y'):
+                raise PlayerExit
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
