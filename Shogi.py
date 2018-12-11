@@ -287,14 +287,27 @@ def helpdesk(filenm=None):
     print(filetxt)
     while True:
         filenm = input('help: ')
-        filenm = filenm.lower().strip()
-        if filenm == 'exit':
+        filenm = filenm.strip()
+        filelwr = filenm.lower()
+        if filelwr == 'exit':
             print('Returning to game')
             break
-        elif filenm == 'quit':
+        elif filelwr == 'quit':
             willquit = input('Are you sure you want to quit? (y/n) ')
             if willquit.startswith('y'):
                 raise PlayerExit
+        else:
+            with open('shoginames.txt') as f:
+                namelist = f.readlines()
+            for x, y in enumerate(namelist):
+                namelist[x] = y.strip().split(': ')
+            namedict = {x[0]: x[1] for x in namelist}
+            if filenm.lower() in namedict:
+                if filenm.islower():
+                    filenm = namedict[filenm]
+                elif filenm.isupper():
+                    filenm = '+'+namedict[filenm]
+        filenm = filelwr
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
