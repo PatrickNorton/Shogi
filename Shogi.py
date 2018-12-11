@@ -263,6 +263,8 @@ def droppiece():
     if not theboard.CAPTURED[theboard.currplyr]:
         raise IllegalMove(7)
     moved = input('Which piece do you want put in play? ')
+    if moved.startswith('k'):
+        moved = 'n'
     try:
         thepiece = piece(moved[0], theboard.currplyr)
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
