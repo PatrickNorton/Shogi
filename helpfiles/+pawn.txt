@@ -1,0 +1,5 @@
+Moves for the promoted pawn:
+
+1 1 1
+1 P 1
+X 1 X
