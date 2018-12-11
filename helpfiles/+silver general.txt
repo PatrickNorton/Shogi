@@ -1,0 +1,5 @@
+Moves for the promoted silver general:
+
+1 1 1
+1 S 1
+X 1 X

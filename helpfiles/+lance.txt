@@ -1,0 +1,5 @@
+Moves for the promoted lance:
+
+1 1 1
+1 L 1
+X 1 X
