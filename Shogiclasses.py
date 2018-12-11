@@ -105,7 +105,7 @@ class moves:
         elif magicvar == '+':
             return True
         elif magicvar == 'T':
-            return abs(relloc.x) == 1 and relloc.y == 2
+            return abs(relloc.x) == 1 and abs(relloc.y) == 2
 
     def prom(self):
         self.ispromoted = True
