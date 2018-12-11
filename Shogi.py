@@ -165,6 +165,8 @@ def kingcheck(oldloc, newloc):
         dist = coord(dist)
         try:
             loctotest = newloc+x*dist
+            if theboard[loctotest].COLOR == theboard[oldloc].COLOR:
+                raise IllegalMove(4)
             movecheck2(loctotest, newloc)
         except (ValueError, IndexError):
             continue
@@ -173,7 +175,8 @@ def kingcheck(oldloc, newloc):
                 break
             else:
                 continue
-        raise IllegalMove(6)
+        else:
+            raise IllegalMove(6)
     for delx, dely in product((-1, 1), (-1, 1)):
         relcoord = coord((delx, 2*dely))
         try:
