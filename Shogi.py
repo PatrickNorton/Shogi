@@ -1,5 +1,5 @@
 from Shogiclasses import piece, board, direction, coord
-from Shogiclasses import pathjoin, IllegalMove, row, color
+from Shogiclasses import IllegalMove, row, color
 from copy import deepcopy
 from itertools import product
 
@@ -19,7 +19,7 @@ def playgame():
     debug = False
     if debug:
         theboard = setpos()
-    with open(pathjoin('shogierrors.txt')) as etxt:
+    with open('shogierrors.txt') as etxt:
         etxt = etxt.readlines()
         errorlist = [x.strip() for x in etxt]
     while game:

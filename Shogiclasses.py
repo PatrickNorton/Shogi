@@ -1,10 +1,7 @@
 from numpy import sin, cos, pi, sign
 import os
 import sys
-cpath = sys.path[0]
-
-
-def pathjoin(path): return os.path.join(cpath, path)
+os.chdir(sys.path[0])
 
 
 class piece:
@@ -62,7 +59,7 @@ class nopiece(piece):
 
 
 class moves:
-    with open(pathjoin('shogimoves.txt')) as movef:
+    with open('shogimoves.txt') as movef:
         movelist = movef.readlines()
         movedict = {}
         for n, line in enumerate(movelist):
@@ -152,7 +149,7 @@ class color:
 
 
 class ptype:
-    with open(pathjoin('shoginames.txt')) as namtxt:
+    with open('shoginames.txt') as namtxt:
         namelist = namtxt.readlines()
         for x, y in enumerate(namelist):
             namelist[x] = y.strip().split(': ')
@@ -264,7 +261,7 @@ class DemotedException(Exception):
 
 class board:
     def __init__(self, pieces=None):
-        with open(pathjoin('shogiboard.txt')) as boardtxt:
+        with open('shogiboard.txt') as boardtxt:
             boardtxt = boardtxt.readlines()
             for x, y in enumerate(boardtxt):
                 boardtxt[x] = y.split()
