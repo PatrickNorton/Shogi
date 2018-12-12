@@ -58,6 +58,8 @@ def piececheck():
     while not validpiece:
         pieceloc = input('Where is the piece you want to move? ')
         validpiece = inputpiece(pieceloc)
+        if not validpiece:
+            print('That is not a valid piece!')
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         movecheck(pieceloc)
@@ -71,6 +73,7 @@ def movecheck(current):
     while not validpiece:
         moveloc = input('Where do you want to move this piece? ')
         validpiece = inputpiece(moveloc)
+        print('That is not a valid piece!')
     moveloc = coord(moveloc)
     promote = movecheck2(current, moveloc)
     theboard.nextmove = (current, moveloc)
@@ -256,6 +259,7 @@ def otherconditions(var):
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(filenm)
+        raise IllegalMove(0)
 
 
 def droppiece():
