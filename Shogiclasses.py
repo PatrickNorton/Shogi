@@ -263,15 +263,18 @@ class DemotedException(Exception):
 
 
 class board:
-    def __init__(self):
+    def __init__(self, pieces=None):
         with open(pathjoin('shogiboard.txt')) as boardtxt:
             boardtxt = boardtxt.readlines()
             for x, y in enumerate(boardtxt):
                 boardtxt[x] = y.split()
-        self.PIECES = {}
-        for (x, y) in self.it():
-            if boardtxt[y][x] != '--':
-                self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+        if pieces is None:
+            self.PIECES = {}
+            for (x, y) in self.it():
+                if boardtxt[y][x] != '--':
+                    self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+        else:
+            self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(2)}
         self.PCSBYCLR = {}

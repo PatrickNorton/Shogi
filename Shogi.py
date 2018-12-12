@@ -16,6 +16,9 @@ def playgame():
     global theboard
     theboard = board()
     game = True
+    debug = False
+    if debug:
+        theboard = setpos()
     with open(pathjoin('shogierrors.txt')) as etxt:
         etxt = etxt.readlines()
         errorlist = [x.strip() for x in etxt]
@@ -329,6 +332,30 @@ def ltrtoname(filenm):
         elif filenm.isupper():
             filenm = '+'+namedict[filenm.lower()]
     return filenm
+
+
+def setpos():
+    todict = {}
+    while True:
+        loc = input('Choose location ')
+        loc = loc.strip()
+        if loc == 'done':
+            print('Board completed')
+            break
+        valid = inputpiece(loc)
+        if not valid:
+            print('Invalid location')
+            continue
+        loc = coord(loc)
+        pcstr = input('Choose piece and color ')
+        try:
+            piecenm = piece(*pcstr)
+        except (ValueError, IndexError):
+            print('Invalid piece')
+            continue
+        todict[loc] = piecenm
+    toreturn = board(todict)
+    return toreturn
 
 
 if __name__ == "__main__":
