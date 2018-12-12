@@ -93,10 +93,10 @@ def movecheck2(current, new):
     magicvar = piece.MOVES[movedir]
     if movedir == direction(8):
         raise IllegalMove(3)
-    elif theboard[new].COLOR == theboard[current].COLOR:
-        raise IllegalMove(4)
     elif not piece.canmove(move):
         raise IllegalMove(1)
+    elif theboard[new].COLOR == theboard[current].COLOR:
+        raise IllegalMove(4)
     elif magicvar == 'T':
         pass
     elif str(piece.PTYPE) == 'k':
