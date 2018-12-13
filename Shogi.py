@@ -87,10 +87,14 @@ def movecheck(current):
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
-        print('Promote this piece? (y/n)')
-        topromote = input('] ')
-        if topromote.lower().startswith('y'):
-            theboard[moveloc].promote()
+        while True:
+            print('Promote this piece? (y/n)')
+            topromote = input('] ')
+            if topromote.lower().startswith('y'):
+                theboard[moveloc].promote()
+                break
+            if topromote.lower().startswith('n'):
+                break
 
 
 def movecheck2(current, new):
@@ -257,10 +261,13 @@ def otherconditions(var):
         droppiece()
         return True
     if var == 'quit':
-        print('Are you sure you want to quit? (y/n)')
-        willquit = input('] ')
-        if willquit.startswith('y'):
-            raise PlayerExit
+        while True:
+            print('Are you sure you want to quit? (y/n)')
+            willquit = input('] ')
+            if willquit.lower().startswith('y'):
+                raise PlayerExit
+            elif willquit.lower().startswith('n'):
+                break
     if var == 'help':
         helpdesk()
         raise IllegalMove(0)
@@ -314,11 +321,14 @@ def helpdesk(filenm=None):
             print('Returning to game')
             break
         elif filelwr == 'quit':
-            print('You are about to quit the game of Shogi')
-            print('Are you sure you want to quit? (y/n)')
-            willquit = input('] ')
-            if willquit.startswith('y'):
-                raise PlayerExit
+            while True:
+                print('You are about to quit the game of Shogi')
+                print('Are you sure you want to quit? (y/n)')
+                willquit = input('] ')
+                if willquit.startswith('y'):
+                    raise PlayerExit
+                elif willquit.startswith('n'):
+                    break
         else:
             filenm = ltrtoname(filenm)
         filenm = filenm.lower()
