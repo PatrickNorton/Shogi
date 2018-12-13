@@ -33,7 +33,8 @@ def playgame():
                 raise IllegalMove(6)
         except IllegalMove as e:
             var = int(str(e))
-            print(f"Error: {errorlist[var]}")
+            if var:
+                print(f"Error: {errorlist[var]}")
             continue
         except OtherMove:
             theboard.currplyr = theboard.currplyr.other()
@@ -267,7 +268,7 @@ def otherconditions(var):
             if willquit.lower().startswith('y'):
                 raise PlayerExit
             elif willquit.lower().startswith('n'):
-                break
+                raise IllegalMove(0)
     if var == 'help':
         helpdesk()
         raise IllegalMove(0)
@@ -331,13 +332,13 @@ def helpdesk(filenm=None):
                     break
         else:
             filenm = ltrtoname(filenm)
-        filenm = filenm.lower()
-        try:
-            with open(f"helpfiles/{filenm}.txt") as f:
-                thefile = f.read()
-            print(thefile)
-        except FileNotFoundError:
-            print('Invalid help command')
+            filenm = filenm.lower()
+            try:
+                with open(f"helpfiles/{filenm}.txt") as f:
+                    thefile = f.read()
+                print(thefile)
+            except FileNotFoundError:
+                print('Invalid help command')
 
 
 def ltrtoname(filenm):
