@@ -47,11 +47,11 @@ def playgame():
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate. {repr(theboard.currplyr)} wins.")
+                print(f"Checkmate. {repr(theboard.currplyr)} wins")
                 game = False
                 break
             else:
-                print('Check.')
+                print('Check')
         theboard.currplyr = theboard.currplyr.other()
 
 
@@ -88,7 +88,7 @@ def movecheck(current):
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
         print('Promote this piece? (y/n)')
-        topromote = input(': ')
+        topromote = input('] ')
         if topromote.lower().startswith('y'):
             theboard[moveloc].promote()
 
@@ -258,7 +258,7 @@ def otherconditions(var):
         return True
     if var == 'quit':
         print('Are you sure you want to quit? (y/n)')
-        willquit = input(': ')
+        willquit = input('] ')
         if willquit.startswith('y'):
             raise PlayerExit
     if var == 'help':
@@ -276,7 +276,7 @@ def droppiece():
     if not theboard.CAPTURED[theboard.currplyr]:
         raise IllegalMove(7)
     print('Enter piece name to put in play')
-    moved = input(': ')
+    moved = input('> ')
     if moved.startswith('k'):
         moved = 'n'
     try:
@@ -315,7 +315,7 @@ def helpdesk(filenm=None):
             break
         elif filelwr == 'quit':
             print('Are you sure you want to quit? (y/n)')
-            willquit = input(': ')
+            willquit = input('] ')
             if willquit.startswith('y'):
                 raise PlayerExit
         else:
