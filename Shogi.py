@@ -314,6 +314,7 @@ def helpdesk(filenm=None):
             print('Returning to game')
             break
         elif filelwr == 'quit':
+            print('You are about to quit the game of Shogi')
             print('Are you sure you want to quit? (y/n)')
             willquit = input('] ')
             if willquit.startswith('y'):
