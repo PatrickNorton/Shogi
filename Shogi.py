@@ -38,7 +38,8 @@ def playgame():
         theboard.move(*theboard.nextmove)
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other()
-        check, kingpos, checklist = checkcheck(theboard, theboard.lastmove, clr)
+        ccvars = checkcheck(theboard, theboard.lastmove, clr)
+        check, kingpos, checklist = ccvars
         if check and game:
             mate = matecheck(theboard, kingpos, checklist)
             game = not mate
@@ -122,7 +123,8 @@ def checkcheck(theboard, coords, color, earlybreak=False):
     try:
         movecheck2(theboard, (newloc, kingpos))
     except IllegalMove:
-        check, checklist = checkcheck2(theboard, (oldloc, kingpos), [], earlybreak)
+        tocc2 = ((oldloc, kingpos), [], earlybreak)
+        check, checklist = checkcheck2(theboard, *tocc2)
     else:
         if earlybreak:
             checklist.append(newloc)
