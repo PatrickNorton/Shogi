@@ -13,7 +13,6 @@ class OtherMove(Exception):
 
 
 def playgame():
-    global theboard
     theboard = board()
     game = True
     debug = False
@@ -26,8 +25,9 @@ def playgame():
         print(theboard)
         print(f"{repr(theboard.currplyr)}'s turn")
         try:
-            piececheck()
-            ccvars = checkcheck(*(theboard.nextmove), theboard.currplyr, True)
+            piececheck(theboard)
+            tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
+            ccvars = checkcheck(*tocc)
             check = ccvars[0]
             if check:
                 raise IllegalMove(6)
@@ -42,9 +42,10 @@ def playgame():
         theboard.move(*theboard.nextmove)
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other()
-        check, kingpos, checklist = checkcheck(*(theboard.lastmove), clr)
+        ccvars = checkcheck(theboard, theboard.lastmove, clr)
+        check, kingpos, checklist = ccvars
         if check and game:
-            mate = matecheck(kingpos, checklist)
+            mate = matecheck(theboard, kingpos, checklist)
             game = not mate
             if mate:
                 print(theboard)
@@ -56,34 +57,32 @@ def playgame():
         theboard.currplyr = theboard.currplyr.other()
 
 
-def piececheck():
-    global theboard
+def piececheck(theboard):
     validpiece = False
     while not validpiece:
         print('Enter piece location')
         pieceloc = input(": ")
-        validpiece = inputpiece(pieceloc)
+        validpiece = inputpiece(theboard, pieceloc)
         if not validpiece:
             print('Invalid piece')
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
-        movecheck(pieceloc)
+        movecheck(theboard, pieceloc)
     else:
         raise IllegalMove(5)
 
 
-def movecheck(current):
-    global theboard
+def movecheck(theboard, current):
     validpiece = False
     while not validpiece:
         print(f"The piece is a {repr(theboard[current])} at {current}.")
         print('Enter location to move piece to')
         moveloc = input(': ')
-        validpiece = inputpiece(moveloc)
+        validpiece = inputpiece(theboard, moveloc)
         if not validpiece:
             print('Invalid piece')
     moveloc = coord(moveloc)
-    promote = movecheck2(current, moveloc)
+    promote = movecheck2(theboard, (current, moveloc))
     theboard.nextmove = (current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
@@ -98,8 +97,8 @@ def movecheck(current):
                 break
 
 
-def movecheck2(current, new):
-    global theboard
+def movecheck2(theboard, coords):
+    current, new = coords
     piece = theboard[current]
     move = new-current
     movedir = direction(move)
@@ -115,13 +114,12 @@ def movecheck2(current, new):
     elif str(piece.PTYPE) == 'k':
         kingcheck(current, new)
     else:
-        obscheck(current, new, move)
+        obscheck(theboard, current, move)
     topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
     return topromote
 
 
-def obscheck(current, new, move):
-    global theboard
+def obscheck(theboard, current, move):
     movedir = direction(move)
     for x in range(1, max(abs(move))):
         relcoord = [x*k for k in movedir]
@@ -130,29 +128,30 @@ def obscheck(current, new, move):
             raise IllegalMove(2)
 
 
-def checkcheck(oldloc, newloc, color, earlybreak=False):
-    global theboard
+def checkcheck(theboard, coords, color, earlybreak=False):
+    oldloc, newloc = coords
     check, checklist = False, []
     toget = piece('k', color)
     kingpos = theboard[toget]
     try:
-        movecheck2(newloc, kingpos)
+        movecheck2(theboard, (newloc, kingpos))
     except IllegalMove:
-        check, checklist = checkcheck2(oldloc, kingpos, [], earlybreak)
+        tocc2 = ((oldloc, kingpos), [], earlybreak)
+        check, checklist = checkcheck2(theboard, *tocc2)
     else:
         if earlybreak:
             checklist.append(newloc)
             return True, kingpos, checklist
         else:
             checklist.append(newloc)
-            tocc2 = (oldloc, kingpos, checklist, earlybreak)
-            check, checklist = checkcheck2(*tocc2)
+            tocc2 = ((oldloc, kingpos), checklist, earlybreak)
+            check, checklist = checkcheck2(theboard, *tocc2)
             return True, kingpos, checklist
     return check, kingpos, checklist
 
 
-def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
-    global theboard
+def checkcheck2(theboard, coords, checklist, earlybreak=False):
+    oldloc, kingpos = coords
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)
     if mvmt.x != mvmt.y and min(mvmt):
@@ -163,7 +162,7 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     pieces = [x for x in doa if x in currpieces]
     for x in pieces:
         try:
-            movecheck2(x, kingpos)
+            movecheck2(theboard, (x, kingpos))
         except IllegalMove:
             continue
         else:
@@ -175,7 +174,8 @@ def checkcheck2(oldloc, kingpos, checklist, earlybreak=False):
     return False, checklist
 
 
-def kingcheck(oldloc, newloc):
+def kingcheck(theboard, coords):
+    oldloc, newloc = coords
     rowlist = set(direction(x) for x in range(8))
     for x, dist in product(rowlist, range(9)):
         dist = coord(dist)
@@ -183,7 +183,7 @@ def kingcheck(oldloc, newloc):
             loctotest = newloc+x*dist
             if theboard[loctotest].COLOR == theboard[oldloc].COLOR:
                 raise IllegalMove(4)
-            movecheck2(loctotest, newloc)
+            movecheck2(theboard, (loctotest, newloc))
         except (ValueError, IndexError):
             continue
         except IllegalMove as e:
@@ -197,7 +197,7 @@ def kingcheck(oldloc, newloc):
         relcoord = coord((delx, 2*dely))
         try:
             abscoord = newloc+relcoord
-            movecheck2(abscoord, newloc)
+            movecheck2(theboard, (abscoord, newloc))
         except (ValueError, IndexError):
             continue
         except IllegalMove:
@@ -206,14 +206,13 @@ def kingcheck(oldloc, newloc):
             raise IllegalMove(6)
 
 
-def matecheck(kingpos, checklist):
-    global theboard
+def matecheck(theboard, kingpos, checklist):
     kingmovepos = [coord(direction(x)) for x in range(8)]
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
             try:
-                movecheck2(kingpos, newpos)
+                movecheck2(theboard, (kingpos, newpos))
             except IllegalMove:
                 continue
             else:
@@ -228,7 +227,7 @@ def matecheck(kingpos, checklist):
         return False
     for loc in theboard.enemypcs():
         try:
-            movecheck2(loc, checklist)
+            movecheck2(theboard, (loc, checklist))
         except IllegalMove:
             continue
         return False
@@ -237,29 +236,28 @@ def matecheck(kingpos, checklist):
     for pos, z in product(theboard.enemypcs(), range(abs(max(move)))):
         newpos = z*checklist*coord(movedir)
         try:
-            movecheck2(pos, newpos)
+            movecheck2(theboard, (pos, newpos))
         except IllegalMove:
             continue
         return False
     return True
 
 
-def inputpiece(pieceloc):
+def inputpiece(theboard, pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
     except (ValueError, IndexError):
-        isother = otherconditions(pieceloc)
+        isother = otherconditions(theboard, pieceloc)
         if isother:
             raise OtherMove
         else:
             return False
 
 
-def otherconditions(var):
-    global theboard
+def otherconditions(theboard, var):
     if var == 'drop':
-        droppiece()
+        droppiece(theboard)
         return True
     if var == 'quit':
         while True:
@@ -279,8 +277,7 @@ def otherconditions(var):
         raise IllegalMove(0)
 
 
-def droppiece():
-    global theboard
+def droppiece(theboard):
     if not theboard.CAPTURED[theboard.currplyr]:
         raise IllegalMove(7)
     print('Enter piece name to put in play')
@@ -292,7 +289,7 @@ def droppiece():
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
             print('Enter location to place piece')
             moveto = input(': ')
-            if inputpiece(moveto):
+            if inputpiece(theboard, moveto):
                 moveto = coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
@@ -356,6 +353,7 @@ def ltrtoname(filenm):
 
 
 def setpos():
+    theboard = board()
     todict = {}
     while True:
         loc = input('Choose location ')
@@ -363,7 +361,7 @@ def setpos():
         if loc == 'done':
             print('Board completed')
             break
-        valid = inputpiece(loc)
+        valid = inputpiece(theboard, loc)
         if not valid:
             print('Invalid location')
             continue
