@@ -33,7 +33,7 @@ def playgame():
                 raise IllegalMove(6)
         except IllegalMove as e:
             var = int(str(e))
-            print(errorlist[var])
+            print(f"Error: {errorlist[var]}")
             continue
         except OtherMove:
             theboard.currplyr = theboard.currplyr.other()
