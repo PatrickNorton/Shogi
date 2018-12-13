@@ -79,7 +79,8 @@ def movecheck(current):
         print('Enter location to move piece to')
         moveloc = input(': ')
         validpiece = inputpiece(moveloc)
-        print('Invalid piece')
+        if not validpiece:
+            print('Invalid piece')
     moveloc = coord(moveloc)
     promote = movecheck2(current, moveloc)
     theboard.nextmove = (current, moveloc)
