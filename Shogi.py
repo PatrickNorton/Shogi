@@ -33,7 +33,7 @@ def playgame():
                 raise IllegalMove(6)
         except IllegalMove as e:
             var = int(str(e))
-            print(errorlist[var])
+            print(f"Error: {errorlist[var]}")
             continue
         except OtherMove:
             theboard.currplyr = theboard.currplyr.other()
@@ -47,11 +47,11 @@ def playgame():
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate! {repr(theboard.currplyr)} wins!")
+                print(f"Checkmate. {repr(theboard.currplyr)} wins.")
                 game = False
                 break
             else:
-                print('Check!')
+                print('Check.')
         theboard.currplyr = theboard.currplyr.other()
 
 
@@ -59,10 +59,11 @@ def piececheck():
     global theboard
     validpiece = False
     while not validpiece:
-        pieceloc = input('Where is the piece you want to move? ')
+        print('Enter piece location')
+        pieceloc = input(": ")
         validpiece = inputpiece(pieceloc)
         if not validpiece:
-            print('That is not a valid piece!')
+            print('Invalid piece')
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         movecheck(pieceloc)
@@ -74,16 +75,20 @@ def movecheck(current):
     global theboard
     validpiece = False
     while not validpiece:
-        moveloc = input('Where do you want to move this piece? ')
+        print(f"The piece is a {repr(theboard[current])} at {current}.")
+        print('Enter location to move piece to')
+        moveloc = input(': ')
         validpiece = inputpiece(moveloc)
-        print('That is not a valid piece!')
+        if not validpiece:
+            print('Invalid piece')
     moveloc = coord(moveloc)
     promote = movecheck2(current, moveloc)
     theboard.nextmove = (current, moveloc)
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
-        topromote = input('Would you like to promote this piece? ')
+        print('Promote this piece? (y/n)')
+        topromote = input(': ')
         if topromote.lower().startswith('y'):
             theboard[moveloc].promote()
 
@@ -252,7 +257,8 @@ def otherconditions(var):
         droppiece()
         return True
     if var == 'quit':
-        willquit = input('Are you sure you want to quit? (y/n) ')
+        print('Are you sure you want to quit? (y/n)')
+        willquit = input(': ')
         if willquit.startswith('y'):
             raise PlayerExit
     if var == 'help':
@@ -269,13 +275,15 @@ def droppiece():
     global theboard
     if not theboard.CAPTURED[theboard.currplyr]:
         raise IllegalMove(7)
-    moved = input('Which piece do you want put in play? ')
+    print('Enter piece name to put in play')
+    moved = input(': ')
     if moved.startswith('k'):
         moved = 'n'
     try:
         thepiece = piece(moved[0], theboard.currplyr)
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
-            moveto = input('Where do you want it moved? ')
+            print('Enter location to place piece')
+            moveto = input(': ')
             if inputpiece(moveto):
                 moveto = coord(moveto)
                 theboard.putinplay(thepiece, moveto)
@@ -306,7 +314,8 @@ def helpdesk(filenm=None):
             print('Returning to game')
             break
         elif filelwr == 'quit':
-            willquit = input('Are you sure you want to quit? (y/n) ')
+            print('Are you sure you want to quit? (y/n)')
+            willquit = input(': ')
             if willquit.startswith('y'):
                 raise PlayerExit
         else:

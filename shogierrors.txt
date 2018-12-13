@@ -1,11 +1,11 @@
 
-You can't move that there!
-There is a piece in the way!
-You can't move a piece to where it already is!
-You can't capture your own piece!
-That is not your piece!
-You cannot move into check!
-You have no pieces to drop!
-You cannot capture with a drop!
-You cannot put two pawns in the same column!
-You don't have this piece!
+Invalid move direction
+Piece in way
+Must move piece to different location
+Can't capture own piece
+Not your piece
+Cannot move into check
+No pieces to drop
+Cannot capture with a drop
+Cannot put two pawns in the same column
+Piece does not exist
