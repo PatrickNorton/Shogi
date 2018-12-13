@@ -19,9 +19,11 @@ help [piece name]
     Brings up that piece's info
 help rules
     Brings up rules page
-help play
 help commands
     Brings up commands list
+
+help prompt
+    Brings up prompt info and help
 
 These commands should work for any input within the game
 
