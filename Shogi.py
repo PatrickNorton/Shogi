@@ -2,6 +2,7 @@ from Shogiclasses import piece, board, direction, coord
 from Shogiclasses import IllegalMove, row, color
 from copy import deepcopy
 from itertools import product
+import json
 
 
 class PlayerExit(Exception):
@@ -18,9 +19,9 @@ def playgame():
     debug = False
     if debug:
         theboard = setpos()
-    with open('shogierrors.txt') as etxt:
-        etxt = etxt.readlines()
-        errorlist = [x.strip() for x in etxt]
+    with open('shogierrors.json') as etxt:
+        errorlist = json.load(etxt)
+        errorlist = errorlist['errors']
     while game:
         print(theboard)
         print(f"{repr(theboard.currplyr)}'s turn")
