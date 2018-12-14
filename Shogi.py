@@ -384,10 +384,13 @@ def movelistfn(theboard):
     for loc, apiece in currpieces.items():
         movelst = []
         dirlist = (direction(x) for x in range(8))
-        for x in dirlist:
-            tolst = apiece.validspaces(x)
-            tolst = testspcs(theboard, loc, tolst)
-            movelst += tolst
+        if dirlist is not None:
+            for x in dirlist:
+                tolst = apiece.validspaces(x)
+                tolst = testspcs(theboard, loc, tolst)
+                movelst += tolst
+        else:
+            dirlist = [None]
         movedict[apiece] = movelst
     for loc, piece in currpieces.items():
         print(f"{repr(piece)} at {loc}:")
