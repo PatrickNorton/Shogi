@@ -263,12 +263,12 @@ def otherconditions(theboard, var):
         toquit()
         raise IllegalMove(0)
     if var == 'help':
-        helpdesk()
+        helpdesk(theboard)
         raise IllegalMove(0)
     if var[:4] == 'help':
         filenm = var[4:]
         filenm = filenm.strip()
-        helpdesk(filenm)
+        helpdesk(theboard, filenm)
         raise IllegalMove(0)
 
 
@@ -293,7 +293,7 @@ def droppiece(theboard):
         pass
 
 
-def helpdesk(filenm=None):
+def helpdesk(theboard, filenm=None):
     with open('shogihelp.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
@@ -315,6 +315,8 @@ def helpdesk(filenm=None):
             break
         elif filelwr == 'quit':
             toquit()
+        elif filelwr == 'moves':
+            movelist(theboard)
         else:
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
@@ -374,6 +376,11 @@ def toquit():
             raise PlayerExit
         elif willquit.startswith('n'):
             return
+
+
+def movelist(theboard):
+    for x in theboard.currpieces():
+        pass
 
 
 if __name__ == "__main__":
