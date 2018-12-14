@@ -21,7 +21,6 @@ def playgame():
         theboard = setpos()
     with open('shogierrors.json') as etxt:
         errorlist = json.load(etxt)
-        errorlist = errorlist['errors']
     while game:
         print(theboard)
         print(f"{repr(theboard.currplyr)}'s turn")
