@@ -17,6 +17,8 @@ class piece:
         else:
             self.prom = False
             self.PROMOTABLE = True
+        otherattrs = _info.PCINFO[typ]
+        self.AUTOPROMOTE = otherattrs['autopromote']
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
@@ -78,12 +80,9 @@ class nopiece(piece):
 
 
 class moves:
-    with open('shogimoves.json') as movef:
-        movedict = json.load(movef)
-
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
-        pcmvlist = list(self.movedict[piecenm])
+        pcmvlist = list(_info.MOVEDICT[piecenm])
         if clr == color(1):
             for y, var in enumerate(pcmvlist):
                 if var is not None:
@@ -163,13 +162,10 @@ class color:
 
 
 class ptype:
-    with open('shoginames.json') as namtxt:
-        namedict = json.load(namtxt)
-
     def __init__(self, typ):
         typ = str(typ)
         self.TYP = typ.lower()
-        self.NAME = self.namedict[self.TYP]
+        self.NAME = _info.NAMEDICT[self.TYP]
 
     def __str__(self): return self.TYP
 
@@ -273,9 +269,7 @@ class DemotedException(Exception):
 class board:
     def __init__(self, pieces=None):
         if pieces is None:
-            with open('shogiboard.json') as f:
-                ls = json.load(f)
-            self.PIECES = {coord(x): piece(*y) for x, y in ls.items()}
+            self.PIECES = {coord(x): piece(*y) for x, y in _info.LS.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
@@ -407,3 +401,17 @@ class Shogi:
         self.PromotedException = PromotedException
         self.DemotedException = DemotedException
         self.IllegalMove = IllegalMove
+
+
+class _info:
+    def __init__(self):
+        with open('shogimoves.json') as f:
+            self.MOVEDICT = json.load(f)
+        with open('shoginames.json') as f:
+            self.NAMEDICT = json.load(f)
+        with open('shogiboard.json') as f:
+            self.LS = json.load(f)
+        with open('shogiother.json') as f:
+            self.PCINFO = json.load(f)
+
+_info = _info()
