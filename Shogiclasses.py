@@ -78,14 +78,8 @@ class nopiece(piece):
 
 
 class moves:
-    with open('shogimoves.txt') as movef:
-        movelist = movef.readlines()
-        movedict = {}
-        for n, line in enumerate(movelist):
-            line = line.strip()
-            var = line.split(' ')
-            movelist[n] = var
-            movedict[line[0]] = tuple(var[1:])
+    with open('shogimoves.json') as movef:
+        movedict = json.load(movef)
 
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
@@ -97,7 +91,7 @@ class moves:
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
-        if mvlist in ('None', 'enoN'):
+        if mvlist is None:
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
