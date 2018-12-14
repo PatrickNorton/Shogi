@@ -269,6 +269,8 @@ def otherconditions(theboard, var):
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(theboard, filenm)
+        print('Press enter to return to game.')
+        input()
         raise IllegalMove(0)
 
 
@@ -299,8 +301,6 @@ def helpdesk(theboard, filenm=None):
     if filenm is not None:
         if filenm == 'moves':
             movelistfn(theboard)
-            print('Press enter to return to game.')
-            input()
             return
         filenm = ltrtoname(filenm)
         try:
