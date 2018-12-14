@@ -50,6 +50,24 @@ class piece:
 
     def canmove(self, relloc): return self.MOVES.canmove(relloc)
 
+    def validspaces(self, direct):
+        magicvar = self.MOVES[direct]
+        valid = []
+        if magicvar == '-':
+            return []
+        elif magicvar == '1':
+            valid.append(coord(direct))
+        elif magicvar == 'T':
+            xy = (direct.x, 2*direct.y)
+            valid.append(coord(xy))
+        elif magicvar == '+':
+            for x in range(9):
+                x = coord(x)
+                relloc = x*direct
+                if self.canmove(relloc):
+                    valid.append(relloc)
+        return valid
+
 
 class nopiece(piece):
     def __init__(self):
@@ -274,11 +292,10 @@ class board:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(2)}
-        self.PCSBYCLR = {}
+        self.PCSBYCLR = {color(0): {}, color(1): {}}
         self.currplyr = color(0)
         for x in range(2):
             theclr = color(x)
-            self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
                 if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y

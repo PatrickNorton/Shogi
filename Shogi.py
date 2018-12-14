@@ -263,12 +263,12 @@ def otherconditions(theboard, var):
         toquit()
         raise IllegalMove(0)
     if var == 'help':
-        helpdesk()
+        helpdesk(theboard)
         raise IllegalMove(0)
     if var[:4] == 'help':
         filenm = var[4:]
         filenm = filenm.strip()
-        helpdesk(filenm)
+        helpdesk(theboard, filenm)
         raise IllegalMove(0)
 
 
@@ -293,18 +293,23 @@ def droppiece(theboard):
         pass
 
 
-def helpdesk(filenm=None):
+def helpdesk(theboard, filenm=None):
     with open('shogihelp.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
+        if filenm == 'moves':
+            movelistfn(theboard)
+            print('Press enter to return to game.')
+            input()
+            return
         filenm = ltrtoname(filenm)
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
             print(thefile)
-            return
         except FileNotFoundError:
-            print('Invalid help command')
+            print('Invalid help command. Type "help" for command list.')
+        return
     print(filetxt)
     while True:
         filenm = input('help: ')
@@ -315,6 +320,8 @@ def helpdesk(filenm=None):
             break
         elif filelwr == 'quit':
             toquit()
+        elif filelwr == 'moves':
+            movelistfn(theboard)
         else:
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
@@ -374,6 +381,36 @@ def toquit():
             raise PlayerExit
         elif willquit.startswith('n'):
             return
+
+
+def movelistfn(theboard):
+    movedict = {}
+    currpieces = theboard.currpcs()
+    for loc, apiece in currpieces.items():
+        movelst = []
+        dirlist = (direction(x) for x in range(8))
+        for x in dirlist:
+            tolst = apiece.validspaces(x)
+            tolst = testspcs(theboard, loc, tolst)
+            movelst += tolst
+        movedict[apiece] = movelst
+    for loc, piece in currpieces.items():
+        print(f"{repr(piece)} at {loc}:")
+        toprint = (str(x) for x in movedict[piece])
+        print(f"    {', '.join(toprint)}")
+
+
+def testspcs(theboard, pieceloc, spacelist):
+    toreturn = []
+    for relloc in spacelist:
+        try:
+            absloc = pieceloc+relloc
+            movecheck2(theboard, (pieceloc, absloc))
+        except (TypeError, ValueError, IllegalMove):
+            continue
+        else:
+            toreturn.append(absloc)
+    return toreturn
 
 
 if __name__ == "__main__":
