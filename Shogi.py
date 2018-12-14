@@ -379,8 +379,28 @@ def toquit():
 
 
 def movelist(theboard):
-    for x in theboard.currpieces():
-        pass
+    movedict = {}
+    for loc, apiece in theboard.currpcs().items():
+        movelst = []
+        dirlist = (direction(x) for x in range(8))
+        for x in dirlist:
+            tolst = apiece.validspaces(x)
+            tolst = testspcs(theboard, loc, tolst)
+            movelst += tolst
+        movedict[apiece] = movelst
+
+
+def testspcs(theboard, pieceloc, spacelist):
+    toreturn = []
+    for relloc in spacelist:
+        try:
+            absloc = spacelist+relloc
+            movecheck2(theboard, (pieceloc, absloc))
+        except (TypeError, ValueError, IllegalMove):
+            continue
+        else:
+            toreturn.append(absloc)
+    return toreturn
 
 
 if __name__ == "__main__":
