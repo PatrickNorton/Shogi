@@ -380,7 +380,8 @@ def toquit():
 
 def movelist(theboard):
     movedict = {}
-    for loc, apiece in theboard.currpcs().items():
+    currpieces = theboard.currpcs()
+    for loc, apiece in currpieces.items():
         movelst = []
         dirlist = (direction(x) for x in range(8))
         for x in dirlist:
