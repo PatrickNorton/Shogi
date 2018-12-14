@@ -299,13 +299,16 @@ def helpdesk(theboard, filenm=None):
     if filenm is not None:
         if filenm == 'moves':
             movelistfn(theboard)
+            print('Press enter to return to game.')
+            input()
+            return
         filenm = ltrtoname(filenm)
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
             print(thefile)
         except FileNotFoundError:
-            print('Invalid help command. Type "help" for command list')
+            print('Invalid help command. Type "help" for command list.')
         return
     print(filetxt)
     while True:
