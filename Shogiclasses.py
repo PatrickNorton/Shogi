@@ -54,7 +54,7 @@ class piece:
         magicvar = self.MOVES[direct]
         valid = []
         if magicvar == '-':
-            return None
+            return []
         elif magicvar == '1':
             valid.append(coord(direct))
         elif magicvar == 'T':

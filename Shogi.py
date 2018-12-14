@@ -384,24 +384,22 @@ def movelistfn(theboard):
     for loc, apiece in currpieces.items():
         movelst = []
         dirlist = (direction(x) for x in range(8))
-        if dirlist is not None:
-            for x in dirlist:
-                tolst = apiece.validspaces(x)
-                tolst = testspcs(theboard, loc, tolst)
-                movelst += tolst
-        else:
-            dirlist = [None]
+        for x in dirlist:
+            tolst = apiece.validspaces(x)
+            tolst = testspcs(theboard, loc, tolst)
+            movelst += tolst
         movedict[apiece] = movelst
     for loc, piece in currpieces.items():
         print(f"{repr(piece)} at {loc}:")
-        print(f"    {', '.join(movedict[piece])}")
+        toprint = (str(x) for x in movedict[piece])
+        print(f"    {', '.join(toprint)}")
 
 
 def testspcs(theboard, pieceloc, spacelist):
     toreturn = []
     for relloc in spacelist:
         try:
-            absloc = spacelist+relloc
+            absloc = pieceloc+relloc
             movecheck2(theboard, (pieceloc, absloc))
         except (TypeError, ValueError, IllegalMove):
             continue
