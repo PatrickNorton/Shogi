@@ -328,8 +328,14 @@ class board:
         del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
 
     def canpromote(self, space):
-        zonevar = ((0, 1, 2), (6, 7, 8))
+        zonevar = ((0, 1, 2), (8, 7, 6))
         return space.y in zonevar[int(self.currplyr)]
+
+    def autopromote(self, space):
+        zonevar = ((0, 1, 2), (8, 7, 6))
+        plyrint = int(self.currplyr)
+        index = zonevar[plyrint].index(space.y)
+        return index < self[space].AUTOPROMOTE
 
     def putinplay(self, piece, movedto):
         player = self.currplyr

@@ -87,14 +87,17 @@ def movecheck(theboard, current):
     canpromote = theboard[moveloc].PROMOTABLE
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
-        while True:
-            print('Promote this piece? (y/n)')
-            topromote = input('] ')
-            if topromote.lower().startswith('y'):
-                theboard[moveloc].promote()
-                break
-            if topromote.lower().startswith('n'):
-                break
+        if theboard.autopromote(moveloc):
+            theboard[moveloc].promote()
+        else:
+            while True:
+                print('Promote this piece? (y/n)')
+                topromote = input('] ')
+                if topromote.lower().startswith('y'):
+                    theboard[moveloc].promote()
+                    break
+                if topromote.lower().startswith('n'):
+                    break
 
 
 def movecheck2(theboard, coords):
