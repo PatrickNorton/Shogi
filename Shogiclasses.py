@@ -274,11 +274,10 @@ class board:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(2)}
-        self.PCSBYCLR = {}
+        self.PCSBYCLR = {color(0): {}, color(1): {}}
         self.currplyr = color(0)
         for x in range(2):
             theclr = color(x)
-            self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
                 if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y
