@@ -316,7 +316,7 @@ def helpdesk(theboard, filenm=None):
         elif filelwr == 'quit':
             toquit()
         elif filelwr == 'moves':
-            movelist(theboard)
+            movelistfn(theboard)
         else:
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
@@ -378,7 +378,7 @@ def toquit():
             return
 
 
-def movelist(theboard):
+def movelistfn(theboard):
     movedict = {}
     currpieces = theboard.currpcs()
     for loc, apiece in currpieces.items():
