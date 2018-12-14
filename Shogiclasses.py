@@ -275,7 +275,7 @@ class board:
         if pieces is None:
             with open('shogiboard.json') as f:
                 ls = json.load(f)
-            self.PIECES = {coord(x): piece(*y) for x, y in enumerate(ls)}
+            self.PIECES = {coord(x): piece(*y) for x, y in ls.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
