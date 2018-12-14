@@ -334,11 +334,8 @@ def helpdesk(theboard, filenm=None):
 
 
 def ltrtoname(filenm):
-    with open('shoginames.txt') as f:
-        namelist = f.readlines()
-    for x, y in enumerate(namelist):
-        namelist[x] = y.strip().split(': ')
-    namedict = {x[0]: x[1] for x in namelist}
+    with open('shoginames.json') as f:
+        namedict = json.load(f)
     if filenm.lower() in namedict:
         if filenm.islower():
             filenm = namedict[filenm]

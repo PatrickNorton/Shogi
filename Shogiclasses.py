@@ -1,6 +1,7 @@
 from numpy import sin, cos, pi, sign
 import os
 import sys
+import json
 os.chdir(sys.path[0])
 
 
@@ -167,11 +168,8 @@ class color:
 
 
 class ptype:
-    with open('shoginames.txt') as namtxt:
-        namelist = namtxt.readlines()
-        for x, y in enumerate(namelist):
-            namelist[x] = y.strip().split(': ')
-        namedict = {x[0]: x[1] for x in namelist}
+    with open('shoginames.json') as namtxt:
+        namedict = json.load(namtxt)
 
     def __init__(self, typ):
         typ = str(typ)
