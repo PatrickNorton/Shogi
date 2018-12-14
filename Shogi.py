@@ -260,13 +260,8 @@ def otherconditions(theboard, var):
         droppiece(theboard)
         return True
     if var == 'quit':
-        while True:
-            print('Are you sure you want to quit? (y/n)')
-            willquit = input('] ')
-            if willquit.lower().startswith('y'):
-                raise PlayerExit
-            elif willquit.lower().startswith('n'):
-                raise IllegalMove(0)
+        toquit()
+        raise IllegalMove(0)
     if var == 'help':
         helpdesk()
         raise IllegalMove(0)
@@ -319,14 +314,7 @@ def helpdesk(filenm=None):
             print('Returning to game')
             break
         elif filelwr == 'quit':
-            while True:
-                print('You are about to quit the game of Shogi')
-                print('Are you sure you want to quit? (y/n)')
-                willquit = input('] ')
-                if willquit.startswith('y'):
-                    raise PlayerExit
-                elif willquit.startswith('n'):
-                    break
+            toquit()
         else:
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
@@ -375,6 +363,17 @@ def setpos():
         todict[loc] = piecenm
     toreturn = board(todict)
     return toreturn
+
+
+def toquit():
+    while True:
+        print('You are about to quit the game of Shogi')
+        print('Are you sure you want to quit? (y/n)')
+        willquit = input('] ')
+        if willquit.startswith('y'):
+            raise PlayerExit
+        elif willquit.startswith('n'):
+            return
 
 
 if __name__ == "__main__":
