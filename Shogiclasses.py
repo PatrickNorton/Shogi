@@ -86,7 +86,8 @@ class moves:
         pcmvlist = list(self.movedict[piecenm])
         if clr == color(1):
             for y, var in enumerate(pcmvlist):
-                pcmvlist[y] = var[4:]+var[:4]
+                if var is not None:
+                    pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
@@ -271,15 +272,10 @@ class DemotedException(Exception):
 
 class board:
     def __init__(self, pieces=None):
-        with open('shogiboard.txt') as boardtxt:
-            boardtxt = boardtxt.readlines()
-            for x, y in enumerate(boardtxt):
-                boardtxt[x] = y.split()
         if pieces is None:
-            self.PIECES = {}
-            for (x, y) in self.it():
-                if boardtxt[y][x] != '--':
-                    self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+            with open('shogiboard.json') as f:
+                ls = json.load(f)
+            self.PIECES = {coord(x): piece(*y) for x, y in enumerate(ls)}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
