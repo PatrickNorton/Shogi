@@ -50,6 +50,24 @@ class piece:
 
     def canmove(self, relloc): return self.MOVES.canmove(relloc)
 
+    def validspaces(self, direct):
+        magicvar = self.MOVES[direct]
+        valid = []
+        if magicvar == '-':
+            return None
+        elif magicvar == '1':
+            valid.append(coord(direct))
+        elif magicvar == 'T':
+            xy = (direct.x, 2*direct.y)
+            valid.append(coord(xy))
+        elif magicvar == '+':
+            for x in range(9):
+                x = coord(x)
+                relloc = x*direct
+                if self.canmove(relloc):
+                    valid.append(relloc)
+        return valid
+
 
 class nopiece(piece):
     def __init__(self):
