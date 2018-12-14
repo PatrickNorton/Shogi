@@ -389,6 +389,9 @@ def movelistfn(theboard):
             tolst = testspcs(theboard, loc, tolst)
             movelst += tolst
         movedict[apiece] = movelst
+    for loc, piece in currpieces.items():
+        print(f"{repr(piece)} at {loc}:")
+        print(f"    {', '.join(movedict[piece])}")
 
 
 def testspcs(theboard, pieceloc, spacelist):
