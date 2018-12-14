@@ -297,14 +297,16 @@ def helpdesk(theboard, filenm=None):
     with open('shogihelp.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
+        if filenm == 'moves':
+            movelistfn(theboard)
         filenm = ltrtoname(filenm)
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
             print(thefile)
-            return
         except FileNotFoundError:
-            print('Invalid help command')
+            print('Invalid help command. Type "help" for command list')
+        return
     print(filetxt)
     while True:
         filenm = input('help: ')
