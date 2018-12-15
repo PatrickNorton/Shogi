@@ -135,7 +135,7 @@ def checkcheck(theboard, coords, color, earlybreak=False):
     oldloc, newloc = coords
     check, checklist = False, []
     toget = piece('k', color)
-    kingpos = theboard[toget]
+    kingpos = theboard.getpiece(toget)
     try:
         movecheck2(theboard, (newloc, kingpos))
     except IllegalMove:

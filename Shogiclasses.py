@@ -302,9 +302,8 @@ class board:
     def __getitem__(self, index):
         if isinstance(index, (tuple, coord)):
             coords = coord(index)
-            return self.PIECES.get(coords, nopiece())
-        elif isinstance(index, piece):
-            return self.INVPIECES[index]
+            toreturn = self.PIECES.get(coords, nopiece())
+        return toreturn
 
     def it(self): yield from ((x, y) for x in range(9) for y in range(9))
 
@@ -316,6 +315,9 @@ class board:
         self.PIECES[coord(new)] = self.PIECES.pop(current)
         self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
         del self.PCSBYCLR[self[new].COLOR][coord(current)]
+
+    def getpiece(self, location):
+        return self.INVPIECES[location]
 
     def capture(self, new):
         piece = self[new]
