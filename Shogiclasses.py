@@ -296,7 +296,7 @@ class board:
         return toreturn
 
     def __iter__(self):
-        yield from [[self[x, y] for x in range(9)] for y in range(9)]
+        yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
         if isinstance(index, (tuple, coord)):
@@ -305,7 +305,7 @@ class board:
         elif isinstance(index, piece):
             return self.INVPIECES[index]
 
-    def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
+    def it(self): yield from ((x, y) for x in range(9) for y in range(9))
 
     def occupied(self): yield from self.PIECES
 

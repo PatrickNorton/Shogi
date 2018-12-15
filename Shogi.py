@@ -162,7 +162,7 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
     toking = direction(relcoord)
     doa = row(oldloc, toking)
     currpieces = theboard.playerpcs(theboard[kingpos].COLOR.other())
-    pieces = [x for x in doa if x in currpieces]
+    pieces = (x for x in doa if x in currpieces)
     for x in pieces:
         try:
             movecheck2(theboard, (x, kingpos))
@@ -179,7 +179,7 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
 
 def kingcheck(theboard, coords):
     oldloc, newloc = coords
-    rowlist = set(direction(x) for x in range(8))
+    rowlist = (direction(x) for x in range(8))
     for x, dist in product(rowlist, range(9)):
         dist = coord(dist)
         try:
@@ -210,7 +210,7 @@ def kingcheck(theboard, coords):
 
 
 def matecheck(theboard, kingpos, checklist):
-    kingmovepos = [coord(direction(x)) for x in range(8)]
+    kingmovepos = (coord(direction(x)) for x in range(8))
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
