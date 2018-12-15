@@ -6,7 +6,7 @@ os.chdir(sys.path[0])
 
 
 class piece:
-    def __init__(self, typ, clr):
+    def __init__(self, typ, clr, prom=False):
         self.PTYPE = ptype(typ)
         self.MOVES = moves(self.PTYPE, color(clr))
         self.COLOR = color(clr)
@@ -17,6 +17,10 @@ class piece:
         else:
             self.prom = False
             self.PROMOTABLE = True
+        if prom and self.prom is not None:
+            self.PTYPE = self.PTYPE.prom()
+            self.MOVES = self.MOVES.prom()
+            self.prom = True
         otherattrs = _info.PCINFO[typ]
         self.AUTOPROMOTE = otherattrs['autopromote']
 
@@ -37,16 +41,13 @@ class piece:
         elif self.prom:
             raise PromotedException
         else:
-            self.PTYPE = self.PTYPE.prom()
-            self.MOVES = self.MOVES.prom()
-            self.prom = True
+            return piece(self.PTYPE, self.COLOR, True)
 
     def demote(self):
         if not self.prom:
             raise DemotedException
         else:
-            self.PTYPE = self.PTYPE.dem()
-            self.MOVES = self.MOVES.dem()
+            return piece(self.PTYPE, self.COLOR)
 
     def flipsides(self):
         return piece(str(self.PTYPE), self.COLOR.OTHER)

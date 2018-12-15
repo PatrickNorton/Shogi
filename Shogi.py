@@ -88,13 +88,13 @@ def movecheck(theboard, current):
     ispromoted = theboard[moveloc].prom
     if promote and canpromote and not ispromoted:
         if theboard.autopromote(moveloc):
-            theboard[moveloc].promote()
+            theboard[moveloc] = theboard[moveloc].promote()
         else:
             while True:
                 print('Promote this piece? (y/n)')
                 topromote = input('] ')
                 if topromote.lower().startswith('y'):
-                    theboard[moveloc].promote()
+                    theboard[moveloc] = theboard[moveloc].promote()
                     break
                 if topromote.lower().startswith('n'):
                     break
