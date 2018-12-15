@@ -315,6 +315,7 @@ class board:
         self.PIECES[coord(new)] = self.PIECES.pop(current)
         self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
         del self.PCSBYCLR[self[new].COLOR][coord(current)]
+        self.INVPIECES[self[new]] = new
 
     def getpiece(self, location):
         return self.INVPIECES[location]
@@ -329,6 +330,11 @@ class board:
         self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
         del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
+        if piece in self.PIECES:
+            gen = [loc for loc, x in self.PIECES.items() if x == piece]
+            self.INVPIECES[piece] = gen[0]
+        else:
+            del self.INVPIECES[piece]
 
     def canpromote(self, space):
         zonevar = ((0, 1, 2), (8, 7, 6))
@@ -352,6 +358,7 @@ class board:
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece
         self.PIECES[movedto] = piece
+        self.INVPIECES[piece] = movedto
 
     def currpcs(self): return self.PCSBYCLR[self.currplyr]
 
