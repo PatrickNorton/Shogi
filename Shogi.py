@@ -393,10 +393,10 @@ def movelistfn(theboard):
             tolst = apiece.validspaces(x)
             tolst = testspcs(theboard, loc, tolst)
             movelst += tolst
-        movedict[apiece] = movelst
+        movedict[loc] = movelst
     for loc, piece in currpieces.items():
         print(f"{repr(piece)} at {loc}:")
-        toprint = (str(x) for x in movedict[piece])
+        toprint = (str(x) for x in movedict[loc])
         print(f"    {', '.join(toprint)}")
 
 
