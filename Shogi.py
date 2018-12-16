@@ -27,7 +27,7 @@ def playgame(stdscr):
     while game:
         stdscr.clear()
         if errstr:
-            stdscr.addstr(errstr, curses.A_STANDOUT)
+            stdscr.addstr(errstr, curses.A_BOLD)
             errstr = ''
         stdscr.addstr(str(theboard))
         stdscr.addstr(f"{repr(theboard.currplyr)}'s turn\n")
