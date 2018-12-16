@@ -117,7 +117,7 @@ def movecheck2(theboard, coords):
     elif magicvar == 'T':
         pass
     elif str(piece.PTYPE) == 'k':
-        kingcheck(current, new)
+        kingcheck(theboard, (current, new))
     else:
         obscheck(theboard, current, move)
     topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
