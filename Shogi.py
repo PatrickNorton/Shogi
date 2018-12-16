@@ -19,12 +19,16 @@ def playgame(stdscr):
     theboard = board()
     game = True
     debug = False
+    errstr = ''
     if debug:
         theboard = setpos(stdscr)
     with open('shogierrors.json') as etxt:
         errorlist = json.load(etxt)
     while game:
         stdscr.clear()
+        if errstr:
+            stdscr.addstr(errstr, curses.A_STANDOUT)
+            errstr = ''
         stdscr.addstr(str(theboard))
         stdscr.addstr(f"{repr(theboard.currplyr)}'s turn\n")
         try:
@@ -37,7 +41,7 @@ def playgame(stdscr):
         except IllegalMove as e:
             var = int(str(e))
             if var:
-                stdscr.addstr(f"Error: {errorlist[var]}\n")
+                errstr = f"Error: {errorlist[var]}\n"
             continue
         except OtherMove:
             theboard.currplyr = theboard.currplyr.other()
