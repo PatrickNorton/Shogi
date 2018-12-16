@@ -473,7 +473,9 @@ def getinput(stdscr, msg, yn=False):
     if yn:
         msg += ' (y/n)\n'
         stdscr.addstr(msg)
+        currloc = stdscr.getyx()
         while True:
+            stdscr.move(*currloc)
             toreturn = stdscr.getkey()
             if toreturn == 'y':
                 return True
