@@ -98,12 +98,10 @@ def movecheck(stdscr, theboard, current):
         else:
             while True:
                 topromote = getinput(stdscr, 'Promote this piece?', True)
-                topromote = stdscr.getch()
-                topromote = topromote.decode("utf-8")
-                if topromote.lower().startswith('y'):
+                if topromote == 'y':
                     theboard[moveloc] = theboard[moveloc].promote()
                     break
-                if topromote.lower().startswith('n'):
+                if topromote == 'n':
                     break
 
 
