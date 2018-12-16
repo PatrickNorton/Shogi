@@ -1,6 +1,8 @@
 This is shogi.
 You are in the interactive help mode.
 
+To enter the help menu prompt, hit Esc.
+
 If you wish to learn the rules of shogi, type 'rules'.
 
 If you wish to know the full list of commands, type 'commands'.
