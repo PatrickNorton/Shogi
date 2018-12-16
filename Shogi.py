@@ -81,7 +81,8 @@ def piececheck(stdscr, theboard):
 def movecheck(stdscr, theboard, current):
     validpiece = False
     while not validpiece:
-        stdscr.addstr(f"The piece is a {repr(theboard[current])} at {current}.\n")
+        stdscr.addstr(
+            f"The piece is a {repr(theboard[current])} at {current}.\n")
         moveloc = getinput(stdscr, 'Enter location to move piece to\n: ')
         validpiece = inputpiece(stdscr, theboard, moveloc)
         if not validpiece:
@@ -317,15 +318,17 @@ def helpdesk(stdscr, theboard, filenm=None):
                 thefile = f.read()
             stdscr.addstr(thefile+'\n')
         except FileNotFoundError:
-            stdscr.addstr('Invalid help command. Type "help" for command list.\n')
+            stdscr.addstr(
+                'Invalid help command. Type "help" for command list.\n')
         return
-    stdscr.addstr(filetxt+'\n')
+    filedisp(stdscr, filetxt)
     while True:
-        filenm = getinput(stdscr, 'help: ')
+        stdscr.clrtoeol()
+        filenm = getinput(stdscr, "help: ")
         filenm = filenm.strip()
         filelwr = filenm.lower()
+        stdscr.clear()
         if filelwr == 'exit':
-            stdscr.addstr('Returning to game\n')
             break
         elif filelwr == 'quit':
             toquit(stdscr)
@@ -337,7 +340,7 @@ def helpdesk(stdscr, theboard, filenm=None):
             try:
                 with open(f"helpfiles/{filenm}.txt") as f:
                     thefile = f.read()
-                stdscr.addstr(thefile+'\n')
+                filedisp(stdscr, thefile)
             except FileNotFoundError:
                 stdscr.addstr('Invalid help command\n')
 
@@ -416,6 +419,35 @@ def testspcs(theboard, pieceloc, spacelist):
         else:
             toreturn.append(absloc)
     return toreturn
+
+
+def filedisp(stdscr, filetxt):
+    maxy, maxx = stdscr.getmaxyx()
+    filelis = filetxt.split('\n')
+    filelist = []
+    for line in filelis:
+        if len(line) > maxx:
+            filelist.append(line[:maxx-1])
+            filelist.append(line[maxx-1:])
+        else:
+            filelist.append(line)
+    stdscr.clear()
+    stdscr.move(0, 0)
+    stdscr.addstr('\n'.join(filelist[:maxy-1]))
+    topln = 0
+    while True:
+        stdscr.move(maxy-1, 0)
+        keynm = stdscr.getch()
+        if keynm == curses.KEY_UP and topln > 0:
+            topln -= 1
+        elif keynm == curses.KEY_DOWN and topln < len(filelist)-maxy-1:
+            topln += 1
+        elif keynm in (67, 27):
+            break
+        stdscr.clear()
+        stdscr.move(0, 0)
+        stdscr.addstr('\n'.join(filelist[topln:maxy+topln-1]))
+        stdscr.refresh()
 
 
 def main(stdscr):
