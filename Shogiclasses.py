@@ -6,7 +6,7 @@ os.chdir(sys.path[0])
 
 
 class piece:
-    def __init__(self, typ, clr, prom=False):
+    def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
         self.MOVES = moves(self.PTYPE, color(clr))
         self.COLOR = color(clr)
@@ -17,11 +17,7 @@ class piece:
         else:
             self.prom = False
             self.PROMOTABLE = True
-        if prom and self.prom is not None:
-            self.PTYPE = self.PTYPE.prom()
-            self.MOVES = self.MOVES.prom()
-            self.prom = True
-        otherattrs = _info.PCINFO[typ]
+        otherattrs = _info.PCINFO[str(typ)]
         self.AUTOPROMOTE = otherattrs['autopromote']
 
     def __str__(self):
@@ -41,13 +37,19 @@ class piece:
         elif self.prom:
             raise PromotedException
         else:
-            return piece(self.PTYPE, self.COLOR, True)
+            self.PTYPE = self.PTYPE.prom()
+            self.MOVES = self.MOVES.prom()
+            self.prom = True
+            return self
 
     def demote(self):
         if not self.prom:
             raise DemotedException
         else:
-            return piece(self.PTYPE, self.COLOR)
+            self.PTYPE = self.PTYPE.dem()
+            self.MOVES = self.MOVES.dem()
+            self.dem = False
+            return self
 
     def flipsides(self):
         return piece(str(self.PTYPE), self.COLOR.OTHER)
@@ -121,10 +123,12 @@ class moves:
     def prom(self):
         self.ispromoted = True
         self.CMOVES = self.MOVES[self.ispromoted]
+        return self
 
     def dem(self):
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
+        return self
 
 
 class color:
@@ -179,10 +183,12 @@ class ptype:
     def prom(self):
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
+        return self
 
     def dem(self):
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
+        return self
 
 
 class coord:
@@ -345,6 +351,13 @@ class board:
         plyrint = int(self.currplyr)
         index = zonevar[plyrint].index(space.y)
         return index < self[space].AUTOPROMOTE
+
+    def promote(self, space):
+        piece = self[space]
+        piece = piece.promote()
+        self.PIECES[space] = piece
+        self.PCSBYCLR[piece.COLOR][space] = piece
+        self.INVPIECES[piece] = space
 
     def putinplay(self, piece, movedto):
         player = self.currplyr

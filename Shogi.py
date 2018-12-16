@@ -47,6 +47,17 @@ def playgame(stdscr):
             theboard.currplyr = theboard.currplyr.other()
             continue
         theboard.move(*theboard.nextmove)
+        moveloc = theboard.nextmove[1]
+        promote = theboard.canpromote(moveloc)
+        canpromote = theboard[moveloc].PROMOTABLE
+        ispromoted = theboard[moveloc].prom
+        if promote and canpromote and not ispromoted:
+            if theboard.autopromote(moveloc):
+                theboard.promote(moveloc)
+            else:
+                topromote = getinput(stdscr, 'Promote this piece?', True)
+                if topromote:
+                    theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other()
         ccvars = checkcheck(theboard, theboard.lastmove, clr)
@@ -88,17 +99,8 @@ def movecheck(stdscr, theboard, current):
         if not validpiece:
             stdscr.addstr('Invalid piece\n')
     moveloc = coord(moveloc)
-    promote = movecheck2(theboard, (current, moveloc))
+    movecheck2(theboard, (current, moveloc))
     theboard.nextmove = (current, moveloc)
-    canpromote = theboard[moveloc].PROMOTABLE
-    ispromoted = theboard[moveloc].prom
-    if promote and canpromote and not ispromoted:
-        if theboard.autopromote(moveloc):
-            theboard[moveloc] = theboard[moveloc].promote()
-        else:
-            topromote = getinput(stdscr, 'Promote this piece?', True)
-            if topromote:
-                theboard[moveloc] = theboard[moveloc].promote()
 
 
 def movecheck2(theboard, coords):
@@ -119,8 +121,6 @@ def movecheck2(theboard, coords):
         kingcheck(theboard, (current, new))
     else:
         obscheck(theboard, current, move)
-    topromote = theboard[new].PROMOTABLE and theboard.canpromote(new)
-    return topromote
 
 
 def obscheck(theboard, current, move):
