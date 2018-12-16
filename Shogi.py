@@ -4,7 +4,6 @@ from copy import deepcopy
 from itertools import product
 import json
 import curses
-import time
 
 
 class PlayerExit(Exception):
