@@ -279,7 +279,7 @@ def otherconditions(stdscr, theboard, var):
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(stdscr, theboard, filenm)
-        stdscr.addstr('Press any key to return to game.\n')
+        stdscr.addstr('\nPress any key to return to game.\n')
         stdscr.getch()
         raise IllegalMove(0)
 
@@ -318,8 +318,8 @@ def helpdesk(stdscr, theboard, filenm=None):
                 thefile = f.read()
             stdscr.addstr(thefile+'\n')
         except FileNotFoundError:
-            stdscr.addstr(
-                'Invalid help command. Type "help" for command list.\n')
+            toout = 'Invalid help command. Type "help" for command list.\n'
+            stdscr.addstr(toout)
         return
     filedisp(stdscr, filetxt)
     while True:
@@ -342,7 +342,11 @@ def helpdesk(stdscr, theboard, filenm=None):
                     thefile = f.read()
                 filedisp(stdscr, thefile)
             except FileNotFoundError:
-                stdscr.addstr('Invalid help command\n')
+                stdscr.addstr('Invalid help command\n', curses.A_BOLD)
+                with open("helpfiles/helpcommands.txt") as f:
+                    commands = f.read()
+                stdscr.addstr(commands+'\n')
+                stdscr.move(stdscr.getmaxyx()[0]-1, 0)
 
 
 def ltrtoname(filenm):
