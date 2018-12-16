@@ -92,7 +92,7 @@ def movecheck(stdscr, theboard, current):
             theboard[moveloc] = theboard[moveloc].promote()
         else:
             while True:
-                stdscr.addstr('Promote this piece? (y/n)\n] ')
+                topromote = getinput(stdscr, 'Promote this piece?', True)
                 topromote = stdscr.getch()
                 topromote = topromote.decode("utf-8")
                 if topromote.lower().startswith('y'):
@@ -377,12 +377,11 @@ def setpos(stdscr):
 def toquit(stdscr):
     while True:
         stdscr.addstr('You are about to quit the game of Shogi\n')
-        stdscr.addstr('Are you sure you want to quit? (y/n)\n] ')
-        willquit = stdscr.getkey()
-        if willquit.startswith('y'):
+        toquit = getinput(stdscr, 'Are you sure you want to quit?', True)
+        if toquit:
             raise PlayerExit
-        elif willquit.startswith('n'):
-            return
+        else:
+            break
 
 
 def movelistfn(stdscr, theboard):
@@ -433,16 +432,26 @@ def main(stdscr):
 
 
 def getinput(stdscr, msg, yn=False):
-    stdscr.addstr(msg)
-    currloc = stdscr.getyx()
-    curses.echo()
-    toreturn = b''
-    while toreturn == b'':
-        stdscr.move(*currloc)
-        toreturn = stdscr.getstr()
-    curses.noecho()
-    toreturn = toreturn.decode("utf-8")
-    return toreturn
+    if yn:
+        msg += ' (y/n)\n'
+        stdscr.addstr(msg)
+        while True:
+            toreturn = stdscr.getkey()
+            if toreturn == 'y':
+                return True
+            elif toreturn == 'n':
+                return False
+    else:
+        stdscr.addstr(msg)
+        currloc = stdscr.getyx()
+        curses.echo()
+        toreturn = b''
+        while toreturn == b'':
+            stdscr.move(*currloc)
+            toreturn = stdscr.getstr()
+        curses.noecho()
+        toreturn = toreturn.decode("utf-8")
+        return toreturn
 
 
 if __name__ == "__main__":
