@@ -96,13 +96,9 @@ def movecheck(stdscr, theboard, current):
         if theboard.autopromote(moveloc):
             theboard[moveloc] = theboard[moveloc].promote()
         else:
-            while True:
-                topromote = getinput(stdscr, 'Promote this piece?', True)
-                if topromote == 'y':
-                    theboard[moveloc] = theboard[moveloc].promote()
-                    break
-                if topromote == 'n':
-                    break
+            topromote = getinput(stdscr, 'Promote this piece?', True)
+            if topromote:
+                theboard[moveloc] = theboard[moveloc].promote()
 
 
 def movecheck2(theboard, coords):
