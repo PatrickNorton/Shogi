@@ -460,7 +460,6 @@ def filedisp(stdscr, filetxt, prompt):
 def main(stdscr):
     import os
     import sys
-    os.chdir(sys.path[0])
     curses.nonl()
     while True:
         try:
@@ -497,6 +496,10 @@ def getinput(stdscr, msg, yn=False):
         curses.noecho()
         toreturn = toreturn.decode("utf-8")
         return toreturn
+
+
+def start():
+    curses.wrapper(main)
 
 
 if __name__ == "__main__":
