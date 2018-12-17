@@ -80,7 +80,7 @@ def piececheck(stdscr, theboard):
         pieceloc = getinput(stdscr, 'Enter piece location\n: ')
         validpiece = inputpiece(stdscr, theboard, pieceloc)
         if not validpiece:
-            stdscr.addstr('Invalid piece\n')
+            raise IllegalMove(11)
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR == theboard.currplyr:
         movecheck(stdscr, theboard, pieceloc)
@@ -100,7 +100,7 @@ def movecheck(stdscr, theboard, current):
         moveloc = getinput(stdscr, 'Enter location to move piece to\n: ')
         validpiece = inputpiece(stdscr, theboard, moveloc)
         if not validpiece:
-            stdscr.addstr('Invalid piece\n')
+            raise IllegalMove(11)
     moveloc = coord(moveloc)
     movecheck2(theboard, (current, moveloc))
     theboard.nextmove = (current, moveloc)

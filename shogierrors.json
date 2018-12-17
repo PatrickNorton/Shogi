@@ -9,5 +9,6 @@
     "No pieces to drop",
     "Cannot capture with a drop",
     "Cannot put two pawns in the same column",
-    "Piece does not exist"
+    "Piece does not exist",
+    "Invalid piece"
     ]
