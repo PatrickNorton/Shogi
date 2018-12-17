@@ -276,8 +276,6 @@ def otherconditions(stdscr, theboard, var):
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(stdscr, theboard, filenm)
-        stdscr.addstr('\nPress any key to return to game.\n')
-        stdscr.getch()
         raise IllegalMove(0)
 
 
@@ -406,10 +404,14 @@ def movelistfn(stdscr, theboard):
             tolst = testspcs(theboard, loc, tolst)
             movelst += tolst
         movedict[loc] = movelst
+    filestr = ''
     for loc, piece in currpieces.items():
-        stdscr.addstr(f"{repr(piece)} at {loc}:\n")
+        filestr += f"{repr(piece)} at {loc}:\n"
         toprint = (str(x) for x in movedict[loc])
-        stdscr.addstr(f"    {', '.join(toprint)}\n")
+        filestr += f"    {', '.join(toprint)}\n"
+    filestr = filestr.strip()
+    prompt = "Press Esc to return to game"
+    filedisp(stdscr, filestr, prompt)
 
 
 def testspcs(theboard, pieceloc, spacelist):
@@ -445,10 +447,12 @@ def filedisp(stdscr, filetxt, prompt):
         stdscr.addstr(prompt)
         stdscr.move(maxy-1, 0)
         keynm = stdscr.getch()
-        if keynm == curses.KEY_UP and topln > 0:
-            topln -= 1
-        elif keynm == curses.KEY_DOWN and topln <= len(filelist)-maxy+1:
-            topln += 1
+        if keynm == curses.KEY_UP:
+            if topln > 0:
+                topln -= 1
+        elif keynm == curses.KEY_DOWN:
+            if topln <= len(filelist)-maxy+1:
+                topln += 1
         elif keynm in (67, 27):
             break
         stdscr.clear()
