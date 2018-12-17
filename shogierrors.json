@@ -1,0 +1,13 @@
+[
+    "",
+    "Invalid move direction",
+    "Piece in way",
+    "Must move piece to different location",
+    "Can't capture own piece",
+    "Not your piece",
+    "Cannot move into check",
+    "No pieces to drop",
+    "Cannot capture with a drop",
+    "Cannot put two pawns in the same column",
+    "Piece does not exist"
+    ]

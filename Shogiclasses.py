@@ -1,10 +1,8 @@
 from numpy import sin, cos, pi, sign
 import os
 import sys
-cpath = sys.path[0]
-
-
-def pathjoin(path): return os.path.join(cpath, path)
+import json
+os.chdir(sys.path[0])
 
 
 class piece:
@@ -19,6 +17,8 @@ class piece:
         else:
             self.prom = False
             self.PROMOTABLE = True
+        otherattrs = _info.PCINFO[str(typ)]
+        self.AUTOPROMOTE = otherattrs['autopromote']
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
@@ -40,6 +40,7 @@ class piece:
             self.PTYPE = self.PTYPE.prom()
             self.MOVES = self.MOVES.prom()
             self.prom = True
+            return self
 
     def demote(self):
         if not self.prom:
@@ -47,11 +48,31 @@ class piece:
         else:
             self.PTYPE = self.PTYPE.dem()
             self.MOVES = self.MOVES.dem()
+            self.dem = False
+            return self
 
     def flipsides(self):
         return piece(str(self.PTYPE), self.COLOR.OTHER)
 
     def canmove(self, relloc): return self.MOVES.canmove(relloc)
+
+    def validspaces(self, direct):
+        magicvar = self.MOVES[direct]
+        valid = []
+        if magicvar == '-':
+            return []
+        elif magicvar == '1':
+            valid.append(coord(direct))
+        elif magicvar == 'T':
+            xy = (direct.x, 2*direct.y)
+            valid.append(coord(xy))
+        elif magicvar == '+':
+            for x in range(9):
+                x = coord(x)
+                relloc = x*direct
+                if self.canmove(relloc):
+                    valid.append(relloc)
+        return valid
 
 
 class nopiece(piece):
@@ -62,26 +83,18 @@ class nopiece(piece):
 
 
 class moves:
-    with open(pathjoin('shogimoves.txt')) as movef:
-        movelist = movef.readlines()
-        movedict = {}
-        for n, line in enumerate(movelist):
-            line = line.strip()
-            var = line.split(' ')
-            movelist[n] = var
-            movedict[line[0]] = tuple(var[1:])
-
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
-        pcmvlist = list(self.movedict[piecenm])
+        pcmvlist = list(_info.MOVEDICT[piecenm])
         if clr == color(1):
             for y, var in enumerate(pcmvlist):
-                pcmvlist[y] = var[4:]+var[:4]
+                if var is not None:
+                    pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
         self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[direction(8)] = '-'
         mvlist = pcmvlist[1]
-        if mvlist in ('None', 'enoN'):
+        if mvlist is None:
             self.PMOVES = None
         else:
             self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
@@ -105,15 +118,17 @@ class moves:
         elif magicvar == '+':
             return True
         elif magicvar == 'T':
-            return abs(relloc.x) == 1 and relloc.y == 2
+            return abs(relloc.x) == 1 and abs(relloc.y) == 2
 
     def prom(self):
         self.ispromoted = True
         self.CMOVES = self.MOVES[self.ispromoted]
+        return self
 
     def dem(self):
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
+        return self
 
 
 class color:
@@ -152,16 +167,10 @@ class color:
 
 
 class ptype:
-    with open(pathjoin('shoginames.txt')) as namtxt:
-        namelist = namtxt.readlines()
-        for x, y in enumerate(namelist):
-            namelist[x] = y.strip().split(': ')
-        namedict = {x[0]: x[1] for x in namelist}
-
     def __init__(self, typ):
         typ = str(typ)
         self.TYP = typ.lower()
-        self.NAME = self.namedict[self.TYP]
+        self.NAME = _info.NAMEDICT[self.TYP]
 
     def __str__(self): return self.TYP
 
@@ -174,10 +183,12 @@ class ptype:
     def prom(self):
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
+        return self
 
     def dem(self):
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
+        return self
 
 
 class coord:
@@ -263,22 +274,17 @@ class DemotedException(Exception):
 
 
 class board:
-    def __init__(self):
-        with open(pathjoin('shogiboard.txt')) as boardtxt:
-            boardtxt = boardtxt.readlines()
-            for x, y in enumerate(boardtxt):
-                boardtxt[x] = y.split()
-        self.PIECES = {}
-        for (x, y) in self.it():
-            if boardtxt[y][x] != '--':
-                self.PIECES[coord((x, y))] = piece(*boardtxt[y][x])
+    def __init__(self, pieces=None):
+        if pieces is None:
+            self.PIECES = {coord(x): piece(*y) for x, y in _info.LS.items()}
+        else:
+            self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED = {color(x): [] for x in range(2)}
-        self.PCSBYCLR = {}
+        self.PCSBYCLR = {color(0): {}, color(1): {}}
         self.currplyr = color(0)
         for x in range(2):
             theclr = color(x)
-            self.PCSBYCLR[theclr] = {}
             for x, y in self.PIECES.items():
                 if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y
@@ -293,20 +299,19 @@ class board:
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
         captostr = [str(x) for x in self.CAPTURED[color(0)]]
-        toreturn += f"White pieces: {' '.join(captostr)}\n"
+        toreturn += f"White pieces: {' '.join(captostr)}\n\n"
         return toreturn
 
     def __iter__(self):
-        yield from [[self[x, y] for x in range(9)] for y in range(9)]
+        yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
         if isinstance(index, (tuple, coord)):
             coords = coord(index)
-            return self.PIECES.get(coords, nopiece())
-        elif isinstance(index, piece):
-            return self.INVPIECES[index]
+            toreturn = self.PIECES.get(coords, nopiece())
+        return toreturn
 
-    def it(self): yield from [(x, y) for x in range(9) for y in range(9)]
+    def it(self): yield from ((x, y) for x in range(9) for y in range(9))
 
     def occupied(self): yield from self.PIECES
 
@@ -316,6 +321,10 @@ class board:
         self.PIECES[coord(new)] = self.PIECES.pop(current)
         self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
         del self.PCSBYCLR[self[new].COLOR][coord(current)]
+        self.INVPIECES[self[new]] = new
+
+    def getpiece(self, location):
+        return self.INVPIECES[location]
 
     def capture(self, new):
         piece = self[new]
@@ -327,10 +336,28 @@ class board:
         self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
         del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
+        if piece in self.PIECES:
+            gen = [loc for loc, x in self.PIECES.items() if x == piece]
+            self.INVPIECES[piece] = gen[0]
+        else:
+            del self.INVPIECES[piece]
 
     def canpromote(self, space):
-        zonevar = [[6, 7, 8], [0, 1, 2]]
+        zonevar = ((0, 1, 2), (8, 7, 6))
         return space.y in zonevar[int(self.currplyr)]
+
+    def autopromote(self, space):
+        zonevar = ((0, 1, 2), (8, 7, 6))
+        plyrint = int(self.currplyr)
+        index = zonevar[plyrint].index(space.y)
+        return index < self[space].AUTOPROMOTE
+
+    def promote(self, space):
+        piece = self[space]
+        piece = piece.promote()
+        self.PIECES[space] = piece
+        self.PCSBYCLR[piece.COLOR][space] = piece
+        self.INVPIECES[piece] = space
 
     def putinplay(self, piece, movedto):
         player = self.currplyr
@@ -344,6 +371,7 @@ class board:
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece
         self.PIECES[movedto] = piece
+        self.INVPIECES[piece] = movedto
 
     def currpcs(self): return self.PCSBYCLR[self.currplyr]
 
@@ -402,3 +430,17 @@ class Shogi:
         self.PromotedException = PromotedException
         self.DemotedException = DemotedException
         self.IllegalMove = IllegalMove
+
+
+class _info:
+    def __init__(self):
+        with open('shogimoves.json') as f:
+            self.MOVEDICT = json.load(f)
+        with open('shoginames.json') as f:
+            self.NAMEDICT = json.load(f)
+        with open('shogiboard.json') as f:
+            self.LS = json.load(f)
+        with open('shogiother.json') as f:
+            self.PCINFO = json.load(f)
+
+_info = _info()

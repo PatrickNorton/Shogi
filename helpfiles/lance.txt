@@ -3,3 +3,6 @@ Moves for the lance:
 X | X
 X l X
 X X X
+
+Special lance rules:
+When a lance reaches the last row of the board, it must promote.

@@ -3,3 +3,6 @@ Moves for the knight:
 X T X
 X n X
 X X X
+
+Special knight rules:
+When a knight reaches the last two rows of the board, it must promote.

@@ -1,9 +1,0 @@
--: none
-p: pawn
-l: lance
-n: knight
-s: silver general
-g: gold general
-b: bishop
-r: rook
-k: king

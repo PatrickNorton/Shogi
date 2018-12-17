@@ -25,5 +25,5 @@ When a player's move threatens to capture the king on the next turn, the king is
 The program announces check when it happens.
 
 Checkmate:
-When a player is in check and has no possible move which could remove them from check, rhey are in checkmate. If a plater is checkmated, they lose.
+When a player is in check and has no possible move which could remove them from check, they are in checkmate. If a player is checkmated, they lose.
 The program announces checkmate when it happens, and ends the game.

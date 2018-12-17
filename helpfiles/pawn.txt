@@ -3,3 +3,8 @@ Moves for the pawn:
 X 1 X
 X p X
 X X X
+
+Special pawn rules:
+If a pawn gets to the last row of the board, it must promote.
+Two pawns of the same color may not be placed in the same file.
+A pawn may not be placed to give immediate checkmate.
