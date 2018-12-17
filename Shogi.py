@@ -91,8 +91,12 @@ def piececheck(stdscr, theboard):
 def movecheck(stdscr, theboard, current):
     validpiece = False
     while not validpiece:
+        curr = stdscr.getyx()
+        stdscr.move(curr[0]-2, 0)
+        stdscr.clrtoeol()
         stdscr.addstr(
             f"The piece is a {repr(theboard[current])} at {current}.\n")
+        stdscr.clrtoeol()
         moveloc = getinput(stdscr, 'Enter location to move piece to\n: ')
         validpiece = inputpiece(stdscr, theboard, moveloc)
         if not validpiece:
