@@ -309,12 +309,14 @@ def helpdesk(stdscr, theboard, filenm=None):
         try:
             with open(f"helpfiles/{filenm}.txt") as f:
                 thefile = f.read()
-            stdscr.addstr(thefile+'\n')
+            prompt = 'Press Esc to return to game'
+            filedisp(stdscr, thefile, prompt)
         except FileNotFoundError:
             toout = 'Invalid help command. Type "help" for command list.\n'
             stdscr.addstr(toout)
         return
-    filedisp(stdscr, filetxt)
+    prompt = 'Press Esc to activate help menu'
+    filedisp(stdscr, filetxt, prompt)
     while True:
         stdscr.clrtoeol()
         filenm = getinput(stdscr, "help: ")
@@ -333,7 +335,8 @@ def helpdesk(stdscr, theboard, filenm=None):
             try:
                 with open(f"helpfiles/{filenm}.txt") as f:
                     thefile = f.read()
-                filedisp(stdscr, thefile)
+                prompt = 'Press Esc to activate help menu'
+                filedisp(stdscr, thefile, prompt)
             except FileNotFoundError:
                 stdscr.addstr('Invalid help command\n', curses.A_BOLD)
                 with open("helpfiles/helpcommands.txt") as f:
@@ -418,7 +421,7 @@ def testspcs(theboard, pieceloc, spacelist):
     return toreturn
 
 
-def filedisp(stdscr, filetxt):
+def filedisp(stdscr, filetxt, prompt):
     maxy, maxx = stdscr.getmaxyx()
     filelis = filetxt.split('\n')
     filelist = []
@@ -434,10 +437,13 @@ def filedisp(stdscr, filetxt):
     topln = 0
     while True:
         stdscr.move(maxy-1, 0)
+        stdscr.clrtoeol()
+        stdscr.addstr(prompt)
+        stdscr.move(maxy-1, 0)
         keynm = stdscr.getch()
         if keynm == curses.KEY_UP and topln > 0:
             topln -= 1
-        elif keynm == curses.KEY_DOWN and topln < len(filelist)-maxy-1:
+        elif keynm == curses.KEY_DOWN and topln <= len(filelist)-maxy+1:
             topln += 1
         elif keynm in (67, 27):
             break
