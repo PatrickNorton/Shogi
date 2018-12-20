@@ -498,7 +498,7 @@ def getinput(stdscr, msg, yn=False):
             stdscr.move(*currloc)
             toreturn = stdscr.getstr()
         curses.noecho()
-        toreturn = toreturn.decode("utf-8")
+        toreturn = str(toreturn.decode("utf-8"))
         return toreturn
 
 
