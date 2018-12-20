@@ -31,7 +31,9 @@ def playgame(stdscr):
         stdscr.addstr(str(theboard))
         stdscr.addstr(f"{repr(theboard.currplyr)}'s turn\n")
         try:
-            piececheck(stdscr, theboard)
+            pieceloc = piececheck(stdscr, theboard)
+            coords = movecheck(stdscr, theboard, pieceloc)
+            movecheck2(theboard, coords)
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
             ccvars = checkcheck(*tocc)
             check = ccvars[0]
@@ -82,10 +84,9 @@ def piececheck(stdscr, theboard):
         if not validpiece:
             raise IllegalMove(11)
     pieceloc = coord(pieceloc)
-    if theboard[pieceloc].COLOR == theboard.currplyr:
-        movecheck(stdscr, theboard, pieceloc)
-    else:
+    if theboard[pieceloc].COLOR != theboard.currplyr:
         raise IllegalMove(5)
+    return pieceloc
 
 
 def movecheck(stdscr, theboard, current):
@@ -102,8 +103,7 @@ def movecheck(stdscr, theboard, current):
         if not validpiece:
             raise IllegalMove(11)
     moveloc = coord(moveloc)
-    movecheck2(theboard, (current, moveloc))
-    theboard.nextmove = (current, moveloc)
+    return (current, moveloc)
 
 
 def movecheck2(theboard, coords):
