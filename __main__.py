@@ -15,7 +15,7 @@ def main(session):
         errorlist = json.load(etxt)
     while game:
         if errstr:
-            print('<b>'+errstr+'</b>')
+            print('<b>Error: '+errstr+'</b>')
             errstr = ''
         print(str(theboard))
         print(f"{repr(theboard.currplyr)}'s turn")
