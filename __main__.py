@@ -23,6 +23,7 @@ def main(session):
             pieceloc = Shogi.piececheck(session, theboard)
             coords = Shogi.movecheck(session, theboard, pieceloc)
             Shogi.movecheck2(theboard, coords)
+            theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
             ccvars = Shogi.checkcheck(*tocc)
             check = ccvars[0]
