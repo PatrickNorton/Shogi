@@ -4,13 +4,13 @@ from prompt_toolkit import print_formatted_text as print
 import Shogi
 import Shogiclasses
 import json
-def main():
+def main(session):
     theboard = Shogiclasses.board()
     game = True
     debug = False
     errstr = ''
     if debug:
-        theboard = Shogi.setpos()
+        theboard = Shogi.setpos(session)
     with open('shogierrors.json') as etxt:
         errorlist = json.load(etxt)
     while game:
@@ -20,8 +20,8 @@ def main():
         print(str(theboard))
         print(f"{repr(theboard.currplyr)}'s turn")
         try:
-            pieceloc = Shogi.piececheck(stdscr, theboard)
-            coords = Shogi.movecheck(stdscr, theboard, pieceloc)
+            pieceloc = Shogi.piececheck(session, theboard)
+            coords = Shogi.movecheck(session, theboard, pieceloc)
             Shogi.movecheck2(theboard, coords)
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
             ccvars = Shogi.checkcheck(*tocc)
@@ -45,7 +45,8 @@ def main():
             if theboard.autopromote(moveloc):
                 theboard.promote(moveloc)
             else:
-                topromote = getinput(stdscr, 'Promote this piece?', True)
+                topromote = session.prompt('Promote this piece? ')
+                topromote = topromote.startswith('y')
                 if topromote:
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
@@ -63,3 +64,7 @@ def main():
             else:
                 print('Check')
         theboard.currplyr = theboard.currplyr.other()
+
+
+session = PromptSession()
+main(session)
