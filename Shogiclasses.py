@@ -306,9 +306,8 @@ class board:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
-        if isinstance(index, (tuple, coord)):
-            coords = coord(index)
-            toreturn = self.PIECES.get(coords, nopiece())
+        coords = coord(index)
+        toreturn = self.PIECES.get(coords, nopiece())
         return toreturn
 
     def it(self): yield from ((x, y) for x in range(9) for y in range(9))
