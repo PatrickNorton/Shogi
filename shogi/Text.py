@@ -1,5 +1,5 @@
-from shogi import Shogi
-from shogi import Shogiclasses
+from shogi import Checks
+from shogi import Classes
 import json
 import curtsies
 
@@ -10,39 +10,39 @@ def otherconditions(input_gen, window, todisp, theboard, var):
         return True
     if var == 'quit':
         toquit(input_gen, window, todisp)
-        raise Shogiclasses.IllegalMove(0)
+        raise Classes.IllegalMove(0)
     if var == 'help':
         helpdesk(input_gen, window, theboard)
-        raise Shogiclasses.IllegalMove(0)
+        raise Classes.IllegalMove(0)
     if var[:4] == 'help':
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(input_gen, window, theboard, filenm)
-        raise Shogiclasses.IllegalMove(0)
+        raise Classes.IllegalMove(0)
 
 
 def droppiece(input_gen, window, todisp, theboard):
     if not theboard.CAPTURED[theboard.currplyr]:
-        raise Shogiclasses.IllegalMove(7)
+        raise Classes.IllegalMove(7)
     todisp.append('Enter piece name to put in play')
     todisp.append('> ')
     if moved.startswith('k'):
         moved = 'n'
     try:
         todisp = todisp[:-2]
-        thepiece = Shogiclasses.piece(moved[0], theboard.currplyr)
+        thepiece = Classes.piece(moved[0], theboard.currplyr)
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
             todisp.append('Enter location to place piece')
             todisp.append(': ')
             moveto = getinput(input_gen, window, todisp)
-            if Shogi.inputpiece(theboard, moveto):
-                moveto = Shogiclasses.coord(moveto)
+            if Checks.inputpiece(theboard, moveto):
+                moveto = Classes.coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
-            raise Shogiclasses.IllegalMove(10)
+            raise Classes.IllegalMove(10)
     except ValueError:
         pass
-    except Shogi.OtherInput:
+    except Checks.OtherInput:
         otherconditions(input_gen, window, todisp, theboard, moveto)
 
 
@@ -105,7 +105,7 @@ def ltrtoname(filenm):
 
 
 def setpos(input_gen, window):
-    theboard = Shogiclasses.board()
+    theboard = Classes.board()
     todict = {}
     while True:
         todisp = []
@@ -117,22 +117,22 @@ def setpos(input_gen, window):
             window.render_to_terminal(todisp)
             break
         try:
-            valid = Shogi.inputpiece(input_gen, window)
-        except Shogi.OtherInput:
+            valid = Checks.inputpiece(input_gen, window)
+        except Checks.OtherInput:
             otherconditions(input_gen, window, todisp, theboard, loc)
         if not valid:
             print('Invalid location')
             continue
-        loc = Shogiclasses.coord(loc)
+        loc = Classes.coord(loc)
         todisp.append('Choose piece and color ')
         pcstr = getinput(input_gen, window, todisp)
         try:
-            piecenm = Shogiclasses.piece(*pcstr)
+            piecenm = Classes.piece(*pcstr)
         except (ValueError, IndexError):
             print('Invalid piece\n')
             continue
         todict[loc] = piecenm
-    toreturn = Shogiclasses.board(todict)
+    toreturn = Classes.board(todict)
     return toreturn
 
 
@@ -149,7 +149,7 @@ def toquit(input_gen, window, todisp):
                 toquit = False
                 break
         if toquit:
-            raise Shogi.PlayerExit
+            raise Checks.PlayerExit
         else:
             break
 
@@ -159,7 +159,7 @@ def movelistfn(input_gen, window, theboard):
     currpieces = theboard.currpcs()
     for loc, apiece in currpieces.items():
         movelst = []
-        dirlist = (Shogiclasses.direction(x) for x in range(8))
+        dirlist = (Classes.direction(x) for x in range(8))
         for x in dirlist:
             tolst = apiece.validspaces(x)
             tolst = testspcs(theboard, loc, tolst)
@@ -180,8 +180,8 @@ def testspcs(theboard, pieceloc, spacelist):
     for relloc in spacelist:
         try:
             absloc = pieceloc+relloc
-            Shogi.movecheck2(theboard, (pieceloc, absloc))
-        except (TypeError, ValueError, Shogi.IllegalMove):
+            Checks.movecheck2(theboard, (pieceloc, absloc))
+        except (TypeError, ValueError, Checks.IllegalMove):
             continue
         else:
             toreturn.append(absloc)
