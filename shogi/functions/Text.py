@@ -1,5 +1,6 @@
 from shogi import functions
 from shogi import classes
+from shogi.classes import _opendata
 import json
 import curtsies
 
@@ -56,7 +57,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             return
         filenm = ltrtoname(filenm)
         try:
-            with open(f"helpfiles/{filenm}.txt") as f:
+            with _openhelp(f"{filenm}.txt") as f:
                 thefile = f.read()
             prompt = 'Press Esc to return to game'
             filedisp(input_gen, window, prompt, thefile)
@@ -82,19 +83,19 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
             try:
-                with open(f"helpfiles/{filenm}.txt") as f:
+                with _openhelp(f"{filenm}.txt") as f:
                     thefile = f.read()
                 prompt = 'Press Esc to activate help menu'
                 todisp = filedisp(input_gen, window, prompt, filetxt)
             except FileNotFoundError:
                 print('Invalid help command\n')
-                with open("helpfiles/helpcommands.txt") as f:
+                with _openhelp("helpcommands.txt") as f:
                     commands = f.read()
                 print(commands)
 
 
 def ltrtoname(filenm):
-    with open('datafiles/names.json') as f:
+    with _opendata('names.json') as f:
         namedict = json.load(f)
     if filenm.lower() in namedict:
         if filenm.islower():
@@ -261,7 +262,7 @@ def filedisp(input_gen, window, prompt, filetxt):
 
 
 def getfile(filenm):
-    with open('datafiles/helpindex.json') as f:
+    with _opendata('helpindex.json') as f:
         filedict = json.load(f)
     for key, value in filedict['pieces'].items():
         promkey = '+'+key
@@ -281,3 +282,17 @@ def _flatten_dict(d):
                 yield key, value
 
     return dict(items())
+
+
+def _opendata(filenm):
+    import os
+    cwd = os.path.dirname(__file__)
+    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
+    return open(filepath)
+
+
+def _openhelp(filenm):
+    import os
+    cwd = os.path.dirname(__file__)
+    filepath = os.path.join(cwd, f'../helpfiles{filenm}')
+    return open(filepath)
