@@ -56,7 +56,7 @@ def main(input_gen, window):
                 var = int(str(e))
                 if var:
                     errstr = f"Error: {errorlist[var]}"
-                    continue
+                continue
             except functions.OtherMove:
                 theboard.currplyr = theboard.currplyr.other()
                 continue

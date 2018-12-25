@@ -64,6 +64,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
                 thefile = f.read()
             prompt = 'Press Esc to return to game'
             filedisp(input_gen, window, prompt, thefile)
+            raise classes.IllegalMove(0)
         except FileNotFoundError as f:
             toout = 'Invalid help command. Type "help" for command list.'
             print(toout)
@@ -95,6 +96,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
                 with _openhelp("helpcommands.txt") as f:
                     commands = f.read()
                 print(commands)
+    raise classes.IllegalMove(0)
 
 
 def ltrtoname(filenm):
