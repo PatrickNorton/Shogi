@@ -3,6 +3,23 @@ import os
 import sys
 import json
 
+__all__ = [
+    "piece",
+    "nopiece",
+    "moves",
+    "color",
+    "ptype",
+    "coord",
+    "direction",
+    "NotPromotableException",
+    "PromotedException",
+    "DemotedException",
+    "board",
+    "IllegalMove",
+    "row",
+    "Shogi"
+]
+
 
 class piece:
     def __init__(self, typ, clr):
