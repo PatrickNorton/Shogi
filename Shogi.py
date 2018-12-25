@@ -279,7 +279,7 @@ def helpdesk(session, theboard, filenm=None):
 
 
 def ltrtoname(filenm):
-    with open('shoginames.json') as f:
+    with open('datafiles/shoginames.json') as f:
         namedict = json.load(f)
     if filenm.lower() in namedict:
         if filenm.islower():
