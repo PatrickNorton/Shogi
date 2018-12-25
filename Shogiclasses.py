@@ -433,13 +433,13 @@ class Shogi:
 
 class _info:
     def __init__(self):
-        with open('datafiles/shogimoves.json') as f:
+        with open('datafiles/moves.json') as f:
             self.MOVEDICT = json.load(f)
-        with open('datafiles/shoginames.json') as f:
+        with open('datafiles/names.json') as f:
             self.NAMEDICT = json.load(f)
-        with open('datafiles/shogiboard.json') as f:
+        with open('datafiles/board.json') as f:
             self.LS = json.load(f)
-        with open('datafiles/shogiother.json') as f:
+        with open('datafiles/other.json') as f:
             self.PCINFO = json.load(f)
 
 _info = _info()

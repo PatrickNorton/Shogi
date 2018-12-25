@@ -11,7 +11,7 @@ def main(session):
     errstr = ''
     if debug:
         theboard = Shogi.setpos(session)
-    with open('shogierrors.json') as etxt:
+    with open('datafiles/errors.json') as etxt:
         errorlist = json.load(etxt)
     while game:
         if errstr:
