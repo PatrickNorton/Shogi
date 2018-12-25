@@ -25,5 +25,5 @@ __all__ = [
     "yninput",
     "filedisp",
     "getfile",
-    ""
+    "geterrors"
 ]

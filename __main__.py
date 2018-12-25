@@ -13,8 +13,7 @@ def main(input_gen, window):
     errstr = ''
     if debug:
         theboard = functions.setpos(input_gen, window)
-    with open('datafiles/errors.json') as etxt:
-        errorlist = json.load(etxt)
+    errorlist = functions.geterrors()
     while game:
         todisp = []
         if errstr:

@@ -1,5 +1,4 @@
 from numpy import sin, cos, pi, sign
-from shogi.functions import _opendata
 import os
 import sys
 import json
@@ -441,6 +440,13 @@ class _info:
             self.LS = json.load(f)
         with _opendata('other.json') as f:
             self.PCINFO = json.load(f)
+
+
+def _opendata(filenm):
+    import os
+    cwd = os.path.dirname(__file__)
+    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
+    return open(filepath)
 
 
 _info = _info()

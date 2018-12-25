@@ -1,6 +1,5 @@
 from shogi import functions
 from shogi import classes
-from shogi.classes import _opendata
 import json
 import curtsies
 
@@ -55,6 +54,8 @@ def helpdesk(input_gen, window, theboard, filenm=None):
         if filenm == 'moves':
             movelistfn(input_gen, window, theboard)
             return
+        if filenm == 'menu':
+            filenm = helpmenu(input_gen, window, theboard)
         filenm = ltrtoname(filenm)
         try:
             with _openhelp(f"{filenm}.txt") as f:
@@ -270,6 +271,33 @@ def getfile(filenm):
             filedict['pieces'][promkey] = filedict['pieces'][key]['promoted']
             filedict['pieces'][key] = filedict['pieces'][key]['unpromoted']
     _flatten_dict(filedict)
+
+
+def helpmenu(input_gen, window, theboard):
+    with _opendata('helpindex.json') as f:
+        index = json.load(f)
+    while True:
+        todisp = list(index)
+        todisp.extend(['','',''])
+        todisp.append('menu: ')
+        window.render_to_terminal(todisp)
+        filenm = getinput(input_gen, window, todisp)
+        try:
+            filenm = int(filenm)
+            filenm = todisp.index(filenm)
+        except ValueError:
+            pass
+        filepath = index[filenm]
+        if isinstance(filepath, str):
+            break
+        elif isinstance(filepath, dict):
+            index = filepath
+    return filepath
+
+
+def geterrors():
+    with _opendata('errors.json') as f:
+        return json.load(f)
 
 
 def _flatten_dict(d):
