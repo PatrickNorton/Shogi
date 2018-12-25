@@ -1,5 +1,5 @@
-from shogi import Checks
-from shogi import Classes
+from shogi import functions
+from shogi import classes
 import json
 import curtsies
 
@@ -10,39 +10,39 @@ def otherconditions(input_gen, window, todisp, theboard, var):
         return True
     if var == 'quit':
         toquit(input_gen, window, todisp)
-        raise Classes.IllegalMove(0)
+        raise classes.IllegalMove(0)
     if var == 'help':
         helpdesk(input_gen, window, theboard)
-        raise Classes.IllegalMove(0)
+        raise classes.IllegalMove(0)
     if var[:4] == 'help':
         filenm = var[4:]
         filenm = filenm.strip()
         helpdesk(input_gen, window, theboard, filenm)
-        raise Classes.IllegalMove(0)
+        raise classes.IllegalMove(0)
 
 
 def droppiece(input_gen, window, todisp, theboard):
     if not theboard.CAPTURED[theboard.currplyr]:
-        raise Classes.IllegalMove(7)
+        raise classes.IllegalMove(7)
     todisp.append('Enter piece name to put in play')
     todisp.append('> ')
     if moved.startswith('k'):
         moved = 'n'
     try:
         todisp = todisp[:-2]
-        thepiece = Classes.piece(moved[0], theboard.currplyr)
+        thepiece = classes.piece(moved[0], theboard.currplyr)
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
             todisp.append('Enter location to place piece')
             todisp.append(': ')
             moveto = getinput(input_gen, window, todisp)
-            if Checks.inputpiece(theboard, moveto):
-                moveto = Classes.coord(moveto)
+            if functions.inputpiece(theboard, moveto):
+                moveto = classes.coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
-            raise Classes.IllegalMove(10)
+            raise classes.IllegalMove(10)
     except ValueError:
         pass
-    except Checks.OtherInput:
+    except functions.OtherInput:
         otherconditions(input_gen, window, todisp, theboard, moveto)
 
 
@@ -105,7 +105,7 @@ def ltrtoname(filenm):
 
 
 def setpos(input_gen, window):
-    theboard = Classes.board()
+    theboard = classes.board()
     todict = {}
     while True:
         todisp = []
@@ -117,22 +117,22 @@ def setpos(input_gen, window):
             window.render_to_terminal(todisp)
             break
         try:
-            valid = Checks.inputpiece(input_gen, window)
-        except Checks.OtherInput:
+            valid = functions.inputpiece(input_gen, window)
+        except functions.OtherInput:
             otherconditions(input_gen, window, todisp, theboard, loc)
         if not valid:
             print('Invalid location')
             continue
-        loc = Classes.coord(loc)
+        loc = classes.coord(loc)
         todisp.append('Choose piece and color ')
         pcstr = getinput(input_gen, window, todisp)
         try:
-            piecenm = Classes.piece(*pcstr)
+            piecenm = classes.piece(*pcstr)
         except (ValueError, IndexError):
             print('Invalid piece\n')
             continue
         todict[loc] = piecenm
-    toreturn = Classes.board(todict)
+    toreturn = classes.board(todict)
     return toreturn
 
 
@@ -149,7 +149,7 @@ def toquit(input_gen, window, todisp):
                 toquit = False
                 break
         if toquit:
-            raise Checks.PlayerExit
+            raise functions.PlayerExit
         else:
             break
 
@@ -159,7 +159,7 @@ def movelistfn(input_gen, window, theboard):
     currpieces = theboard.currpcs()
     for loc, apiece in currpieces.items():
         movelst = []
-        dirlist = (Classes.direction(x) for x in range(8))
+        dirlist = (classes.direction(x) for x in range(8))
         for x in dirlist:
             tolst = apiece.validspaces(x)
             tolst = testspcs(theboard, loc, tolst)
@@ -180,8 +180,8 @@ def testspcs(theboard, pieceloc, spacelist):
     for relloc in spacelist:
         try:
             absloc = pieceloc+relloc
-            Checks.movecheck2(theboard, (pieceloc, absloc))
-        except (TypeError, ValueError, Checks.IllegalMove):
+            functions.movecheck2(theboard, (pieceloc, absloc))
+        except (TypeError, ValueError, functions.IllegalMove):
             continue
         else:
             toreturn.append(absloc)

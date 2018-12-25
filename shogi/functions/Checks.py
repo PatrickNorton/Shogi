@@ -1,5 +1,5 @@
-from shogi.Classes import piece, board, direction, coord
-from shogi.Classes import IllegalMove, row, color
+from shogi.classes import piece, board, direction, coord
+from shogi.classes import IllegalMove, row, color
 from prompt_toolkit import print_formatted_text as print
 from copy import deepcopy
 from itertools import product
