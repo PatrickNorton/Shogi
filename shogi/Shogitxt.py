@@ -258,3 +258,26 @@ def filedisp(input_gen, window, prompt, filetxt):
         todisp.append(prompt)
         window.render_to_terminal(todisp)
     return todisp
+
+
+def getfile(filenm):
+    with open('datafiles/helpindex.json') as f:
+        filedict = json.load(f)
+    for key, value in filedict['pieces'].items():
+        promkey = '+'+key
+        if isinstance(value, dict):
+            filedict['pieces'][promkey] = filedict['pieces'][key]['promoted']
+            filedict['pieces'][key] = filedict['pieces'][key]['unpromoted']
+    flatten_dict(filedict)
+
+
+def flatten_dict(d):
+    def items():
+        for key, value in d.items():
+            if isinstance(value, dict):
+                for subkey, subvalue in flatten_dict(value).items():
+                    yield key + "." + subkey, subvalue
+            else:
+                yield key, value
+
+    return dict(items())
