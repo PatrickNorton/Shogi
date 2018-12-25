@@ -1,5 +1,5 @@
-import Shogi
-import Shogiclasses
+import shogi.Shogi as Shogi
+import shogi.Shogiclasses as Shogiclasses
 import json
 import curtsies
 
