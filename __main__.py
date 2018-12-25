@@ -1,9 +1,9 @@
 from curtsies import FullscreenWindow, Input, fsarray
 from curtsies.fmtfuncs import bold
 from curtsies.events import PasteEvent
-from pyfiles import Shogi
-from pyfiles import Shogiclasses
-from pyfiles import Shogitxt
+from shogi import Shogi
+from shogi import Shogiclasses
+from shogi import Shogitxt
 import json
 
 
@@ -87,7 +87,9 @@ def main(input_gen, window):
 
 
 
-
-with Input() as input_gen:
-    with FullscreenWindow() as window:
-        main(input_gen, window)
+try:
+    with Input() as input_gen:
+        with FullscreenWindow() as window:
+            main(input_gen, window)
+except Shogi.PlayerExit:
+    pass
