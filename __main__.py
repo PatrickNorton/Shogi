@@ -1,9 +1,9 @@
 from curtsies import FullscreenWindow, Input, fsarray
 from curtsies.fmtfuncs import bold
 from curtsies.events import PasteEvent
-import Shogi
-import Shogiclasses
-import Shogitxt
+from pyfiles import Shogi
+from pyfiles import Shogiclasses
+from pyfiles import Shogitxt
 import json
 
 
