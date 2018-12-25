@@ -24,12 +24,11 @@
         "pawn": {
             "unpromoted": "pieces/pawn.txt",
             "promoted": "pieces/+pawn.txt"
-        }
+        },
+        "gold general": "pieces/gold general.txt"
     },
     "rules": "rules.txt",
-    "pi": "pieces",
     "prompt": "prompt.txt",
     "commands": "commands.txt",
-    "helpcommands": "helpcommands.txt",
-    "gold general": "gold general.txt"
+    "helpcommands": "helpcommands.txt"
 }
