@@ -306,9 +306,8 @@ class board:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
-        if isinstance(index, (tuple, coord)):
-            coords = coord(index)
-            toreturn = self.PIECES.get(coords, nopiece())
+        coords = coord(index)
+        toreturn = self.PIECES.get(coords, nopiece())
         return toreturn
 
     def it(self): yield from ((x, y) for x in range(9) for y in range(9))
@@ -434,13 +433,13 @@ class Shogi:
 
 class _info:
     def __init__(self):
-        with open('shogimoves.json') as f:
+        with open('datafiles/moves.json') as f:
             self.MOVEDICT = json.load(f)
-        with open('shoginames.json') as f:
+        with open('datafiles/names.json') as f:
             self.NAMEDICT = json.load(f)
-        with open('shogiboard.json') as f:
+        with open('datafiles/board.json') as f:
             self.LS = json.load(f)
-        with open('shogiother.json') as f:
+        with open('datafiles/other.json') as f:
             self.PCINFO = json.load(f)
 
 _info = _info()

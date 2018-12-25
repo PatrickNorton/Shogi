@@ -1,9 +1,9 @@
 from Shogiclasses import piece, board, direction, coord
 from Shogiclasses import IllegalMove, row, color
+from prompt_toolkit import print_formatted_text as print
 from copy import deepcopy
 from itertools import product
 import json
-import curses
 
 
 class PlayerExit(Exception):
@@ -14,96 +14,26 @@ class OtherMove(Exception):
     pass
 
 
-def playgame(stdscr):
-    theboard = board()
-    game = True
-    debug = False
-    errstr = ''
-    if debug:
-        theboard = setpos(stdscr)
-    with open('shogierrors.json') as etxt:
-        errorlist = json.load(etxt)
-    while game:
-        stdscr.clear()
-        if errstr:
-            stdscr.addstr(errstr, curses.A_BOLD)
-            errstr = ''
-        stdscr.addstr(str(theboard))
-        stdscr.addstr(f"{repr(theboard.currplyr)}'s turn\n")
-        try:
-            piececheck(stdscr, theboard)
-            tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
-            ccvars = checkcheck(*tocc)
-            check = ccvars[0]
-            if check:
-                raise IllegalMove(6)
-        except IllegalMove as e:
-            var = int(str(e))
-            if var:
-                errstr = f"Error: {errorlist[var]}\n"
-            continue
-        except OtherMove:
-            theboard.currplyr = theboard.currplyr.other()
-            continue
-        theboard.move(*theboard.nextmove)
-        moveloc = theboard.nextmove[1]
-        promote = theboard.canpromote(moveloc)
-        canpromote = theboard[moveloc].PROMOTABLE
-        ispromoted = theboard[moveloc].prom
-        if promote and canpromote and not ispromoted:
-            if theboard.autopromote(moveloc):
-                theboard.promote(moveloc)
-            else:
-                topromote = getinput(stdscr, 'Promote this piece?', True)
-                if topromote:
-                    theboard.promote(moveloc)
-        theboard.lastmove = theboard.nextmove
-        clr = theboard.currplyr.other()
-        ccvars = checkcheck(theboard, theboard.lastmove, clr)
-        check, kingpos, checklist = ccvars
-        if check and game:
-            mate = matecheck(theboard, kingpos, checklist)
-            game = not mate
-            if mate:
-                stdscr.addstr(theboard)
-                stdscr.addstr(f"Checkmate. {repr(theboard.currplyr)} wins\n")
-                game = False
-                break
-            else:
-                stdscr.addstr('Check\n')
-        theboard.currplyr = theboard.currplyr.other()
+class OtherInput(Exception):
+    pass
 
 
-def piececheck(stdscr, theboard):
-    validpiece = False
-    while not validpiece:
-        pieceloc = getinput(stdscr, 'Enter piece location\n: ')
-        validpiece = inputpiece(stdscr, theboard, pieceloc)
-        if not validpiece:
-            raise IllegalMove(11)
+def piececheck(theboard, pieceloc):
+    validpiece = inputpiece(theboard, pieceloc)
+    if not validpiece:
+        raise IllegalMove(11)
     pieceloc = coord(pieceloc)
-    if theboard[pieceloc].COLOR == theboard.currplyr:
-        movecheck(stdscr, theboard, pieceloc)
-    else:
+    if theboard[pieceloc].COLOR != theboard.currplyr:
         raise IllegalMove(5)
+    return pieceloc
 
 
-def movecheck(stdscr, theboard, current):
-    validpiece = False
-    while not validpiece:
-        curr = stdscr.getyx()
-        stdscr.move(curr[0]-2, 0)
-        stdscr.clrtoeol()
-        stdscr.addstr(
-            f"The piece is a {repr(theboard[current])} at {current}.\n")
-        stdscr.clrtoeol()
-        moveloc = getinput(stdscr, 'Enter location to move piece to\n: ')
-        validpiece = inputpiece(stdscr, theboard, moveloc)
-        if not validpiece:
-            raise IllegalMove(11)
+def movecheck(theboard, current, moveloc):
+    validpiece = inputpiece(theboard, moveloc)
+    if not validpiece:
+        raise IllegalMove(11)
     moveloc = coord(moveloc)
-    movecheck2(theboard, (current, moveloc))
-    theboard.nextmove = (current, moveloc)
+    return (current, moveloc)
 
 
 def movecheck2(theboard, coords):
@@ -250,261 +180,9 @@ def matecheck(theboard, kingpos, checklist):
     return True
 
 
-def inputpiece(stdscr, theboard, pieceloc):
+def inputpiece(theboard, pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
     except (ValueError, IndexError):
-        isother = otherconditions(stdscr, theboard, pieceloc)
-        if isother:
-            raise OtherMove
-        else:
-            return False
-
-
-def otherconditions(stdscr, theboard, var):
-    if var == 'drop':
-        droppiece(stdscr, theboard)
-        return True
-    if var == 'quit':
-        toquit(stdscr)
-        raise IllegalMove(0)
-    if var == 'help':
-        helpdesk(stdscr, theboard)
-        raise IllegalMove(0)
-    if var[:4] == 'help':
-        filenm = var[4:]
-        filenm = filenm.strip()
-        helpdesk(stdscr, theboard, filenm)
-        raise IllegalMove(0)
-
-
-def droppiece(stdscr, theboard):
-    if not theboard.CAPTURED[theboard.currplyr]:
-        raise IllegalMove(7)
-    moved = getinput(stdscr, 'Enter piece name to put in play\n> ')
-    if moved.startswith('k'):
-        moved = 'n'
-    try:
-        thepiece = piece(moved[0], theboard.currplyr)
-        if thepiece in theboard.CAPTURED[theboard.currplyr]:
-            moveto = getinput(stdscr, 'Enter location to place piece\n: ')
-            if inputpiece(stdscr, theboard, moveto):
-                moveto = coord(moveto)
-                theboard.putinplay(thepiece, moveto)
-        else:
-            raise IllegalMove(10)
-    except ValueError:
-        pass
-
-
-def helpdesk(stdscr, theboard, filenm=None):
-    with open('shogihelp.txt') as helpf:
-        filetxt = helpf.read()
-    stdscr.clear()
-    stdscr.scrollok(True)
-    if filenm is not None:
-        if filenm == 'moves':
-            movelistfn(stdscr, theboard)
-            return
-        filenm = ltrtoname(filenm)
-        try:
-            with open(f"helpfiles/{filenm}.txt") as f:
-                thefile = f.read()
-            prompt = 'Press Esc to return to game'
-            filedisp(stdscr, thefile, prompt)
-        except FileNotFoundError:
-            toout = 'Invalid help command. Type "help" for command list.\n'
-            stdscr.addstr(toout)
-        return
-    prompt = 'Press Esc to activate help menu'
-    filedisp(stdscr, filetxt, prompt)
-    while True:
-        stdscr.clrtoeol()
-        filenm = getinput(stdscr, "help: ")
-        filenm = filenm.strip()
-        filelwr = filenm.lower()
-        stdscr.clear()
-        if filelwr == 'exit':
-            break
-        elif filelwr == 'quit':
-            toquit(stdscr)
-        elif filelwr == 'moves':
-            movelistfn(stdscr, theboard)
-        else:
-            filenm = ltrtoname(filenm)
-            filenm = filenm.lower()
-            try:
-                with open(f"helpfiles/{filenm}.txt") as f:
-                    thefile = f.read()
-                prompt = 'Press Esc to activate help menu'
-                filedisp(stdscr, thefile, prompt)
-            except FileNotFoundError:
-                stdscr.addstr('Invalid help command\n', curses.A_BOLD)
-                with open("helpfiles/helpcommands.txt") as f:
-                    commands = f.read()
-                stdscr.addstr(commands+'\n')
-                stdscr.move(stdscr.getmaxyx()[0]-1, 0)
-
-
-def ltrtoname(filenm):
-    with open('shoginames.json') as f:
-        namedict = json.load(f)
-    if filenm.lower() in namedict:
-        if filenm.islower():
-            filenm = namedict[filenm]
-        elif filenm.isupper():
-            filenm = '+'+namedict[filenm.lower()]
-    return filenm
-
-
-def setpos(stdscr):
-    theboard = board()
-    todict = {}
-    while True:
-        loc = getinput(stdscr, 'Choose location\n')
-        loc = loc.strip()
-        if loc == 'done':
-            stdscr.addstr('Board completed\n')
-            break
-        valid = inputpiece(stdscr, theboard, loc)
-        if not valid:
-            stdscr.addstr('Invalid location\n')
-            continue
-        loc = coord(loc)
-        pcstr = getinput(stdscr, 'Choose piece and color ')
-        try:
-            piecenm = piece(*pcstr)
-        except (ValueError, IndexError):
-            stdscr.addstr('Invalid piece\n')
-            continue
-        todict[loc] = piecenm
-    toreturn = board(todict)
-    return toreturn
-
-
-def toquit(stdscr):
-    while True:
-        stdscr.addstr('You are about to quit the game of Shogi\n')
-        toquit = getinput(stdscr, 'Are you sure you want to quit?', True)
-        if toquit:
-            raise PlayerExit
-        else:
-            break
-
-
-def movelistfn(stdscr, theboard):
-    movedict = {}
-    currpieces = theboard.currpcs()
-    for loc, apiece in currpieces.items():
-        movelst = []
-        dirlist = (direction(x) for x in range(8))
-        for x in dirlist:
-            tolst = apiece.validspaces(x)
-            tolst = testspcs(theboard, loc, tolst)
-            movelst += tolst
-        movedict[loc] = movelst
-    filestr = ''
-    for loc, piece in currpieces.items():
-        filestr += f"{repr(piece)} at {loc}:\n"
-        toprint = (str(x) for x in movedict[loc])
-        filestr += f"    {', '.join(toprint)}\n"
-    filestr = filestr.strip()
-    prompt = "Press Esc to return to game"
-    filedisp(stdscr, filestr, prompt)
-
-
-def testspcs(theboard, pieceloc, spacelist):
-    toreturn = []
-    for relloc in spacelist:
-        try:
-            absloc = pieceloc+relloc
-            movecheck2(theboard, (pieceloc, absloc))
-        except (TypeError, ValueError, IllegalMove):
-            continue
-        else:
-            toreturn.append(absloc)
-    return toreturn
-
-
-def filedisp(stdscr, filetxt, prompt):
-    maxy, maxx = stdscr.getmaxyx()
-    filelis = filetxt.split('\n')
-    filelist = []
-    for line in filelis:
-        if len(line) > maxx:
-            filelist.append(line[:maxx-1])
-            filelist.append(line[maxx-1:])
-        else:
-            filelist.append(line)
-    stdscr.clear()
-    stdscr.move(0, 0)
-    stdscr.addstr('\n'.join(filelist[:maxy-1]))
-    topln = 0
-    while True:
-        stdscr.move(maxy-1, 0)
-        stdscr.clrtoeol()
-        stdscr.addstr(prompt)
-        stdscr.move(maxy-1, 0)
-        keynm = stdscr.getch()
-        if keynm == curses.KEY_UP:
-            if topln > 0:
-                topln -= 1
-        elif keynm == curses.KEY_DOWN:
-            if topln <= len(filelist)-maxy+1:
-                topln += 1
-        elif keynm in (67, 27):
-            break
-        stdscr.clear()
-        stdscr.move(0, 0)
-        stdscr.addstr('\n'.join(filelist[topln:maxy+topln-1]))
-        stdscr.refresh()
-
-
-def main(stdscr):
-    import os
-    import sys
-    curses.nonl()
-    while True:
-        try:
-            stdscr.clear()
-            playgame(stdscr)
-            stdscr.addstr('Would you like to play again? ')
-            again = stdscr.getkey()
-            if not again.startswith('y'):
-                break
-        except PlayerExit:
-            break
-
-
-def getinput(stdscr, msg, yn=False):
-    if yn:
-        msg += ' (y/n)\n'
-        stdscr.addstr(msg)
-        currloc = stdscr.getyx()
-        while True:
-            stdscr.move(*currloc)
-            toreturn = stdscr.getkey()
-            if toreturn == 'y':
-                return True
-            elif toreturn == 'n':
-                return False
-    else:
-        stdscr.addstr(msg)
-        currloc = stdscr.getyx()
-        curses.echo()
-        toreturn = b''
-        while toreturn == b'':
-            stdscr.move(*currloc)
-            toreturn = stdscr.getstr()
-        curses.noecho()
-        toreturn = str(toreturn.decode("utf-8"))
-        return toreturn
-
-
-def start():
-    curses.wrapper(main)
-
-
-if __name__ == "__main__":
-    curses.wrapper(main)
+        raise OtherInput(pieceloc)
