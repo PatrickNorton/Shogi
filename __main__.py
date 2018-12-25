@@ -50,12 +50,18 @@ def main(input_gen, window):
             continue
         except Shogi.OtherInput as e:
             pieceloc = e.args[0]
-            Shogitxt.otherconditions(
-                input_gen, window, todisp, theboard, pieceloc
-                )
-        except Shogi.OtherMove:
-            theboard.currplyr = theboard.currplyr.other()
-            continue
+            try:
+                Shogitxt.otherconditions(
+                    input_gen, window, todisp, theboard, pieceloc
+                    )
+            except Shogiclasses.IllegalMove:
+                var = int(str(e))
+                if var:
+                    errstr = f"Error: {errorlist[var]}"
+                    continue
+            except Shogi.OtherMove:
+                theboard.currplyr = theboard.currplyr.other()
+                continue
         theboard.move(*theboard.nextmove)
         moveloc = theboard.nextmove[1]
         promote = theboard.canpromote(moveloc)
