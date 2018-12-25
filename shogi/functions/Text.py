@@ -268,14 +268,14 @@ def getfile(filenm):
         if isinstance(value, dict):
             filedict['pieces'][promkey] = filedict['pieces'][key]['promoted']
             filedict['pieces'][key] = filedict['pieces'][key]['unpromoted']
-    flatten_dict(filedict)
+    _flatten_dict(filedict)
 
 
-def flatten_dict(d):
+def _flatten_dict(d):
     def items():
         for key, value in d.items():
             if isinstance(value, dict):
-                for subkey, subvalue in flatten_dict(value).items():
+                for subkey, subvalue in _flatten_dict(value).items():
                     yield key + "." + subkey, subvalue
             else:
                 yield key, value
