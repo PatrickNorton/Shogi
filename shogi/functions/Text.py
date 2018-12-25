@@ -2,6 +2,7 @@ from shogi import functions
 from shogi import classes
 import json
 import curtsies
+import os
 
 
 def otherconditions(input_gen, window, todisp, theboard, var):
@@ -84,8 +85,14 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
             try:
-                with _openhelp(f"{filenm}.txt") as f:
-                    thefile = f.read()
+                direc = os.path.dirname(__file__)
+                filepath = os.path.join(direc, '../helpfiles/pieces')
+                if f'{filenm}.txt' in os.listdir(filepath):
+                    with _openhelp(f"pieces/{filenm}.txt") as f:
+                        thefile = f.read()
+                else:
+                    with _openhelp(f"{filenm}.txt") as f:
+                        thefile = f.read()
                 prompt = 'Press Esc to activate help menu'
                 todisp = filedisp(input_gen, window, prompt, filetxt)
             except FileNotFoundError:
@@ -322,5 +329,10 @@ def _opendata(filenm):
 def _openhelp(filenm):
     import os
     cwd = os.path.dirname(__file__)
-    filepath = os.path.join(cwd, f'../helpfiles{filenm}')
-    return open(filepath)
+    filepath = os.path.join(cwd, f'../helpfiles/{filenm}')
+    piecepath = os.path.join(cwd, '../helpfiles/pieces')
+    if f'{filenm}.txt' in os.listdir(piecepath):
+        piecepath = os.path.join(piecepath, f'{filenm}.txt')
+        return open(piecepath)
+    else:
+        return open(filepath)
