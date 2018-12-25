@@ -2,7 +2,6 @@ from numpy import sin, cos, pi, sign
 import os
 import sys
 import json
-os.chdir(sys.path[0])
 
 
 class piece:
@@ -433,13 +432,20 @@ class Shogi:
 
 class _info:
     def __init__(self):
-        with open('datafiles/moves.json') as f:
+        with _opendata('moves.json') as f:
             self.MOVEDICT = json.load(f)
-        with open('datafiles/names.json') as f:
+        with _opendata('names.json') as f:
             self.NAMEDICT = json.load(f)
-        with open('datafiles/board.json') as f:
+        with _opendata('board.json') as f:
             self.LS = json.load(f)
-        with open('datafiles/other.json') as f:
+        with _opendata('other.json') as f:
             self.PCINFO = json.load(f)
+
+
+def _opendata(filenm):
+    import os
+    cwd = os.path.dirname(__file__)
+    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
+    return open(filepath)
 
 _info = _info()
