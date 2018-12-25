@@ -52,7 +52,7 @@ def main(input_gen, window):
                 functions.otherconditions(
                     input_gen, window, todisp, theboard, pieceloc
                 )
-            except classes.IllegalMove:
+            except classes.IllegalMove as e:
                 var = int(str(e))
                 if var:
                     errstr = f"Error: {errorlist[var]}"

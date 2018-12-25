@@ -57,13 +57,14 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             return
         if filenm == 'menu':
             filenm = helpmenu(input_gen, window, theboard)
+            filenm = filenm[:-4]
         filenm = ltrtoname(filenm)
         try:
             with _openhelp(f"{filenm}.txt") as f:
                 thefile = f.read()
             prompt = 'Press Esc to return to game'
             filedisp(input_gen, window, prompt, thefile)
-        except FileNotFoundError:
+        except FileNotFoundError as f:
             toout = 'Invalid help command. Type "help" for command list.'
             print(toout)
         return
@@ -85,14 +86,8 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
             try:
-                direc = os.path.dirname(__file__)
-                filepath = os.path.join(direc, '../helpfiles/pieces')
-                if f'{filenm}.txt' in os.listdir(filepath):
-                    with _openhelp(f"pieces/{filenm}.txt") as f:
-                        thefile = f.read()
-                else:
-                    with _openhelp(f"{filenm}.txt") as f:
-                        thefile = f.read()
+                with _opendata(filenm) as f:
+                    filetxt = f.read()
                 prompt = 'Press Esc to activate help menu'
                 todisp = filedisp(input_gen, window, prompt, filetxt)
             except FileNotFoundError:
@@ -212,6 +207,9 @@ def getinput(input_gen, window, todisp):
         elif c == '<BACKSPACE>':
             todisp[-1] = todisp[-1][:-1]
             toreturn = toreturn[:-1]
+        elif c == '<SPACE>':
+            todisp[-1] += ' '
+            toreturn += ' '
         elif c.startswith('<'):
             continue
         elif len(c) > 1:
@@ -331,8 +329,8 @@ def _openhelp(filenm):
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../helpfiles/{filenm}')
     piecepath = os.path.join(cwd, '../helpfiles/pieces')
-    if f'{filenm}.txt' in os.listdir(piecepath):
-        piecepath = os.path.join(piecepath, f'{filenm}.txt')
+    if filenm in os.listdir(piecepath):
+        piecepath = os.path.join(piecepath, filenm)
         return open(piecepath)
     else:
         return open(filepath)
