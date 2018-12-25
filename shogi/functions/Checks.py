@@ -1,6 +1,18 @@
 from shogi import classes
 from itertools import product
 
+__all__ = [
+    "piececheck",
+    "movecheck",
+    "movecheck2",
+    "obscheck",
+    "checkcheck",
+    "checkcheck2",
+    "kingcheck",
+    "matecheck",
+    "inputpiece"
+]
+
 
 class PlayerExit(Exception):
     pass
