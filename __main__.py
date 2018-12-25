@@ -1,19 +1,19 @@
 from curtsies import FullscreenWindow, Input, fsarray
 from curtsies.fmtfuncs import bold
 from curtsies.events import PasteEvent
-from shogi import Shogi
-from shogi import Shogiclasses
-from shogi import Shogitxt
+from shogi import Checks
+from shogi import Classes
+from shogi import Text
 import json
 
 
 def main(input_gen, window):
-    theboard = Shogiclasses.board()
+    theboard = Classes.board()
     game = True
     debug = False
     errstr = ''
     if debug:
-        theboard = Shogitxt.setpos(input_gen, window)
+        theboard = Text.setpos(input_gen, window)
     with open('datafiles/errors.json') as etxt:
         errorlist = json.load(etxt)
     while game:
@@ -27,39 +27,39 @@ def main(input_gen, window):
         todisp.append('Enter piece location')
         todisp.append(': ')
         try:
-            pieceloc = Shogitxt.getinput(input_gen, window, todisp)
-            pieceloc = Shogi.piececheck(theboard, pieceloc)
+            pieceloc = Text.getinput(input_gen, window, todisp)
+            pieceloc = Checks.piececheck(theboard, pieceloc)
             todisp = maindisp[:]
             astr = f"The piece is a {repr(theboard[pieceloc])} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
-            moveloc = Shogitxt.getinput(input_gen, window, todisp)
-            coords = Shogi.movecheck(theboard, pieceloc, moveloc)
-            Shogi.movecheck2(theboard, coords)
+            moveloc = Text.getinput(input_gen, window, todisp)
+            coords = Checks.movecheck(theboard, pieceloc, moveloc)
+            Checks.movecheck2(theboard, coords)
             theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
-            ccvars = Shogi.checkcheck(*tocc)
+            ccvars = Checks.checkcheck(*tocc)
             check = ccvars[0]
             if check:
-                raise Shogiclasses.IllegalMove(6)
-        except Shogiclasses.IllegalMove as e:
+                raise Classes.IllegalMove(6)
+        except Classes.IllegalMove as e:
             var = int(str(e))
             if var:
                 errstr = f"Error: {errorlist[var]}"
             continue
-        except Shogi.OtherInput as e:
+        except Checks.OtherInput as e:
             pieceloc = e.args[0]
             try:
-                Shogitxt.otherconditions(
+                Text.otherconditions(
                     input_gen, window, todisp, theboard, pieceloc
                     )
-            except Shogiclasses.IllegalMove:
+            except Classes.IllegalMove:
                 var = int(str(e))
                 if var:
                     errstr = f"Error: {errorlist[var]}"
                     continue
-            except Shogi.OtherMove:
+            except Checks.OtherMove:
                 theboard.currplyr = theboard.currplyr.other()
                 continue
         theboard.move(*theboard.nextmove)
@@ -72,15 +72,15 @@ def main(input_gen, window):
                 theboard.promote(moveloc)
             else:
                 todisp.append('Promote this piece? ')
-                topromote = Shogitxt.yninput(input_gen, window, todisp)
+                topromote = Text.yninput(input_gen, window, todisp)
                 if topromote:
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other()
-        ccvars = Shogi.checkcheck(theboard, theboard.lastmove, clr)
+        ccvars = Checks.checkcheck(theboard, theboard.lastmove, clr)
         check, kingpos, checklist = ccvars
         if check and game:
-            mate = Shogi.matecheck(theboard, kingpos, checklist)
+            mate = Checks.matecheck(theboard, kingpos, checklist)
             game = not mate
             if mate:
                 print(theboard)
@@ -97,5 +97,5 @@ try:
     with Input() as input_gen:
         with FullscreenWindow() as window:
             main(input_gen, window)
-except Shogi.PlayerExit:
+except Checks.PlayerExit:
     pass
