@@ -1,14 +1,13 @@
 {
     "pieces": {
-        "none": "helpfiles/none.txt",
-        "pawn": "helpfiles/pawn.txt",
-        "lance": "helpfiles/lance.txt",
-        "knight": "helpfiles/knight.txt",
-        "silver general": "helpfiles/silver general.txt",
-        "gold general": "helpfiles/gold general.txt",
-        "bishop": "helpfiles/bishop.txt",
-        "rook": "helpfiles/rook.txt",
-        "king": "helpfiles/king.txt"
+        "pawn": "helpfiles/pieces/pawn.txt",
+        "lance": "helpfiles/pieces/lance.txt",
+        "knight": "helpfiles/pieces/knight.txt",
+        "silver general": "helpfiles/pieces/silver general.txt",
+        "gold general": "helpfiles/pieces/gold general.txt",
+        "bishop": "helpfiles/pieces/bishop.txt",
+        "rook": "helpfiles/pieces/rook.txt",
+        "king": "helpfiles/pieces/king.txt"
     },
     "moves": "helpfiles/moves.txt",
     "errors": "helpfiles/errors.txt",
