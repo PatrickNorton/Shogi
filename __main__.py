@@ -1,27 +1,41 @@
-from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit import print_formatted_text as print
+from curtsies import FullscreenWindow, Input, fsarray
+from curtsies.fmtfuncs import bold
+from curtsies.events import PasteEvent
 import Shogi
 import Shogiclasses
+import Shogitxt
 import json
-def main(session):
+
+
+def main(input_gen, window):
     theboard = Shogiclasses.board()
     game = True
     debug = False
     errstr = ''
     if debug:
-        theboard = Shogi.setpos(session)
+        theboard = Shogitxt.setpos(input_gen, window)
     with open('datafiles/errors.json') as etxt:
         errorlist = json.load(etxt)
     while game:
+        todisp = []
         if errstr:
-            print('<b>Error: '+errstr+'</b>')
+            todisp.append(bold('Error: '+errstr))
             errstr = ''
-        print(str(theboard))
-        print(f"{repr(theboard.currplyr)}'s turn")
+        todisp += str(theboard).split('\n')
+        todisp.append(f"{repr(theboard.currplyr)}'s turn")
+        maindisp = todisp[:]
+        todisp.append('Enter piece location')
+        todisp.append(': ')
         try:
-            pieceloc = Shogi.piececheck(session, theboard)
-            coords = Shogi.movecheck(session, theboard, pieceloc)
+            pieceloc = Shogitxt.getinput(input_gen, window, todisp)
+            pieceloc = Shogi.piececheck(theboard, pieceloc)
+            todisp = maindisp[:]
+            astr = f"The piece is a {repr(theboard[pieceloc])} at {pieceloc}."
+            todisp.append(astr)
+            todisp.append('Enter location to move piece to')
+            todisp.append(': ')
+            moveloc = Shogitxt.getinput(input_gen, window, todisp)
+            coords = Shogi.movecheck(theboard, pieceloc, moveloc)
             Shogi.movecheck2(theboard, coords)
             theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
@@ -34,6 +48,11 @@ def main(session):
             if var:
                 errstr = f"Error: {errorlist[var]}"
             continue
+        except Shogi.OtherInput as e:
+            pieceloc = e.args[0]
+            Shogitxt.otherconditions(
+                input_gen, window, todisp, theboard, pieceloc
+                )
         except Shogi.OtherMove:
             theboard.currplyr = theboard.currplyr.other()
             continue
@@ -46,8 +65,8 @@ def main(session):
             if theboard.autopromote(moveloc):
                 theboard.promote(moveloc)
             else:
-                topromote = session.prompt('Promote this piece? ')
-                topromote = topromote.startswith('y')
+                todisp.append('Promote this piece? ')
+                topromote = Shogitxt.yninput(input_gen, window, todisp)
                 if topromote:
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
@@ -67,5 +86,8 @@ def main(session):
         theboard.currplyr = theboard.currplyr.other()
 
 
-session = PromptSession()
-main(session)
+
+
+with Input() as input_gen:
+    with FullscreenWindow() as window:
+        main(input_gen, window)

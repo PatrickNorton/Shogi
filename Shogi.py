@@ -14,27 +14,24 @@ class OtherMove(Exception):
     pass
 
 
-def piececheck(session, theboard):
-    validpiece = False
-    while not validpiece:
-        pieceloc = session.prompt('Enter piece location\n: ')
-        validpiece = inputpiece(session, theboard, pieceloc)
-        if not validpiece:
-            raise IllegalMove(11)
+class OtherInput(Exception):
+    pass
+
+
+def piececheck(theboard, pieceloc):
+    validpiece = inputpiece(theboard, pieceloc)
+    if not validpiece:
+        raise IllegalMove(11)
     pieceloc = coord(pieceloc)
     if theboard[pieceloc].COLOR != theboard.currplyr:
         raise IllegalMove(5)
     return pieceloc
 
 
-def movecheck(session, theboard, current):
-    validpiece = False
-    while not validpiece:
-        print(f"The piece is a {repr(theboard[current])} at {current}.")
-        moveloc = session.prompt('Enter location to move piece to\n: ')
-        validpiece = inputpiece(session, theboard, moveloc)
-        if not validpiece:
-            raise IllegalMove(11)
+def movecheck(theboard, current, moveloc):
+    validpiece = inputpiece(theboard, moveloc)
+    if not validpiece:
+        raise IllegalMove(11)
     moveloc = coord(moveloc)
     return (current, moveloc)
 
@@ -183,177 +180,9 @@ def matecheck(theboard, kingpos, checklist):
     return True
 
 
-def inputpiece(session, theboard, pieceloc):
+def inputpiece(theboard, pieceloc):
     try:
         pieceloc = coord(pieceloc)
         return True
     except (ValueError, IndexError):
-        isother = otherconditions(session, theboard, pieceloc)
-        if isother:
-            raise OtherMove
-        else:
-            return False
-
-
-def otherconditions(session, theboard, var):
-    if var == 'drop':
-        droppiece(session, theboard)
-        return True
-    if var == 'quit':
-        toquit(session)
-        raise IllegalMove(0)
-    if var == 'help':
-        helpdesk(session, theboard)
-        raise IllegalMove(0)
-    if var[:4] == 'help':
-        filenm = var[4:]
-        filenm = filenm.strip()
-        helpdesk(session, theboard, filenm)
-        raise IllegalMove(0)
-
-
-def droppiece(session, theboard):
-    if not theboard.CAPTURED[theboard.currplyr]:
-        raise IllegalMove(7)
-    moved = session.prompt('Enter piece name to put in play\n> ')
-    if moved.startswith('k'):
-        moved = 'n'
-    try:
-        thepiece = piece(moved[0], theboard.currplyr)
-        if thepiece in theboard.CAPTURED[theboard.currplyr]:
-            moveto = session.prompt('Enter location to place piece\n: ')
-            if inputpiece(session, theboard, moveto):
-                moveto = coord(moveto)
-                theboard.putinplay(thepiece, moveto)
-        else:
-            raise IllegalMove(10)
-    except ValueError:
-        pass
-
-
-def helpdesk(session, theboard, filenm=None):
-    with open('shogihelp.txt') as helpf:
-        filetxt = helpf.read()
-    if filenm is not None:
-        if filenm == 'moves':
-            movelistfn(session, theboard)
-            return
-        filenm = ltrtoname(filenm)
-        try:
-            with open(f"helpfiles/{filenm}.txt") as f:
-                thefile = f.read()
-            prompt = 'Press Esc to return to game'
-            print(thefile)
-            session.prompt(prompt)
-        except FileNotFoundError:
-            toout = 'Invalid help command. Type "help" for command list.\n'
-            print(toout)
-        return
-    prompt = 'Press Esc to activate help menu'
-    print(filetxt)
-    session.prompt(prompt)
-    while True:
-        filenm = session.prompt("help: ")
-        filenm = filenm.strip()
-        filelwr = filenm.lower()
-        if filelwr == 'exit':
-            break
-        elif filelwr == 'quit':
-            toquit(session)
-        elif filelwr == 'moves':
-            movelistfn(session, theboard)
-        else:
-            filenm = ltrtoname(filenm)
-            filenm = filenm.lower()
-            try:
-                with open(f"helpfiles/{filenm}.txt") as f:
-                    thefile = f.read()
-                prompt = 'Press Esc to activate help menu'
-                print(thefile)
-                session.prompt(prompt)
-            except FileNotFoundError:
-                print('Invalid help command\n')
-                with open("helpfiles/helpcommands.txt") as f:
-                    commands = f.read()
-                print(commands)
-
-
-def ltrtoname(filenm):
-    with open('datafiles/names.json') as f:
-        namedict = json.load(f)
-    if filenm.lower() in namedict:
-        if filenm.islower():
-            filenm = namedict[filenm]
-        elif filenm.isupper():
-            filenm = '+'+namedict[filenm.lower()]
-    return filenm
-
-
-def setpos(session):
-    theboard = board()
-    todict = {}
-    while True:
-        loc = session.prompt('Choose location')
-        loc = loc.strip()
-        if loc == 'done':
-            print('Board completed')
-            break
-        valid = inputpiece(session, theboard, loc)
-        if not valid:
-            print('Invalid location')
-            continue
-        loc = coord(loc)
-        pcstr = session.prompt('Choose piece and color ')
-        try:
-            piecenm = piece(*pcstr)
-        except (ValueError, IndexError):
-            print('Invalid piece\n')
-            continue
-        todict[loc] = piecenm
-    toreturn = board(todict)
-    return toreturn
-
-
-def toquit(session):
-    while True:
-        print('You are about to quit the game of Shogi\n')
-        toquit = session.prompt('Are you sure you want to quit?')
-        if toquit:
-            raise PlayerExit
-        else:
-            break
-
-
-def movelistfn(session, theboard):
-    movedict = {}
-    currpieces = theboard.currpcs()
-    for loc, apiece in currpieces.items():
-        movelst = []
-        dirlist = (direction(x) for x in range(8))
-        for x in dirlist:
-            tolst = apiece.validspaces(x)
-            tolst = testspcs(theboard, loc, tolst)
-            movelst += tolst
-        movedict[loc] = movelst
-    filestr = ''
-    for loc, piece in currpieces.items():
-        filestr += f"{repr(piece)} at {loc}:\n"
-        toprint = (str(x) for x in movedict[loc])
-        filestr += f"    {', '.join(toprint)}\n"
-    filestr = filestr.strip()
-    prompt = "Press Esc to return to game"
-    print(filestr)
-    session.prompt(prompt)
-
-
-def testspcs(theboard, pieceloc, spacelist):
-    toreturn = []
-    for relloc in spacelist:
-        try:
-            absloc = pieceloc+relloc
-            movecheck2(theboard, (pieceloc, absloc))
-        except (TypeError, ValueError, IllegalMove):
-            continue
-        else:
-            toreturn.append(absloc)
-    return toreturn
+        raise OtherInput(pieceloc)
