@@ -1,18 +1,35 @@
 {
     "pieces": {
-        "pawn": "helpfiles/pieces/pawn.txt",
-        "lance": "helpfiles/pieces/lance.txt",
-        "knight": "helpfiles/pieces/knight.txt",
-        "silver general": "helpfiles/pieces/silver general.txt",
-        "gold general": "helpfiles/pieces/gold general.txt",
-        "bishop": "helpfiles/pieces/bishop.txt",
-        "rook": "helpfiles/pieces/rook.txt",
-        "king": "helpfiles/pieces/king.txt"
+        "rook": {
+            "unpromoted": "pieces/rook.txt",
+            "promoted": "pieces/+rook.txt"
+        },
+        "knight": {
+            "unpromoted": "pieces/knight.txt",
+            "promoted": "pieces/+knight.txt"
+        },
+        "king": "pieces/king.txt",
+        "lance": {
+            "unpromoted": "pieces/lance.txt",
+            "promoted": "pieces/+lance.txt"
+        },
+        "silver general": {
+            "unpromoted": "pieces/silver general.txt",
+            "promoted": "pieces/+silver general.txt"
+        },
+        "bishop": {
+            "unpromoted": "pieces/bishop.txt",
+            "promoted": "pieces/+bishop.txt"
+        },
+        "pawn": {
+            "unpromoted": "pieces/pawn.txt",
+            "promoted": "pieces/+pawn.txt"
+        }
     },
-    "moves": "helpfiles/moves.txt",
-    "errors": "helpfiles/errors.txt",
-    "other": "helpfiles/other.txt",
-    "board": "helpfiles/board.txt",
-    "helpindex": "helpfiles/helpindex.txt",
-    "names": "helpfiles/names.txt"
+    "rules": "rules.txt",
+    "pi": "pieces",
+    "prompt": "prompt.txt",
+    "commands": "commands.txt",
+    "helpcommands": "helpcommands.txt",
+    "gold general": "gold general.txt"
 }
