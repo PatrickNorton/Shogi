@@ -12,3 +12,14 @@ class DemotedException(Exception):
 
 class IllegalMove(Exception):
     pass
+
+class PlayerExit(Exception):
+    pass
+
+
+class OtherMove(Exception):
+    pass
+
+
+class OtherInput(Exception):
+    pass
