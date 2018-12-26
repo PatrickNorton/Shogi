@@ -1,15 +1,16 @@
 import json
-from .movelistfn import movelistfn
-from .helpmenu import helpmenu
-from .filedisp import filedisp
+from .printers import filedisp
 from shogi import classes
 from .inputfns import getinput
 from .toquit import toquit
 from .privates import _openhelp, _opendata
+from .testpcs import testspcs
 
 __all__ = [
     "helpdesk",
-    "ltrtoname"
+    "ltrtoname",
+    "helpmenu",
+    "movelistfn"
 ]
 
 def helpdesk(input_gen, window, theboard, filenm=None):
@@ -49,6 +50,9 @@ def helpdesk(input_gen, window, theboard, filenm=None):
         elif filelwr == 'moves':
             movelistfn(input_gen, window, theboard)
         else:
+            if filelwr == 'menu':
+                filenm = helpmenu(input_gen, window, theboard)
+                filenm = filenm[:-4]
             filenm = ltrtoname(filenm)
             filenm = filenm.lower()
             try:
@@ -73,3 +77,46 @@ def ltrtoname(filenm):
         elif filenm.isupper():
             filenm = '+'+namedict[filenm.lower()]
     return filenm
+
+
+def helpmenu(input_gen, window, theboard):
+    with _opendata('helpindex.json') as f:
+        index = json.load(f)
+    while True:
+        todisp = list(index)
+        todisp.extend(['','',''])
+        todisp.append('menu: ')
+        window.render_to_terminal(todisp)
+        filenm = getinput(input_gen, window, todisp)
+        try:
+            filenm = int(filenm)
+            filenm = todisp.index(filenm)
+        except ValueError:
+            pass
+        filepath = index[filenm]
+        if isinstance(filepath, str):
+            break
+        elif isinstance(filepath, dict):
+            index = filepath
+    return filepath
+
+
+def movelistfn(input_gen, window, theboard):
+    movedict = {}
+    currpieces = theboard.currpcs()
+    for loc, apiece in currpieces.items():
+        movelst = []
+        dirlist = (classes.direction(x) for x in range(8))
+        for x in dirlist:
+            tolst = apiece.validspaces(x)
+            tolst = testspcs(theboard, loc, tolst)
+            movelst += tolst
+        movedict[loc] = movelst
+    filestr = ''
+    for loc, piece in currpieces.items():
+        filestr += f"{repr(piece)} at {loc}:\n"
+        toprint = (str(x) for x in movedict[loc])
+        filestr += f"    {', '.join(toprint)}\n"
+    filestr = filestr.strip()
+    prompt = "Press Esc to return to game"
+    filedisp(input_gen, window, prompt, filestr)

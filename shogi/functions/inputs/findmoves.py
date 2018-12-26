@@ -1,7 +1,8 @@
+from shogi import classes
 from shogi import functions
 
 __all__ = [
-    "testpcs"
+    "testspcs"
 ]
 
 def testspcs(theboard, pieceloc, spacelist):
@@ -10,7 +11,7 @@ def testspcs(theboard, pieceloc, spacelist):
         try:
             absloc = pieceloc+relloc
             functions.movecheck2(theboard, (pieceloc, absloc))
-        except (TypeError, ValueError, functions.IllegalMove):
+        except (TypeError, ValueError, classes.IllegalMove):
             continue
         else:
             toreturn.append(absloc)

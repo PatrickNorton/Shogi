@@ -1,3 +1,13 @@
+import json
+
+__all__ = [
+    "_flatten_dict",
+    "_opendata",
+    "_openhelp",
+    "_geterrors",
+    "_getfile"
+]
+
 def _flatten_dict(d):
     def items():
         for key, value in d.items():
@@ -27,3 +37,19 @@ def _openhelp(filenm):
         return open(piecepath)
     else:
         return open(filepath)
+
+
+def _geterrors():
+    with _opendata('errors.json') as f:
+        return json.load(f)
+
+
+def _getfile(filenm):
+    with _opendata('helpindex.json') as f:
+        filedict = json.load(f)
+    for key, value in filedict['pieces'].items():
+        promkey = '+'+key
+        if isinstance(value, dict):
+            filedict['pieces'][promkey] = filedict['pieces'][key]['promoted']
+            filedict['pieces'][key] = filedict['pieces'][key]['unpromoted']
+    _flatten_dict(filedict)

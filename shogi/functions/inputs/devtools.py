@@ -1,7 +1,7 @@
 from shogi import classes
 from .inputfns import getinput
 from shogi import functions
-from .otherconditions import otherconditions
+from .oddinputs import otherconditions
 
 __all__ = [
     "setpos"
