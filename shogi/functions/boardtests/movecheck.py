@@ -5,7 +5,8 @@ from .inputpiece import inputpiece
 __all__ = [
     "movecheck",
     "movecheck2",
-    "obscheck"
+    "obscheck",
+    "kingcheck"
 ]
 
 def movecheck(theboard, current, moveloc):
