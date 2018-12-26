@@ -1,6 +1,6 @@
 from itertools import product
 from shogi import classes
-from .inputpiece import inputpiece
+from .goodinput import inputpiece
 
 __all__ = [
     "movecheck",

@@ -1,6 +1,6 @@
 from itertools import product
 from shogi import classes
-from .movecheck import movecheck2
+from .move import movecheck2
 
 __all__ = [
     "matecheck"

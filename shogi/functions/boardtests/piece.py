@@ -1,5 +1,5 @@
 from shogi import classes
-from .inputpiece import inputpiece
+from .piece import inputpiece
 
 __all__ = [
     "piececheck"
