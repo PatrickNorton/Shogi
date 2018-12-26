@@ -1,9 +1,8 @@
 from .locations import coord
 from .pieces import piece, nopiece
-from .pieceattrs import color
+from .pieceattrs import color, ptype
 from .privates import _info
 from .exceptions import PromotedException, DemotedException, IllegalMove
-from .ptypes import ptype
 from .rows import row
 
 _info = _info()

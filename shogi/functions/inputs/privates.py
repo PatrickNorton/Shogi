@@ -23,7 +23,7 @@ def _flatten_dict(d):
 def _opendata(filenm):
     import os
     cwd = os.path.dirname(__file__)
-    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
+    filepath = os.path.join(cwd, f'../../datafiles/{filenm}')
     return open(filepath)
 
 

@@ -2,9 +2,9 @@ import json
 from .printers import filedisp
 from shogi import classes
 from .inputfns import getinput
-from .toquit import toquit
+from .quitting import toquit
 from .privates import _openhelp, _opendata
-from .testpcs import testspcs
+from .findmoves import testspcs
 
 __all__ = [
     "helpdesk",
