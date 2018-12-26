@@ -1,4 +1,11 @@
-from .Classes import *
+from .board import *
+from .color import *
+from .coord import *
+from .exceptions import *
+from .moves import *
+from .piece import *
+from .ptype import *
+from .row import *
 __all__ = [
     "piece",
     "nopiece",
@@ -12,6 +19,5 @@ __all__ = [
     "DemotedException",
     "board",
     "IllegalMove",
-    "row",
-    "Shogi"
+    "row"
 ]
