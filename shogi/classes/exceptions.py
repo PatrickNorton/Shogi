@@ -1,3 +1,13 @@
+__all__ = [
+    "NotPromotableException",
+    "PromotedException",
+    "DemotedException",
+    "IllegalMove",
+    "PlayerExit",
+    "OtherMove",
+    "OtherInput"
+]
+
 class NotPromotableException(Exception):
     pass
 
@@ -12,6 +22,7 @@ class DemotedException(Exception):
 
 class IllegalMove(Exception):
     pass
+
 
 class PlayerExit(Exception):
     pass

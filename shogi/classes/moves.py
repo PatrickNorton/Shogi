@@ -4,6 +4,10 @@ from .privates import _info
 
 _info = _info()
 
+__all__ = [
+    "moves"
+]
+
 class moves:
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)

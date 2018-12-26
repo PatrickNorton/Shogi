@@ -1,3 +1,7 @@
+__all__ = [
+    "color"
+]
+
 class color:
     def __init__(self, turnnum):
         if isinstance(turnnum, int):

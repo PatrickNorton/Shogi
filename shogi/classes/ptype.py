@@ -1,3 +1,11 @@
+from .privates import _info
+
+_info = _info()
+
+__all__ = [
+    "ptype"
+]
+
 class ptype:
     def __init__(self, typ):
         typ = str(typ)

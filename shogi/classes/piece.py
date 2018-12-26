@@ -7,6 +7,11 @@ from .privates import _info
 
 _info = _info()
 
+__all__ = [
+    "piece",
+    "nopiece"
+]
+
 class piece:
     def __init__(self, typ, clr):
         self.PTYPE = ptype(typ)
