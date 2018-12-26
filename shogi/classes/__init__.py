@@ -19,5 +19,8 @@ __all__ = [
     "DemotedException",
     "board",
     "IllegalMove",
-    "row"
+    "row",
+    "PlayerExit",
+    "OtherMove",
+    "OtherInput"
 ]
