@@ -1,4 +1,4 @@
-from .coord import coord, direction
+from .locations import coord, direction
 
 class row:
     def __init__(self, loc, vect):

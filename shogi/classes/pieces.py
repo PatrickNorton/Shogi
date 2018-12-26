@@ -1,7 +1,5 @@
-from .ptype import ptype
-from .moves import moves
-from .color import color
-from .coord import coord
+from .pieceattrs import moves, color, ptype
+from .locations import coord
 from .exceptions import NotPromotableException, PromotedException, DemotedException
 from .privates import _info
 

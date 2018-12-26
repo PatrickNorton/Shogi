@@ -1,10 +1,10 @@
-from .coord import coord
-from .piece import piece, nopiece
-from .color import color
+from .locations import coord
+from .pieces import piece, nopiece
+from .pieceattrs import color
 from .privates import _info
 from .exceptions import PromotedException, DemotedException, IllegalMove
-from .ptype import ptype
-from .row import row
+from .ptypes import ptype
+from .rows import row
 
 _info = _info()
 
