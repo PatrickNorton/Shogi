@@ -35,7 +35,7 @@ class board:
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
         captostr = [str(x) for x in self.CAPTURED[color(0)]]
-        toreturn += f"White pieces: {' '.join(captostr)}\n\n"
+        toreturn += f"White pieces: {' '.join(captostr)}\n"
         return toreturn
 
     def __iter__(self):
