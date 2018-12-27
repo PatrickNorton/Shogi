@@ -1,7 +1,7 @@
+from .information import info
 from .locations import coord
 from .pieces import piece, nopiece
 from .pieceattrs import color, ptype
-from .privates import _info
 from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import row
 
@@ -12,7 +12,7 @@ __all__ = [
 class board:
     def __init__(self, pieces=None):
         if pieces is None:
-            self.PIECES = {coord(x): piece(*y) for x, y in _info.LS.items()}
+            self.PIECES = {coord(x): piece(*y) for x, y in info.LS.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}

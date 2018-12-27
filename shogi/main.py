@@ -13,7 +13,7 @@ def main(input_gen, window):
     errstr = ''
     if debug:
         theboard = functions.setpos(input_gen, window)
-    errorlist = functions.inputs._geterrors()
+    errorlist = classes.info.ERRORS
     while game:
         todisp = []
         if errstr:

@@ -80,8 +80,7 @@ def ltrtoname(filenm):
 
 
 def helpmenu(input_gen, window, theboard):
-    with _opendata('helpindex.json') as f:
-        index = json.load(f)
+    index = classes.info.HELPINDEX
     while True:
         todisp = list(index)
         todisp.extend(['','',''])

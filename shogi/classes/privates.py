@@ -1,7 +1,7 @@
 import json
 
 __all__ = [
-    "_info",
+    "_infocls",
     "_opendata"
 ]
 
@@ -15,6 +15,10 @@ class _infocls:
             self.LS = json.load(f)
         with _opendata('other.json') as f:
             self.PCINFO = json.load(f)
+        with _opendata('errors.json') as f:
+            self.ERRORS = json.load(f)
+        with _opendata('helpindex.json') as f:
+            self.HELPINDEX = json.load(f)
 
 
 def _opendata(filenm):
@@ -22,6 +26,3 @@ def _opendata(filenm):
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../datafiles/{filenm}')
     return open(filepath)
-
-
-_info = _infocls()

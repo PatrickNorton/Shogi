@@ -4,7 +4,6 @@ __all__ = [
     "_flatten_dict",
     "_opendata",
     "_openhelp",
-    "_geterrors",
     "_getfile"
 ]
 
@@ -37,11 +36,6 @@ def _openhelp(filenm):
         return open(piecepath)
     else:
         return open(filepath)
-
-
-def _geterrors():
-    with _opendata('errors.json') as f:
-        return json.load(f)
 
 
 def _getfile(filenm):

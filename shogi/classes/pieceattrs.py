@@ -1,5 +1,5 @@
 from .locations import direction
-from .privates import _info
+from .information import info
 
 __all__ = [
     "color",
@@ -47,7 +47,7 @@ class ptype:
     def __init__(self, typ):
         typ = str(typ)
         self.TYP = typ.lower()
-        self.NAME = _info.NAMEDICT[self.TYP]
+        self.NAME = info.NAMEDICT[self.TYP]
 
     def __str__(self): return self.TYP
 
@@ -71,7 +71,7 @@ class ptype:
 class moves:
     def __init__(self, piecenm, clr):
         piecenm = str(piecenm)
-        pcmvlist = list(_info.MOVEDICT[piecenm])
+        pcmvlist = list(info.MOVEDICT[piecenm])
         if clr == color(1):
             for y, var in enumerate(pcmvlist):
                 if var is not None:

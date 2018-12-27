@@ -1,7 +1,7 @@
 from .pieceattrs import moves, color, ptype
 from .locations import coord
 from .exceptions import NotPromotableException, PromotedException, DemotedException
-from .privates import _info
+from .information import info
 
 __all__ = [
     "piece",
@@ -20,7 +20,7 @@ class piece:
         else:
             self.prom = False
             self.PROMOTABLE = True
-        otherattrs = _info.PCINFO[str(typ)]
+        otherattrs = info.PCINFO[str(typ)]
         self.AUTOPROMOTE = otherattrs['autopromote']
 
     def __str__(self):
