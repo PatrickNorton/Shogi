@@ -1,5 +1,10 @@
 import json
 
+__all__ = [
+    "_info",
+    "_opendata"
+]
+
 class _info:
     def __init__(self):
         with _opendata('moves.json') as f:
