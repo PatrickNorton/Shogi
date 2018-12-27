@@ -17,7 +17,7 @@ def main(input_gen, window):
     while game:
         todisp = []
         if errstr:
-            todisp.append(bold('Error: '+errstr))
+            todisp.append(bold(errstr))
             errstr = ''
         todisp += str(theboard).split('\n')
         todisp.append(f"{repr(theboard.currplyr)}'s turn")
