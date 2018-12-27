@@ -7,7 +7,6 @@ __all__ = [
     "moves"
 ]
 
-_info = _info()
 
 class color:
     def __init__(self, turnnum):

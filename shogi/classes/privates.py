@@ -5,7 +5,7 @@ __all__ = [
     "_opendata"
 ]
 
-class _info:
+class _infocls:
     def __init__(self):
         with _opendata('moves.json') as f:
             self.MOVEDICT = json.load(f)
@@ -22,3 +22,6 @@ def _opendata(filenm):
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../datafiles/{filenm}')
     return open(filepath)
+
+
+_info = _infocls()

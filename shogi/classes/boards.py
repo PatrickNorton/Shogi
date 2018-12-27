@@ -5,8 +5,6 @@ from .privates import _info
 from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import row
 
-_info = _info()
-
 __all__ = [
     "board"
 ]

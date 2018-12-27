@@ -3,8 +3,6 @@ from .locations import coord
 from .exceptions import NotPromotableException, PromotedException, DemotedException
 from .privates import _info
 
-_info = _info()
-
 __all__ = [
     "piece",
     "nopiece"
