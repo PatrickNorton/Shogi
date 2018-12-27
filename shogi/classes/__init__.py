@@ -1,17 +1,6 @@
-from .Classes import *
-__all__ = [
-    "piece",
-    "nopiece",
-    "moves",
-    "color",
-    "ptype",
-    "coord",
-    "direction",
-    "NotPromotableException",
-    "PromotedException",
-    "DemotedException",
-    "board",
-    "IllegalMove",
-    "row",
-    "Shogi"
-]
+from .boards import *
+from .exceptions import *
+from .locations import *
+from .pieceattrs import *
+from .pieces import *
+from .rows import *

@@ -1,8 +1,8 @@
 from curtsies import FullscreenWindow, Input, fsarray
 from curtsies.fmtfuncs import bold
 from curtsies.events import PasteEvent
-from shogi import functions
-from shogi import classes
+from . import functions
+from . import classes
 import json
 
 
@@ -13,7 +13,7 @@ def main(input_gen, window):
     errstr = ''
     if debug:
         theboard = functions.setpos(input_gen, window)
-    errorlist = functions.geterrors()
+    errorlist = functions.inputs._geterrors()
     while game:
         todisp = []
         if errstr:
@@ -95,5 +95,5 @@ def playgame():
         with Input() as input_gen:
             with FullscreenWindow() as window:
                 main(input_gen, window)
-    except functions.PlayerExit:
+    except classes.PlayerExit:
         pass

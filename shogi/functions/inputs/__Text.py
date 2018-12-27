@@ -4,6 +4,23 @@ import json
 import curtsies
 import os
 
+__all__ = [
+    "otherconditions",
+    "droppiece",
+    "helpdesk",
+    "ltrtoname",
+    "setpos",
+    "toquit",
+    "movelistfn",
+    "testspcs",
+    "getinput",
+    "yninput",
+    "filedisp",
+    "getfile",
+    "helpmenu",
+    "geterrors"
+]
+
 
 def otherconditions(input_gen, window, todisp, theboard, var):
     if var == 'drop':
