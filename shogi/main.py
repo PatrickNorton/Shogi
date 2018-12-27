@@ -46,7 +46,7 @@ def main(input_gen, window):
             if var:
                 errstr = f"Error: {errorlist[var]}"
             continue
-        except functions.OtherInput as e:
+        except classes.OtherInput as e:
             pieceloc = e.args[0]
             try:
                 functions.otherconditions(
@@ -57,7 +57,7 @@ def main(input_gen, window):
                 if var:
                     errstr = f"Error: {errorlist[var]}"
                 continue
-            except functions.OtherMove:
+            except classes.OtherMove:
                 theboard.currplyr = theboard.currplyr.other()
                 continue
         theboard.move(*theboard.nextmove)
