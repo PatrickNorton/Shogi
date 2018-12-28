@@ -7,7 +7,18 @@ __all__ = [
     "setpos"
 ]
 
+
 def setpos(input_gen, window):
+    """Set up a board in mid-game.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window displayed
+
+    Returns:
+        board -- the newly set-up board
+    """
+
     theboard = classes.board()
     todict = {}
     while True:
