@@ -2,7 +2,23 @@ from numpy import sin, cos, pi, sign
 import os
 import sys
 import json
-os.chdir(sys.path[0])
+
+__all__ = [
+    "piece",
+    "nopiece",
+    "moves",
+    "color",
+    "ptype",
+    "coord",
+    "direction",
+    "NotPromotableException",
+    "PromotedException",
+    "DemotedException",
+    "board",
+    "IllegalMove",
+    "row",
+    "Shogi"
+]
 
 
 class piece:
@@ -306,9 +322,8 @@ class board:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
-        if isinstance(index, (tuple, coord)):
-            coords = coord(index)
-            toreturn = self.PIECES.get(coords, nopiece())
+        coords = coord(index)
+        toreturn = self.PIECES.get(coords, nopiece())
         return toreturn
 
     def it(self): yield from ((x, y) for x in range(9) for y in range(9))
@@ -434,13 +449,21 @@ class Shogi:
 
 class _info:
     def __init__(self):
-        with open('shogimoves.json') as f:
+        with _opendata('moves.json') as f:
             self.MOVEDICT = json.load(f)
-        with open('shoginames.json') as f:
+        with _opendata('names.json') as f:
             self.NAMEDICT = json.load(f)
-        with open('shogiboard.json') as f:
+        with _opendata('board.json') as f:
             self.LS = json.load(f)
-        with open('shogiother.json') as f:
+        with _opendata('other.json') as f:
             self.PCINFO = json.load(f)
+
+
+def _opendata(filenm):
+    import os
+    cwd = os.path.dirname(__file__)
+    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
+    return open(filepath)
+
 
 _info = _info()

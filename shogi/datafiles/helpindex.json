@@ -1,0 +1,34 @@
+{
+    "pieces": {
+        "rook": {
+            "unpromoted": "pieces/rook.txt",
+            "promoted": "pieces/+rook.txt"
+        },
+        "knight": {
+            "unpromoted": "pieces/knight.txt",
+            "promoted": "pieces/+knight.txt"
+        },
+        "king": "pieces/king.txt",
+        "lance": {
+            "unpromoted": "pieces/lance.txt",
+            "promoted": "pieces/+lance.txt"
+        },
+        "silver general": {
+            "unpromoted": "pieces/silver general.txt",
+            "promoted": "pieces/+silver general.txt"
+        },
+        "bishop": {
+            "unpromoted": "pieces/bishop.txt",
+            "promoted": "pieces/+bishop.txt"
+        },
+        "pawn": {
+            "unpromoted": "pieces/pawn.txt",
+            "promoted": "pieces/+pawn.txt"
+        },
+        "gold general": "pieces/gold general.txt"
+    },
+    "rules": "rules.txt",
+    "prompt": "prompt.txt",
+    "commands": "commands.txt",
+    "helpcommands": "helpcommands.txt"
+}
