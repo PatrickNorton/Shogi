@@ -5,7 +5,19 @@ __all__ = [
     "yninput"
 ]
 
+
 def getinput(input_gen, window, todisp):
+    """Get player input and return a string
+
+    Arguments:
+        input_gen {curtsies.Input} -- generates input
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {str} -- prompt to print before input
+
+    Returns:
+        str -- text entered by user
+    """
+
     toreturn = ''
     window.render_to_terminal(todisp)
     esccode = 0
@@ -36,6 +48,17 @@ def getinput(input_gen, window, todisp):
 
 
 def yninput(input_gen, window, todisp):
+    """Get binary (y/n) input from user.
+
+    Arguments:
+        input_gen {curtsies.Input} -- generate input
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {str} -- prompt to print before input
+
+    Returns:
+        bool -- y/n entered by user
+    """
+
     window.render_to_terminal(todisp)
     for c in input_gen:
         if c == 'y':
