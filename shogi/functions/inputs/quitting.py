@@ -4,7 +4,21 @@ __all__ = [
     "toquit"
 ]
 
+
 def toquit(input_gen, window, todisp):
+    """Check if player wants to quit.
+
+    Depreciated: use .oddinputs.toquit() instead
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {list} -- list of current screen content
+
+    Raises:
+        functions.PlayerExit -- player wishes to exit
+    """
+
     while True:
         todisp.append('You are about to quit the game of Shogi')
         todisp.append('Are you sure you want to quit?')
