@@ -9,7 +9,24 @@ __all__ = [
     "kingcheck"
 ]
 
+
 def movecheck(theboard, current, moveloc):
+    """Check if inputted piece is a valid piece
+
+    TODO: deprecate this in favor of direct inputpiece call
+
+    Arguments:
+        theboard {board} -- current board state
+        current {coord} -- position of piece to be moved
+        moveloc {str} -- input of piece to be moved
+
+    Raises:
+        classes.IllegalMove -- invalid entry
+
+    Returns:
+        tuple[coord] -- coords of movement
+    """
+
     validpiece = inputpiece(theboard, moveloc)
     if not validpiece:
         raise classes.IllegalMove(11)
@@ -18,6 +35,18 @@ def movecheck(theboard, current, moveloc):
 
 
 def movecheck2(theboard, coords):
+    """Check if piece can be moved between locations.
+
+    Arguments:
+        theboard {board} -- current board state
+        coords {tuple[coord]} -- current and new locations of piece
+
+    Raises:
+        classes.IllegalMove -- attempted zero-move of piece
+        classes.IllegalMove -- move to illegal location
+        classes.IllegalMove -- capture of own piece
+    """
+
     current, new = coords
     piece = theboard[current]
     move = new-current
@@ -38,6 +67,17 @@ def movecheck2(theboard, coords):
 
 
 def obscheck(theboard, current, move):
+    """Check if piece is obstructing move.
+
+    Arguments:
+        theboard {board} -- current board state
+        current {coord} -- current piece location
+        move {coord} -- location to move piece
+
+    Raises:
+        classes.IllegalMove -- obstruction found
+    """
+
     movedir = classes.direction(move)
     for x in range(1, max(abs(move))):
         relcoord = [x*k for k in movedir]
@@ -47,6 +87,18 @@ def obscheck(theboard, current, move):
 
 
 def kingcheck(theboard, coords):
+    """Check if king is moving into check.
+
+    Arguments:
+        theboard {board} -- current board state
+        coords {tuple[coord]} -- current and new piece location
+
+    Raises:
+        classes.IllegalMove -- attempted capture of own piece
+        classes.IllegalMove -- attempted move into check
+        classes.IllegalMove -- attempted move into check
+    """
+
     oldloc, newloc = coords
     rowlist = (classes.direction(x) for x in range(8))
     for x, dist in product(rowlist, range(9)):
