@@ -5,8 +5,22 @@ __all__ = [
     "_opendata"
 ]
 
+
 class _infocls:
+    """The class that gets all the info from json.
+
+    Properties:
+        MOVEDICT {dict} -- moves.json
+        NAMEDICT {dict} -- names.json
+        LS {dict} -- board.json
+        PCINFO {dict} -- other.json
+        ERRORS {list} -- errors.json
+        HELPINDEX {dict} -- helpindex.json
+    """
+
     def __init__(self):
+        """Initialise instance of _infocls."""
+
         with _opendata('moves.json') as f:
             self.MOVEDICT = json.load(f)
         with _opendata('names.json') as f:
@@ -22,6 +36,15 @@ class _infocls:
 
 
 def _opendata(filenm):
+    """Open data file.
+
+    Arguments:
+        filenm {str} -- name of file to be opened
+
+    Returns:
+        file -- opened file
+    """
+
     import os
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../datafiles/{filenm}')
