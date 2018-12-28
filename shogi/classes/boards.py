@@ -117,7 +117,7 @@ class board:
         piece = piece.flipsides()
         self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
-        del self.PCSBYCLR[piece.COLOR.other()][coord(new)]
+        del self.PCSBYCLR[piece.COLOR.other][coord(new)]
         if piece in self.PIECES:
             gen = [loc for loc, x in self.PIECES.items() if x == piece]
             self.INVPIECES[piece] = gen[0]
@@ -200,7 +200,7 @@ class board:
     def enemypcs(self):
         """dict: Pieces of opposing player."""
 
-        return self.PCSBYCLR[self.currplyr.other()]
+        return self.PCSBYCLR[self.currplyr.other]
 
     def playerpcs(self, player):
         """Return pieces of specific player

@@ -74,7 +74,7 @@ def main(input_gen, window):
                     errstr = f"Error: {errorlist[var]}"
                 continue
             except classes.OtherMove:
-                theboard.currplyr = theboard.currplyr.other()
+                theboard.currplyr = theboard.currplyr.other
                 continue
         theboard.move(*theboard.nextmove)
         moveloc = theboard.nextmove[1]
@@ -90,7 +90,7 @@ def main(input_gen, window):
                 if topromote:
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
-        clr = theboard.currplyr.other()
+        clr = theboard.currplyr.other
         ccvars = functions.checkcheck(theboard, theboard.lastmove, clr)
         check, kingpos, checklist = ccvars
         if check and game:
@@ -103,7 +103,7 @@ def main(input_gen, window):
                 break
             else:
                 print('Check')
-        theboard.currplyr = theboard.currplyr.other()
+        theboard.currplyr = theboard.currplyr.other
 
 
 def playgame():

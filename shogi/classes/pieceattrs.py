@@ -59,12 +59,9 @@ class color:
 
         return color(int(not self.INT))
 
+    @property
     def other(self):
-        """Get the opposite color.
-
-        Returns:
-            color -- the other color
-        """
+        """color: Opposite color from first"""
 
         return color(self.OTHER)
 
