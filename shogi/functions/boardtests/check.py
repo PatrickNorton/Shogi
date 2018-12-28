@@ -6,7 +6,25 @@ __all__ = [
     "checkcheck2"
 ]
 
+
 def checkcheck(theboard, coords, color, earlybreak=False):
+    """Find if king is in check.
+
+    Arguments:
+        theboard {board} -- current game board
+        coords {tuple[coord]} -- last move (from, to)
+        color {color} -- color of king to test
+
+    Keyword Arguments:
+        earlybreak {bool} -- break after first or second check
+            (default: {False})
+
+    Returns:
+        bool -- if king is in check
+        coord -- location of king
+        list[coord] -- list of coords attacking king
+    """
+
     oldloc, newloc = coords
     check, checklist = False, []
     toget = classes.piece('k', color)
@@ -29,6 +47,21 @@ def checkcheck(theboard, coords, color, earlybreak=False):
 
 
 def checkcheck2(theboard, coords, checklist, earlybreak=False):
+    """Test if non-moved pieces can check king.
+
+    Arguments:
+        theboard {board} -- current board
+        coords {tuple[coord]} -- last move(from, to)
+        checklist {list[coord]} -- list of pieces currently checking king
+
+    Keyword Arguments:
+        earlybreak {bool} -- break after first check (default: {False})
+
+    Returns:
+        bool -- king in check
+        list[coord] -- pieces checking king
+    """
+
     oldloc, kingpos = coords
     relcoord = kingpos-oldloc
     mvmt = abs(relcoord)
