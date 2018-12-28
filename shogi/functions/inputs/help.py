@@ -13,7 +13,22 @@ __all__ = [
     "movelistfn"
 ]
 
+
 def helpdesk(input_gen, window, theboard, filenm=None):
+    """Run help functions.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to display text
+        theboard {board} -- current state of board
+
+    Keyword Arguments:
+        filenm {str} -- name of file, if provided (default: {None})
+
+    Raises:
+        classes.IllegalMove -- return to game and continue with next turn
+    """
+
     todisp = []
     with open('shogihelp.txt') as helpf:
         filetxt = helpf.read()
@@ -69,6 +84,15 @@ def helpdesk(input_gen, window, theboard, filenm=None):
 
 
 def ltrtoname(filenm):
+    """Turn single-letter inputs into a piece name.
+
+    Arguments:
+        filenm {str} -- name inputted
+
+    Returns:
+        str -- full name of piece
+    """
+
     with _opendata('names.json') as f:
         namedict = json.load(f)
     if filenm.lower() in namedict:
@@ -80,10 +104,21 @@ def ltrtoname(filenm):
 
 
 def helpmenu(input_gen, window, theboard):
+    """Function for interactive help menu.
+
+    Arguments:
+        input_gen {curtsies.Input} -- Input generator
+        window {curtsies.FullScreenWindow} -- window on which to print
+        theboard {board} -- current state of the board
+
+    Returns:
+        str -- path of file to open
+    """
+
     index = classes.info.HELPINDEX
     while True:
         todisp = list(index)
-        todisp.extend(['','',''])
+        todisp.extend(['', '', ''])
         todisp.append('menu: ')
         window.render_to_terminal(todisp)
         filenm = getinput(input_gen, window, todisp)
@@ -101,6 +136,14 @@ def helpmenu(input_gen, window, theboard):
 
 
 def movelistfn(input_gen, window, theboard):
+    """List all possible moves for a player.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to display text
+        theboard {board} -- current gameplay board
+    """
+
     movedict = {}
     currpieces = theboard.currpcs()
     for loc, apiece in currpieces.items():
