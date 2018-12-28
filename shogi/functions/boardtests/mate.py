@@ -37,7 +37,7 @@ def matecheck(theboard, kingpos, checklist):
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
         return False
-    for loc in theboard.enemypcs():
+    for loc in theboard.enemypcs:
         try:
             movecheck2(theboard, (loc, checklist))
         except classes.IllegalMove:
@@ -45,7 +45,7 @@ def matecheck(theboard, kingpos, checklist):
         return False
     move = kingpos-checklist
     movedir = classes.direction(move)
-    for pos, z in product(theboard.enemypcs(), range(abs(max(move)))):
+    for pos, z in product(theboard.enemypcs, range(abs(max(move)))):
         newpos = z*checklist*classes.coord(movedir)
         try:
             movecheck2(theboard, (pos, newpos))

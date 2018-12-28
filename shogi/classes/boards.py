@@ -190,6 +190,7 @@ class board:
         self.PIECES[movedto] = piece
         self.INVPIECES[piece] = movedto
 
+    @property
     def currpcs(self):
         """Return pieces of current player.
 
@@ -199,6 +200,7 @@ class board:
 
         return self.PCSBYCLR[self.currplyr]
 
+    @property
     def enemypcs(self):
         """Return pieces of opposing player.
 

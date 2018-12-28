@@ -179,7 +179,7 @@ def toquit(input_gen, window, todisp):
 
 def movelistfn(input_gen, window, theboard):
     movedict = {}
-    currpieces = theboard.currpcs()
+    currpieces = theboard.currpcs
     for loc, apiece in currpieces.items():
         movelst = []
         dirlist = (classes.direction(x) for x in range(8))
