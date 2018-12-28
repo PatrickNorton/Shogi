@@ -9,7 +9,24 @@ __all__ = [
     "toquit"
 ]
 
+
 def otherconditions(input_gen, window, todisp, theboard, var):
+    """Check if string is an action, then do the action.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {list} -- what's currrently on screen
+        theboard {board} -- current board setup
+        var {str} -- text inputted by user
+
+    Raises:
+        classes.IllegalMove -- Restart move with current player
+
+    Returns:
+        bool -- if a valid turn was held
+    """
+
     if var == 'drop':
         droppiece(input_gen, window, todisp, theboard)
         return True
@@ -24,9 +41,23 @@ def otherconditions(input_gen, window, todisp, theboard, var):
         filenm = filenm.strip()
         helpdesk(input_gen, window, theboard, filenm)
         raise classes.IllegalMove(0)
+    return False
 
 
 def droppiece(input_gen, window, todisp, theboard):
+    """Prompt to add a piece to the board.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {list} -- list of what's currently on screen
+        theboard {board} -- current state of board
+
+    Raises:
+        classes.IllegalMove -- attempted drop of uncaptured piece
+        classes.IllegalMove -- illegal drop attempted
+    """
+
     if not theboard.CAPTURED[theboard.currplyr]:
         raise classes.IllegalMove(7)
     todisp.append('Enter piece name to put in play')
@@ -52,6 +83,17 @@ def droppiece(input_gen, window, todisp, theboard):
 
 
 def toquit(input_gen, window, todisp):
+    """Check if player really wants to quit.
+
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to print text
+        todisp {list} -- list of stuff on screen
+
+    Raises:
+        classes.PlayerExit -- player wishes to exit
+    """
+
     while True:
         todisp.append('You are about to quit the game of Shogi')
         todisp.append('Are you sure you want to quit?')
@@ -64,6 +106,6 @@ def toquit(input_gen, window, todisp):
                 toquit = False
                 break
         if toquit:
-            raise functions.PlayerExit
+            raise classes.PlayerExit
         else:
             break
