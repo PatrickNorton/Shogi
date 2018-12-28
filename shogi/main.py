@@ -7,6 +7,22 @@ import json
 
 
 def main(input_gen, window):
+    """Play a complete game of Shogi.
+
+    This uses a window to completely cover the screen, leaving no
+    trace on exit. *! IMPORTANT: Do Not Use VSCode's "terminate", but
+    use Ctrl-C or type "quit" to end program execution. !* For help
+    playing the game, type "help" at a the prompt.
+
+    Arguments:
+        input_gen {curtsies.Input} -- for collecting inputs
+        window {curtsies.FullScreenWindow} -- for displaying the game
+
+    Raises:
+        classes.IllegalMove -- when an illegal move is called
+        **Should always be handled within the function
+    """
+
     theboard = classes.board()
     game = True
     debug = False
@@ -91,6 +107,8 @@ def main(input_gen, window):
 
 
 def playgame():
+    """Context manager for main()."""
+
     try:
         with Input() as input_gen:
             with FullscreenWindow() as window:
