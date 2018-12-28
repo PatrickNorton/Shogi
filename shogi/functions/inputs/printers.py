@@ -3,9 +3,21 @@ __all__ = [
 ]
 
 def filedisp(input_gen, window, prompt, filetxt):
+    """Print a file to screen.
+    
+    Arguments:
+        input_gen {curtsies.Input} -- input generator
+        window {curtsies.FullScreenWindow} -- window to print text
+        prompt {str} -- prompt to print at bottom of screen
+        filetxt {text} -- text of file in question
+    
+    Returns:
+        list -- current screen contents
+    """
+
     maxx = window.width
     maxy = window.height
-    filetxt = filetxt.split('\n')
+    filetxt = filetxt.splitlines()
     filelist = []
     for lin in filetxt:
         if len(lin) >= maxx-1:
