@@ -7,7 +7,17 @@ __all__ = [
     "_getfile"
 ]
 
+
 def _flatten_dict(d):
+    """Flatten a dictionary.
+
+    Arguments:
+        d {dict} -- dictionary to be flattened
+
+    Returns:
+        dict -- flattened dictionary
+    """
+
     def items():
         for key, value in d.items():
             if isinstance(value, dict):
@@ -20,6 +30,15 @@ def _flatten_dict(d):
 
 
 def _opendata(filenm):
+    """Open data file.
+
+    Arguments:
+        filenm {str} -- relative path (from datafiles) of file
+
+    Returns:
+        file -- opened data file
+    """
+
     import os
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../../datafiles/{filenm}')
@@ -27,6 +46,15 @@ def _opendata(filenm):
 
 
 def _openhelp(filenm):
+    """Open help file.
+
+    Arguments:
+        filenm {str} -- relative path (from helpfiles) of file
+
+    Returns:
+        file -- opened help file
+    """
+
     import os
     cwd = os.path.dirname(__file__)
     filepath = os.path.join(cwd, f'../helpfiles/{filenm}')
@@ -39,6 +67,12 @@ def _openhelp(filenm):
 
 
 def _getfile(filenm):
+    """Get helpfile path from name
+
+    Arguments:
+        filenm {str} -- "public" name of file
+    """
+
     with _opendata('helpindex.json') as f:
         filedict = json.load(f)
     for key, value in filedict['pieces'].items():
