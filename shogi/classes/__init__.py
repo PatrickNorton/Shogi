@@ -1,3 +1,9 @@
+"""Shogi's classes.
+
+All classes necessary to play the game are located within this
+module.
+"""
+
 from .boards import *
 from .exceptions import *
 from .information import *
