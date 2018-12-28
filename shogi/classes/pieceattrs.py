@@ -9,6 +9,18 @@ __all__ = [
 
 
 class color:
+    """The class for piece/player colors.
+
+    This class covers both the color for a piece and the player colors.
+    Use accordingly.
+
+    Attributes:
+        INT {int} -- the integer (white=0, black=1) of the turn
+        NAME {str} -- the character (w, b) of the color
+        OTHER {str} -- the character of the other color
+        FULLNM {str} -- the full name (White, Black) of the color
+    """
+
     def __init__(self, turnnum):
         if isinstance(turnnum, int):
             self.INT = turnnum
@@ -38,12 +50,35 @@ class color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
-    def flip(self): return color(int(not self.INT))
+    def flip(self):
+        """DEPRECATED: Get the opposite color.
 
-    def other(self): return color(self.OTHER)
+        Returns:
+            color -- the other color
+        """
+
+        return color(int(not self.INT))
+
+    def other(self):
+        """Get the opposite color.
+
+        Returns:
+            color -- the other color
+        """
+
+        return color(self.OTHER)
 
 
 class ptype:
+    """The class for the type of the piece.
+
+    This class contains the different attributes of the piece's type.
+
+    Attributes:
+        TYP {str} -- the short name of the piece -- see "help names"
+        NAME {str} -- the full name of the piece
+    """
+
     def __init__(self, typ):
         typ = str(typ)
         self.TYP = typ.lower()
@@ -58,18 +93,37 @@ class ptype:
     def __hash__(self): return hash((self.TYP, self.NAME))
 
     def prom(self):
+        """Promote the piece."""
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
         return self
 
     def dem(self):
+        """Demote the piece."""
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
         return self
 
 
 class moves:
+    """The class containing the set of moves the piece can do.
+
+    Attributes:
+        DMOVES {dict} -- dict from direction -> move when unpromoted
+        PMOVES {dict} -- dmoves, but for when promoted
+        MOVES {list[dict]} -- list [DMOVES, PMOVES]
+        ispromoted {bool} -- if the piece is promoted
+        CMOVES {dict} -- current set of moves
+    """
+
     def __init__(self, piecenm, clr):
+        """Initialise instance of moves.
+
+        Arguments:
+            piecenm {str} -- 1-letter name of piece
+            clr {color} -- color of piece
+        """
+
         piecenm = str(piecenm)
         pcmvlist = list(info.MOVEDICT[piecenm])
         if clr == color(1):
@@ -94,6 +148,15 @@ class moves:
     def __iter__(self): yield from self.CMOVES
 
     def canmove(self, relloc):  # Takes coord object
+        """Check if piece can move there.
+
+        Arguments:
+            relloc {coord} -- relative location of move
+
+        Returns:
+            bool -- if move is legal
+        """
+
         vec = direction(relloc)
         dist = max(abs(relloc))
         magicvar = self[vec]
@@ -107,11 +170,23 @@ class moves:
             return abs(relloc.x) == 1 and abs(relloc.y) == 2
 
     def prom(self):
+        """Promote self.
+
+        Returns:
+            moves -- promoted version of self
+        """
+
         self.ispromoted = True
         self.CMOVES = self.MOVES[self.ispromoted]
         return self
 
     def dem(self):
+        """Demote self.
+
+        Returns:
+            moves -- demoted version of self
+        """
+
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
         return self
