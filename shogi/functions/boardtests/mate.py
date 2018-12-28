@@ -6,7 +6,19 @@ __all__ = [
     "matecheck"
 ]
 
+
 def matecheck(theboard, kingpos, checklist):
+    """Test if king is in checkmate.
+
+    Arguments:
+        theboard {board} -- current board position
+        kingpos {coord} -- location of king
+        checklist {list[coord]} -- list of pieces checking king
+
+    Returns:
+        bool -- if king is in checkmate
+    """
+
     kingmovepos = (classes.direction(x) for x in range(8))
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
