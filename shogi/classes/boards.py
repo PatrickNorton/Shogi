@@ -192,21 +192,13 @@ class board:
 
     @property
     def currpcs(self):
-        """Return pieces of current player.
-
-        Returns:
-            dict -- current player coords: pieces
-        """
+        """dict: Pieces of the current player."""
 
         return self.PCSBYCLR[self.currplyr]
 
     @property
     def enemypcs(self):
-        """Return pieces of opposing player.
-
-        Returns:
-            dict -- coords to pieces of opp. player
-        """
+        """dict: Pieces of opposing player."""
 
         return self.PCSBYCLR[self.currplyr.other()]
 
