@@ -5,3 +5,4 @@ __all__ = [
 ]
 
 info = _infocls()
+"""The instance of _infocls to be used. Contains all data."""
