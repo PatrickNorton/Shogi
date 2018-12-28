@@ -8,8 +8,28 @@ __all__ = [
     "nopiece"
 ]
 
+
 class piece:
+    """The class representing a piece.
+
+    Attributes:
+        PTYPE {ptype} -- type of piece
+        MOVES {moves} -- legal moves for piece
+        COLOR {color} -- color of piece
+        TUP {tuple} -- (PTYPE, COLOR)
+        prom {bool or None} -- if piece is promoted
+        PROMOTABLE {bool} -- if piece is promotable
+        AUTOPROMOTE {int} -- where must the piece promote
+    """
+
     def __init__(self, typ, clr):
+        """Initialise instance of piece.
+
+        Arguments:
+            typ {str} -- 1-letter type of piece
+            clr {str} -- 1-letter color of piece
+        """
+
         self.PTYPE = ptype(typ)
         self.MOVES = moves(self.PTYPE, color(clr))
         self.COLOR = color(clr)
@@ -35,6 +55,16 @@ class piece:
     def __repr__(self): return f"{repr(self.COLOR)} {repr(self.PTYPE)}"
 
     def promote(self):
+        """Promote piece.
+
+        Raises:
+            NotPromotableException -- piece is not promotable
+            PromotedException -- piece is already promoted
+
+        Returns:
+            piece -- promoted piece
+        """
+
         if self.prom is None:
             raise NotPromotableException
         elif self.prom:
@@ -46,6 +76,15 @@ class piece:
             return self
 
     def demote(self):
+        """Demote piece.
+
+        Raises:
+            DemotedException -- piece is not promoted
+
+        Returns:
+            piece -- demoted piece
+        """
+
         if not self.prom:
             raise DemotedException
         else:
@@ -55,11 +94,36 @@ class piece:
             return self
 
     def flipsides(self):
+        """Change sides piece is on.
+
+        Returns:
+            piece -- flipped-color piece
+        """
+
         return piece(str(self.PTYPE), self.COLOR.OTHER)
 
-    def canmove(self, relloc): return self.MOVES.canmove(relloc)
+    def canmove(self, relloc):
+        """Check if piece can move to location.
+
+        Arguments:
+            relloc {coord} -- relative location of move
+
+        Returns:
+            bool -- whether or not piece can move
+        """
+
+        return self.MOVES.canmove(relloc)
 
     def validspaces(self, direct):
+        """Get spaces piece could move in a direction
+
+        Arguments:
+            direct {direction} -- direction to be checked
+
+        Returns:
+            list -- list of valid (relative) spaces
+        """
+
         magicvar = self.MOVES[direct]
         valid = []
         if magicvar == '-':
@@ -79,6 +143,18 @@ class piece:
 
 
 class nopiece(piece):
+    """The "null" instance of a piece.
+
+    Attributes:
+        PTYPE {ptype} -- type of piece
+        MOVES {moves} -- legal moves for piece
+        COLOR {color} -- color of piece
+        TUP {tuple} -- (PTYPE, COLOR)
+        prom {bool or None} -- if piece is promoted
+        PROMOTABLE {bool} -- if piece is promotable
+        AUTOPROMOTE {int} -- where must the piece promote
+    """
+
     def __init__(self):
         super().__init__('-', '-')
 
