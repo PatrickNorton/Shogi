@@ -3,7 +3,7 @@ from .locations import Coord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color, Ptype
 from .exceptions import PromotedException, DemotedException, IllegalMove
-from .rows import row
+from .rows import Row
 
 __all__ = [
     "Board"
@@ -181,7 +181,7 @@ class Board:
         if not isinstance(self[movedto], NoPiece):
             raise IllegalMove(8)
         if piece.PTYPE == Ptype('p'):
-            rowtotest = row(movedto, 0)
+            rowtotest = Row(movedto, 0)
             for loc in rowtotest.notoriginal():
                 if self[loc] == Piece('p', player):
                     raise IllegalMove(9)

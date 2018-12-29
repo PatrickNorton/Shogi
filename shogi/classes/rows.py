@@ -1,7 +1,11 @@
 from .locations import Coord, Direction
 
+__all__ = [
+    "Row"
+]
 
-class row:
+
+class Row:
     """The class representing a row of coordinates.
 
     Attributes:
@@ -11,7 +15,7 @@ class row:
     """
 
     def __init__(self, loc, vect):
-        """Initialise instance of row.
+        """Initialise instance of Row.
 
         Arguments:
             loc {Coord} -- location of original space
@@ -37,7 +41,7 @@ class row:
     def __iter__(self): yield from self.SPACES
 
     def __eq__(self, other):
-        if isinstance(other, row):
+        if isinstance(other, Row):
             if other.FIRSTSPACE in self:
                 return abs(self.VECT) == abs(other.VECT)
             else:
@@ -45,7 +49,7 @@ class row:
         else:
             return False
 
-    def __repr__(self): return f"row({self.FIRSTSPACE}, {self.VECT})"
+    def __repr__(self): return f"Row({self.FIRSTSPACE}, {self.VECT})"
 
     def notoriginal(self):
         """Get all non-original spaces in row

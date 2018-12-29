@@ -68,7 +68,7 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
     if mvmt.x != mvmt.y and min(mvmt):
         return False, checklist
     toking = classes.Direction(relcoord)
-    doa = classes.row(oldloc, toking)
+    doa = classes.Row(oldloc, toking)
     currpieces = theboard.playerpcs(theboard[kingpos].COLOR.other)
     pieces = (x for x in doa if x in currpieces)
     for x in pieces:
