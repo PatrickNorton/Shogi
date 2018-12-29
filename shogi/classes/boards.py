@@ -13,6 +13,15 @@ __all__ = [
 class Board:
     """Class for main board object.
 
+    This is the object representing the main game board, and has,
+    additionally, several functions related to gameplay. An instance
+    of this should be passed any functions with an input parameter of
+    "theboard", and should represent the current state of the game, up
+    to, but not including, the current move, unless the current move
+    has been checked and validized. The move to be checked should be
+    stored in the "nextmove" attribute, while the previous move made
+    should be stored in the "lastmove" attribute.
+
     Attributes:
         PIECES {dict} -- Each coord and its corresponding piece
         INVPIECES {dict} -- Inverse of PIECES
