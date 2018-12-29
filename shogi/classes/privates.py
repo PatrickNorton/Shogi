@@ -1,12 +1,12 @@
 import json
 
 __all__ = [
-    "_infocls",
+    "_Infocls",
     "_opendata"
 ]
 
 
-class _infocls:
+class _Infocls:
     """The class that gets all the info from json.
 
     Properties:
@@ -19,7 +19,7 @@ class _infocls:
     """
 
     def __init__(self):
-        """Initialise instance of _infocls."""
+        """Initialise instance of Piece."""
 
         with _opendata('moves.json') as f:
             self.MOVEDICT = json.load(f)

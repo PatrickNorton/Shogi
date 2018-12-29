@@ -1,8 +1,8 @@
-from .privates import _infocls
+from .privates import _Infocls
 
 __all__ = [
     "info"
 ]
 
-info = _infocls()
-"""The instance of _infocls to be used. Contains all data."""
+info = _Infocls()
+"""The instance of Piece to be used. Contains all data."""
