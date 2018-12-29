@@ -11,8 +11,11 @@ __all__ = [
 class Color:
     """The class for piece/player colors.
 
-    This class covers both the color for a piece and the player colors.
-    Use accordingly.
+    This class is used both for the color of a player (e.g. the Board
+    object's currplyr attribute being an instance of Color), and the
+    color of a piece (e.g. the Piece.COLOR attribute being a Color).
+    This class is what should be used for comparisons between two
+    piece's colors.
 
     Attributes:
         INT {int} -- the integer (white=0, black=1) of the turn
@@ -50,7 +53,6 @@ class Color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
-
     @property
     def other(self):
         """Color: Opposite color from first"""
@@ -61,7 +63,11 @@ class Color:
 class Ptype:
     """The class for the type of the piece.
 
-    This class contains the different attributes of the piece's type.
+    This class is what determines which type the piece is (e.g. king,
+    rook, knight, etc.). It should be used for comparisons between
+    two piece's types.
+
+    TODO: Add kwarg for promotion to get promoted piece
 
     Attributes:
         TYP {str} -- the short name of the piece -- see "help names"
@@ -96,6 +102,10 @@ class Ptype:
 
 class Moves:
     """The class containing the set of moves the piece can do.
+
+    This class contains a dictionary relating directions to the moves
+    the piece can make. It also has the ability to test whether or not
+    a certain move can be made.
 
     Attributes:
         DMOVES {dict} -- dict from direction -> move when unpromoted
@@ -140,7 +150,7 @@ class Moves:
         """Check if piece can move there.
 
         Arguments:
-            relloc {Coord  -- relative location of move
+            relloc {Coord}  -- relative location of move
 
         Returns:
             bool -- if move is legal
