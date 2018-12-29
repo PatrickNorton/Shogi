@@ -66,7 +66,7 @@ def droppiece(input_gen, window, todisp, theboard):
         moved = 'n'
     try:
         todisp = todisp[:-2]
-        thepiece = classes.piece(moved[0], theboard.currplyr)
+        thepiece = classes.Piece(moved[0], theboard.currplyr)
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
             todisp.append('Enter location to place piece')
             todisp.append(': ')

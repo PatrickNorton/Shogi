@@ -41,7 +41,7 @@ def setpos(input_gen, window):
         todisp.append('Choose piece and color ')
         pcstr = getinput(input_gen, window, todisp)
         try:
-            piecenm = classes.piece(*pcstr)
+            piecenm = classes.Piece(*pcstr)
         except (ValueError, IndexError):
             print('Invalid piece\n')
             continue

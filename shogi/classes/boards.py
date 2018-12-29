@@ -1,6 +1,6 @@
 from .information import info
 from .locations import Coord
-from .pieces import piece, nopiece
+from .pieces import Piece, NoPiece
 from .pieceattrs import Color, Ptype
 from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import row
@@ -14,7 +14,7 @@ class Board:
     """Class for main board object.
 
     Attributes:
-        PIECES {dict} -- Each Coord and its corresponding piece
+        PIECES {dict} -- Each coord and its corresponding piece
         INVPIECES {dict} -- Inverse of PIECES
         CAPTURED {dict} -- List of captured pieces for each color
         PCSBYCLR {dict} -- Same as pieces, but seperated by color
@@ -31,7 +31,7 @@ class Board:
         """
 
         if pieces is None:
-            self.PIECES = {Coord(x): piece(*y) for x, y in info.LS.items()}
+            self.PIECES = {Coord(x): Piece(*y) for x, y in info.LS.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
@@ -62,7 +62,7 @@ class Board:
 
     def __getitem__(self, index):
         Coords = Coord(index)
-        toreturn = self.PIECES.get(Coords, nopiece())
+        toreturn = self.PIECES.get(Coords, NoPiece())
         return toreturn
 
     def it(self):
@@ -83,7 +83,7 @@ class Board:
             new {Coord} -- location to move piece to
         """
 
-        if not isinstance(self[new], nopiece):
+        if not isinstance(self[new], NoPiece):
             self.capture(new)
         self.PIECES[Coord(new)] = self.PIECES.pop(current)
         self.PCSBYCLR[self[new].COLOR][Coord(new)] = self[new]
@@ -94,7 +94,7 @@ class Board:
         """Return a location based on piece type.
 
         Arguments:
-            location {piece} -- piece type to check
+            location {Piece} -- piece type to check
 
         Returns:
             Coord -- location of piece
@@ -169,7 +169,7 @@ class Board:
         """Move a piece from capture into play.
 
         Arguments:
-            piece {piece} -- the piece to put in play
+            piece {Piece} -- the piece to put in play
             movedto {Coord} -- where to put the piece
 
         Raises:
@@ -178,12 +178,12 @@ class Board:
         """
 
         player = self.currplyr
-        if not isinstance(self[movedto], nopiece):
+        if not isinstance(self[movedto], NoPiece):
             raise IllegalMove(8)
         if piece.PTYPE == Ptype('p'):
             rowtotest = row(movedto, 0)
             for loc in rowtotest.notoriginal():
-                if self[loc] == piece('p', player):
+                if self[loc] == Piece('p', player):
                     raise IllegalMove(9)
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece

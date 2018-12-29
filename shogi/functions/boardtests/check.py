@@ -27,7 +27,7 @@ def checkcheck(theboard, coords, color, earlybreak=False):
 
     oldloc, newloc = coords
     check, checklist = False, []
-    toget = classes.piece('k', color)
+    toget = classes.Piece('k', color)
     kingpos = theboard.getpiece(toget)
     try:
         movecheck2(theboard, (newloc, kingpos))

@@ -4,12 +4,12 @@ from .exceptions import NotPromotableException, PromotedException, DemotedExcept
 from .information import info
 
 __all__ = [
-    "piece",
-    "nopiece"
+    "Piece",
+    "NoPiece"
 ]
 
 
-class piece:
+class Piece:
     """The class representing a piece.
 
     Attributes:
@@ -48,7 +48,7 @@ class piece:
 
     def __eq__(self, other): return self.TUP == other.TUP
 
-    def __bool__(self): return not isinstance(self, nopiece)
+    def __bool__(self): return not isinstance(self, NoPiece)
 
     def __hash__(self): return hash(self.TUP)
 
@@ -100,7 +100,7 @@ class piece:
             piece -- flipped-color piece
         """
 
-        return piece(str(self.PTYPE), self.COLOR.OTHER)
+        return Piece(str(self.PTYPE), self.COLOR.OTHER)
 
     def canmove(self, relloc):
         """Check if piece can move to location.
@@ -142,7 +142,7 @@ class piece:
         return valid
 
 
-class nopiece(piece):
+class NoPiece(Piece):
     """The "null" instance of a piece.
 
     Attributes:
@@ -158,4 +158,4 @@ class nopiece(piece):
     def __init__(self):
         super().__init__('-', '-')
 
-    def __repr__(self): return 'nopiece()'
+    def __repr__(self): return 'NoPiece()'
