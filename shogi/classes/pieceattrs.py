@@ -50,14 +50,6 @@ class Color:
 
     def __hash__(self): return hash((self.INT, self.NAME))
 
-    def flip(self):
-        """DEPRECATED: Get the opposite color.
-
-        Returns:
-            Color -- the other color
-        """
-
-        return Color(int(not self.INT))
 
     @property
     def other(self):
