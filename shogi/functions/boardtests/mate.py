@@ -12,14 +12,14 @@ def matecheck(theboard, kingpos, checklist):
 
     Arguments:
         theboard {board} -- current board position
-        kingpos {coord} -- location of king
-        checklist {list[coord]} -- list of pieces checking king
+        kingpos {Coord} -- location of king
+        checklist {list[Coord]} -- list of pieces checking king
 
     Returns:
         bool -- if king is in checkmate
     """
 
-    kingmovepos = (classes.direction(x) for x in range(8))
+    kingmovepos = (classes.Direction(x) for x in range(8))
     for kmpiter in kingmovepos:
         newpos = kmpiter+kingpos
         if tuple(newpos) in theboard.it():
@@ -44,9 +44,9 @@ def matecheck(theboard, kingpos, checklist):
             continue
         return False
     move = kingpos-checklist
-    movedir = classes.direction(move)
+    movedir = classes.Direction(move)
     for pos, z in product(theboard.enemypcs, range(abs(max(move)))):
-        newpos = z*checklist*classes.coord(movedir)
+        newpos = z*checklist*classes.Coord(movedir)
         try:
             movecheck2(theboard, (pos, newpos))
         except classes.IllegalMove:

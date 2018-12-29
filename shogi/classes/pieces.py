@@ -1,5 +1,5 @@
 from .pieceattrs import moves, color, ptype
-from .locations import coord
+from .locations import Coord
 from .exceptions import NotPromotableException, PromotedException, DemotedException
 from .information import info
 
@@ -106,7 +106,7 @@ class piece:
         """Check if piece can move to location.
 
         Arguments:
-            relloc {coord} -- relative location of move
+            relloc {Coord  -- relative location of move
 
         Returns:
             bool -- whether or not piece can move
@@ -118,7 +118,7 @@ class piece:
         """Get spaces piece could move in a direction
 
         Arguments:
-            direct {direction} -- direction to be checked
+            direct {Direction} -- direction to be checked
 
         Returns:
             list -- list of valid (relative) spaces
@@ -129,14 +129,14 @@ class piece:
         if magicvar == '-':
             return []
         elif magicvar == '1':
-            valid.append(coord(direct))
+            valid.append(Coord(direct))
         elif magicvar == 'T':
-            xy = (direct.x, 2*direct.y)
-            valid.append(coord(xy))
+            xy=(direct.x, 2*direct.y)
+            valid.append(Coord(xy))
         elif magicvar == '+':
             for x in range(9):
-                x = coord(x)
-                relloc = x*direct
+                x=Coord(x)
+                relloc=x*direct
                 if self.canmove(relloc):
                     valid.append(relloc)
         return valid

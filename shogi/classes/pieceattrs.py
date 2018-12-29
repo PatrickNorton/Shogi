@@ -1,4 +1,4 @@
-from .locations import direction
+from .locations import Direction
 from .information import info
 
 __all__ = [
@@ -128,14 +128,14 @@ class moves:
                 if var is not None:
                     pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
-        self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
-        self.DMOVES[direction(8)] = '-'
+        self.DMOVES = {Direction(x): mvlist[x] for x in range(8)}
+        self.DMOVES[Direction(8)] = '-'
         mvlist = pcmvlist[1]
         if mvlist is None:
             self.PMOVES = None
         else:
-            self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
-            self.PMOVES[direction(8)] = '-'
+            self.PMOVES = {Direction(x): mvlist[x] for x in range(8)}
+            self.PMOVES[Direction(8)] = '-'
         self.MOVES = [self.DMOVES, self.PMOVES]
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
@@ -144,17 +144,17 @@ class moves:
 
     def __iter__(self): yield from self.CMOVES
 
-    def canmove(self, relloc):  # Takes coord object
+    def canmove(self, relloc):  # Takes Coord object
         """Check if piece can move there.
 
         Arguments:
-            relloc {coord} -- relative location of move
+            relloc {Coord  -- relative location of move
 
         Returns:
             bool -- if move is legal
         """
 
-        vec = direction(relloc)
+        vec = Direction(relloc)
         dist = max(abs(relloc))
         magicvar = self[vec]
         if magicvar == '-':

@@ -12,7 +12,7 @@ def checkcheck(theboard, coords, color, earlybreak=False):
 
     Arguments:
         theboard {board} -- current game board
-        coords {tuple[coord]} -- last move (from, to)
+        coords {tuple[Coord]} -- last move (from, to)
         color {color} -- color of king to test
 
     Keyword Arguments:
@@ -21,8 +21,8 @@ def checkcheck(theboard, coords, color, earlybreak=False):
 
     Returns:
         bool -- if king is in check
-        coord -- location of king
-        list[coord] -- list of coords attacking king
+        Coord -- location of king
+        list[Coord] -- list of coords attacking king
     """
 
     oldloc, newloc = coords
@@ -51,15 +51,15 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
 
     Arguments:
         theboard {board} -- current board
-        coords {tuple[coord]} -- last move(from, to)
-        checklist {list[coord]} -- list of pieces currently checking king
+        coords {tuple[Coord]} -- last move(from, to)
+        checklist {list[Coord]} -- list of pieces currently checking king
 
     Keyword Arguments:
         earlybreak {bool} -- break after first check (default: {False})
 
     Returns:
         bool -- king in check
-        list[coord] -- pieces checking king
+        list[Coord] -- pieces checking king
     """
 
     oldloc, kingpos = coords
@@ -67,7 +67,7 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
     mvmt = abs(relcoord)
     if mvmt.x != mvmt.y and min(mvmt):
         return False, checklist
-    toking = classes.direction(relcoord)
+    toking = classes.Direction(relcoord)
     doa = classes.row(oldloc, toking)
     currpieces = theboard.playerpcs(theboard[kingpos].COLOR.other)
     pieces = (x for x in doa if x in currpieces)

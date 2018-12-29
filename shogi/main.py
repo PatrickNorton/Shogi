@@ -1,9 +1,7 @@
-from curtsies import FullscreenWindow, Input, fsarray
+from curtsies import FullscreenWindow, Input
 from curtsies.fmtfuncs import bold
-from curtsies.events import PasteEvent
 from . import functions
 from . import classes
-import json
 
 
 def main(input_gen, window):

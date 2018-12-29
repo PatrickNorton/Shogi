@@ -17,20 +17,20 @@ def movecheck(theboard, current, moveloc):
 
     Arguments:
         theboard {board} -- current board state
-        current {coord} -- position of piece to be moved
+        current {Coord} -- position of piece to be moved
         moveloc {str} -- input of piece to be moved
 
     Raises:
         classes.IllegalMove -- invalid entry
 
     Returns:
-        tuple[coord] -- coords of movement
+        tuple[Coord] -- coords of movement
     """
 
     validpiece = inputpiece(theboard, moveloc)
     if not validpiece:
         raise classes.IllegalMove(11)
-    moveloc = classes.coord(moveloc)
+    moveloc = classes.Coord(moveloc)
     return (current, moveloc)
 
 
@@ -39,7 +39,7 @@ def movecheck2(theboard, coords):
 
     Arguments:
         theboard {board} -- current board state
-        coords {tuple[coord]} -- current and new locations of piece
+        coords {tuple[Coord]} -- current and new locations of piece
 
     Raises:
         classes.IllegalMove -- attempted zero-move of piece
@@ -50,9 +50,9 @@ def movecheck2(theboard, coords):
     current, new = coords
     piece = theboard[current]
     move = new-current
-    movedir = classes.direction(move)
+    movedir = classes.Direction(move)
     magicvar = piece.MOVES[movedir]
-    if movedir == classes.direction(8):
+    if movedir == classes.Direction(8):
         raise classes.IllegalMove(3)
     elif not piece.canmove(move):
         raise classes.IllegalMove(1)
@@ -71,17 +71,17 @@ def obscheck(theboard, current, move):
 
     Arguments:
         theboard {board} -- current board state
-        current {coord} -- current piece location
-        move {coord} -- location to move piece
+        current {Coord} -- current piece location
+        move {Coord} -- location to move piece
 
     Raises:
         classes.IllegalMove -- obstruction found
     """
 
-    movedir = classes.direction(move)
+    movedir = classes.Direction(move)
     for x in range(1, max(abs(move))):
         relcoord = [x*k for k in movedir]
-        testpos = current+classes.coord(relcoord)
+        testpos = current+classes.Coord(relcoord)
         if theboard[testpos]:
             raise classes.IllegalMove(2)
 
@@ -91,7 +91,7 @@ def kingcheck(theboard, coords):
 
     Arguments:
         theboard {board} -- current board state
-        coords {tuple[coord]} -- current and new piece location
+        coords {tuple[Coord]} -- current and new piece location
 
     Raises:
         classes.IllegalMove -- attempted capture of own piece
@@ -100,9 +100,9 @@ def kingcheck(theboard, coords):
     """
 
     oldloc, newloc = coords
-    rowlist = (classes.direction(x) for x in range(8))
+    rowlist = (classes.Direction(x) for x in range(8))
     for x, dist in product(rowlist, range(9)):
-        dist = classes.coord(dist)
+        dist = classes.Coord(dist)
         try:
             loctotest = newloc+x*dist
             if theboard[loctotest].COLOR == theboard[oldloc].COLOR:
@@ -118,7 +118,7 @@ def kingcheck(theboard, coords):
         else:
             raise classes.IllegalMove(6)
     for delx, dely in product((-1, 1), (-1, 1)):
-        relcoord = classes.coord((delx, 2*dely))
+        relcoord = classes.Coord((delx, 2*dely))
         try:
             abscoord = newloc+relcoord
             movecheck2(theboard, (abscoord, newloc))

@@ -20,7 +20,7 @@ def inputpiece(theboard, pieceloc):
     """
 
     try:
-        pieceloc = classes.coord(pieceloc)
+        pieceloc = classes.Coord(pieceloc)
         return True
     except (ValueError, IndexError):
         raise classes.OtherInput(pieceloc)

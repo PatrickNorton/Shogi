@@ -18,13 +18,13 @@ def piececheck(theboard, pieceloc):
         classes.IllegalMove -- entry of location without their piece
 
     Returns:
-        coord -- location inputted
+        Coord -- location inputted
     """
 
     validpiece = inputpiece(theboard, pieceloc)
     if not validpiece:
         raise classes.IllegalMove(11)
-    pieceloc = classes.coord(pieceloc)
+    pieceloc = classes.Coord(pieceloc)
     if theboard[pieceloc].COLOR != theboard.currplyr:
         raise classes.IllegalMove(5)
     return pieceloc

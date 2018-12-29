@@ -37,7 +37,7 @@ def setpos(input_gen, window):
         if not valid:
             print('Invalid location')
             continue
-        loc = classes.coord(loc)
+        loc = classes.Coord(loc)
         todisp.append('Choose piece and color ')
         pcstr = getinput(input_gen, window, todisp)
         try:

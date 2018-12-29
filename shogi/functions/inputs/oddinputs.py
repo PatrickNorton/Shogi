@@ -72,7 +72,7 @@ def droppiece(input_gen, window, todisp, theboard):
             todisp.append(': ')
             moveto = getinput(input_gen, window, todisp)
             if functions.inputpiece(theboard, moveto):
-                moveto = classes.coord(moveto)
+                moveto = classes.Coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
             raise classes.IllegalMove(10)

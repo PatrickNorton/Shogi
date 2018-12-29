@@ -11,8 +11,8 @@ def testspcs(theboard, pieceloc, spacelist):
 
     Arguments:
         theboard {board} -- current state of the board
-        pieceloc {coord} -- location of piece to be moved
-        spacelist {list[coord]} -- list of coords to check
+        pieceloc {Coord} -- location of piece to be moved
+        spacelist {list[Coord]} -- list of coords to check
 
     Returns:
         list -- list of valid spaces

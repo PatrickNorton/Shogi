@@ -1,12 +1,12 @@
 from numpy import sin, cos, sign, pi
 
 __all__ = [
-    "coord",
-    "direction"
+    "Coord",
+    "Direction"
 ]
 
 
-class coord:
+class Coord:
     """A set of (x, y) coordinates.
 
     Attributes:
@@ -18,11 +18,11 @@ class coord:
     """
 
     def __init__(self, xy):
-        """Initialise instance of coord.
+        """Initialise instance of Coord
 
     Arguments:
-        xy {int, str, tuple, list or coord} -- The coordinates of
-            which the coord is to be made. If xy is an integer, (x, x)
+        xy {int, str, tuple, list or Coord -- The coordinates of
+            which the Coordis to be made. If xy is an integer, (x, x)
             is created.
 
         Raises:
@@ -52,23 +52,23 @@ class coord:
 
     def __getitem__(self, index): return self.TUP[index]
 
-    def __add__(self, other): return coord((self.x+other.x, self.y+other.y))
+    def __add__(self, other): return Coord((self.x+other.x, self.y+other.y))
 
-    def __sub__(self, other): return coord((self.x-other.x, self.y-other.y))
+    def __sub__(self, other): return Coord((self.x-other.x, self.y-other.y))
 
-    def __mul__(self, other): return coord((self.x*other.x, self.y*other.y))
+    def __mul__(self, other): return Coord((self.x*other.x, self.y*other.y))
 
     def __hash__(self): return hash(self.TUP)
 
-    def __abs__(self): return coord((abs(self.x), abs(self.y)))
+    def __abs__(self): return Coord((abs(self.x), abs(self.y)))
 
-    def __repr__(self): return f"coord('{self}')"
+    def __repr__(self): return f"Coord'{self}')"
 
 
-class direction(coord):
+class Direction(Coord):
     """A direction in which a piece moves.
 
-    This is equivalent to a coord with length 1, but also with an
+    This is equivalent to a Coord with length 1, but also with an
     extra DIR attribute, which specifies the direction in which it is
     facing.
 
@@ -90,7 +90,7 @@ class direction(coord):
     def __init__(self, direction):
         if direction == (0, 0):
             self.DIR = 8
-        elif isinstance(direction, coord):
+        elif isinstance(direction, Coord):
             self.DIR = self._make(direction.x, direction.y)
         elif isinstance(direction, tuple):
             self.DIR = self._make(*direction)
@@ -104,9 +104,9 @@ class direction(coord):
             self.TUP = (0, 0)
         super().__init__(self.TUP)
 
-    def __repr__(self): return f"direction({self.DIR})"
+    def __repr__(self): return f"Direction({self.DIR})"
 
-    def __abs__(self): return direction(abs(self.DIR))
+    def __abs__(self): return Direction(abs(self.DIR))
 
     def __hash__(self): return hash(self.TUP)
 

@@ -1,5 +1,5 @@
 from .information import info
-from .locations import coord
+from .locations import Coord
 from .pieces import piece, nopiece
 from .pieceattrs import color, ptype
 from .exceptions import PromotedException, DemotedException, IllegalMove
@@ -14,13 +14,13 @@ class board:
     """Class for main board object.
 
     Attributes:
-        PIECES {dict} -- Each coord and its corresponding piece
+        PIECES {dict} -- Each Coord and its corresponding piece
         INVPIECES {dict} -- Inverse of PIECES
         CAPTURED {dict} -- List of captured pieces for each color
         PCSBYCLR {dict} -- Same as pieces, but seperated by color
         currplyr {color} -- Active player
-        lastmove {tuple[coord]} -- Previous move performed
-        nextmove {tuple[coord]} -- Move about to be performed
+        lastmove {tuple[Coord]} -- Previous move performed
+        nextmove {tuple[Coord]} -- Move about to be performed
     """
 
     def __init__(self, pieces=None):
@@ -31,7 +31,7 @@ class board:
         """
 
         if pieces is None:
-            self.PIECES = {coord(x): piece(*y) for x, y in info.LS.items()}
+            self.PIECES = {Coord(x): piece(*y) for x, y in info.LS.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
@@ -61,8 +61,8 @@ class board:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index):
-        coords = coord(index)
-        toreturn = self.PIECES.get(coords, nopiece())
+        Coords = Coord(index)
+        toreturn = self.PIECES.get(Coords, nopiece())
         return toreturn
 
     def it(self):
@@ -79,15 +79,15 @@ class board:
         """Move a piece between locations.
 
         Arguments:
-            current {coord} -- location of piece
-            new {coord} -- location to move piece to
+            current {Coord} -- location of piece
+            new {Coord} -- location to move piece to
         """
 
         if not isinstance(self[new], nopiece):
             self.capture(new)
-        self.PIECES[coord(new)] = self.PIECES.pop(current)
-        self.PCSBYCLR[self[new].COLOR][coord(new)] = self[new]
-        del self.PCSBYCLR[self[new].COLOR][coord(current)]
+        self.PIECES[Coord(new)] = self.PIECES.pop(current)
+        self.PCSBYCLR[self[new].COLOR][Coord(new)] = self[new]
+        del self.PCSBYCLR[self[new].COLOR][Coord(current)]
         self.INVPIECES[self[new]] = new
 
     def getpiece(self, location):
@@ -97,7 +97,7 @@ class board:
             location {piece} -- piece type to check
 
         Returns:
-            coord -- location of piece
+            Coord -- location of piece
         """
 
         return self.INVPIECES[location]
@@ -106,7 +106,7 @@ class board:
         """Capture a piece at a location.
 
         Arguments:
-            new {coord} -- location of to-be-captured piece
+            new {Coord} -- location of to-be-captured piece
         """
 
         piece = self[new]
@@ -117,7 +117,7 @@ class board:
         piece = piece.flipsides()
         self.CAPTURED[self.currplyr].append(piece)
         del self.PIECES[new]
-        del self.PCSBYCLR[piece.COLOR.other][coord(new)]
+        del self.PCSBYCLR[piece.COLOR.other][Coord(new)]
         if piece in self.PIECES:
             gen = [loc for loc, x in self.PIECES.items() if x == piece]
             self.INVPIECES[piece] = gen[0]
@@ -128,7 +128,7 @@ class board:
         """Check if a piece is in a promotion zone.
 
         Arguments:
-            space {coord} -- location to be checked
+            space {Coord} -- location to be checked
 
         Returns:
             bool -- if piece is promotable
@@ -141,7 +141,7 @@ class board:
         """Check if piece must be promoted.
 
         Arguments:
-            space {coord} -- location to be checked
+            space {Coord} -- location to be checked
 
         Returns:
             bool -- if piece must promote
@@ -156,7 +156,7 @@ class board:
         """Promote the piece at a location.
 
         Arguments:
-            space {coord} -- space to promote piece at
+            space {Coord} -- space to promote piece at
         """
 
         piece = self[space]
@@ -170,7 +170,7 @@ class board:
 
         Arguments:
             piece {piece} -- the piece to put in play
-            movedto {coord} -- where to put the piece
+            movedto {Coord} -- where to put the piece
 
         Raises:
             IllegalMove -- if capturing on drop
@@ -209,7 +209,7 @@ class board:
             player {color} -- player to return
 
         Returns:
-            dict -- coords: pieces of player
+            dict -- Coords: pieces of player
         """
 
         return self.PCSBYCLR[player]

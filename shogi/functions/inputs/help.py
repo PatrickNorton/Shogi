@@ -148,7 +148,7 @@ def movelistfn(input_gen, window, theboard):
     currpieces = theboard.currpcs
     for loc, apiece in currpieces.items():
         movelst = []
-        dirlist = (classes.direction(x) for x in range(8))
+        dirlist = (classes.Direction(x) for x in range(8))
         for x in dirlist:
             tolst = apiece.validspaces(x)
             tolst = testspcs(theboard, loc, tolst)
