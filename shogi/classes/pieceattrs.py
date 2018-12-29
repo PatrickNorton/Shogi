@@ -2,13 +2,13 @@ from .locations import Direction
 from .information import info
 
 __all__ = [
-    "color",
-    "ptype",
-    "moves"
+    "Color",
+    "Ptype",
+    "Moves"
 ]
 
 
-class color:
+class Color:
     """The class for piece/player colors.
 
     This class covers both the color for a piece and the player colors.
@@ -32,7 +32,7 @@ class color:
             else:
                 self.NAME = turnnum
                 self.INT = 'wb'.index(turnnum)
-        elif isinstance(turnnum, color):
+        elif isinstance(turnnum, Color):
             self.INT = turnnum.INT
             self.NAME = 'wb'[self.INT]
         else:
@@ -54,19 +54,19 @@ class color:
         """DEPRECATED: Get the opposite color.
 
         Returns:
-            color -- the other color
+            Color -- the other color
         """
 
-        return color(int(not self.INT))
+        return Color(int(not self.INT))
 
     @property
     def other(self):
-        """color: Opposite color from first"""
+        """Color: Opposite color from first"""
 
-        return color(self.OTHER)
+        return Color(self.OTHER)
 
 
-class ptype:
+class Ptype:
     """The class for the type of the piece.
 
     This class contains the different attributes of the piece's type.
@@ -102,7 +102,7 @@ class ptype:
         return self
 
 
-class moves:
+class Moves:
     """The class containing the set of moves the piece can do.
 
     Attributes:
@@ -118,12 +118,12 @@ class moves:
 
         Arguments:
             piecenm {str} -- 1-letter name of piece
-            clr {color} -- color of piece
+            clr {Color} -- color of piece
         """
 
         piecenm = str(piecenm)
         pcmvlist = list(info.MOVEDICT[piecenm])
-        if clr == color(1):
+        if clr == Color(1):
             for y, var in enumerate(pcmvlist):
                 if var is not None:
                     pcmvlist[y] = var[4:]+var[:4]
@@ -170,7 +170,7 @@ class moves:
         """Promote self.
 
         Returns:
-            moves -- promoted version of self
+            Moves -- promoted version of self
         """
 
         self.ispromoted = True
@@ -181,7 +181,7 @@ class moves:
         """Demote self.
 
         Returns:
-            moves -- demoted version of self
+            Moves -- demoted version of self
         """
 
         self.ispromoted = False

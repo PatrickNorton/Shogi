@@ -13,7 +13,7 @@ def checkcheck(theboard, coords, color, earlybreak=False):
     Arguments:
         theboard {Board} -- current game board
         coords {tuple[Coord]} -- last move (from, to)
-        color {color} -- color of king to test
+        color {Color} -- color of king to test
 
     Keyword Arguments:
         earlybreak {bool} -- break after first or second check

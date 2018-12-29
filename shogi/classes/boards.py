@@ -1,7 +1,7 @@
 from .information import info
 from .locations import Coord
 from .pieces import piece, nopiece
-from .pieceattrs import color, ptype
+from .pieceattrs import Color, Ptype
 from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import row
 
@@ -18,7 +18,7 @@ class Board:
         INVPIECES {dict} -- Inverse of PIECES
         CAPTURED {dict} -- List of captured pieces for each color
         PCSBYCLR {dict} -- Same as pieces, but seperated by color
-        currplyr {color} -- Active player
+        currplyr {Color} -- Active player
         lastmove {tuple[Coord]} -- Previous move performed
         nextmove {tuple[Coord]} -- Move about to be performed
     """
@@ -35,11 +35,11 @@ class Board:
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
-        self.CAPTURED = {color(x): [] for x in range(2)}
-        self.PCSBYCLR = {color(0): {}, color(1): {}}
-        self.currplyr = color(0)
+        self.CAPTURED = {Color(x): [] for x in range(2)}
+        self.PCSBYCLR = {Color(0): {}, Color(1): {}}
+        self.currplyr = Color(0)
         for x in range(2):
-            theclr = color(x)
+            theclr = Color(x)
             for x, y in self.PIECES.items():
                 if y.COLOR == theclr:
                     self.PCSBYCLR[theclr][x] = y
@@ -48,12 +48,12 @@ class Board:
 
     def __str__(self):
         toreturn = ""
-        captostr = [str(x) for x in self.CAPTURED[color(1)]]
+        captostr = [str(x) for x in self.CAPTURED[Color(1)]]
         toreturn += f"Black pieces: {' '.join(captostr)}\n\n"
         toreturn += f"  {'  '.join('987654321')}\n"
         for x, var in enumerate(self):
             toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
-        captostr = [str(x) for x in self.CAPTURED[color(0)]]
+        captostr = [str(x) for x in self.CAPTURED[Color(0)]]
         toreturn += f"White pieces: {' '.join(captostr)}\n"
         return toreturn
 
@@ -180,7 +180,7 @@ class Board:
         player = self.currplyr
         if not isinstance(self[movedto], nopiece):
             raise IllegalMove(8)
-        if piece.PTYPE == ptype('p'):
+        if piece.PTYPE == Ptype('p'):
             rowtotest = row(movedto, 0)
             for loc in rowtotest.notoriginal():
                 if self[loc] == piece('p', player):
@@ -206,7 +206,7 @@ class Board:
         """Return pieces of specific player
 
         Arguments:
-            player {color} -- player to return
+            player {Color} -- player to return
 
         Returns:
             dict -- Coords: pieces of player

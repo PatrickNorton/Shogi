@@ -1,4 +1,4 @@
-from .pieceattrs import moves, color, ptype
+from .pieceattrs import Moves, Color, Ptype
 from .locations import Coord
 from .exceptions import NotPromotableException, PromotedException, DemotedException
 from .information import info
@@ -13,9 +13,9 @@ class piece:
     """The class representing a piece.
 
     Attributes:
-        PTYPE {ptype} -- type of piece
-        MOVES {moves} -- legal moves for piece
-        COLOR {color} -- color of piece
+        PTYPE {Ptype} -- type of piece
+        MOVES {Moves} -- legal moves for piece
+        COLOR {Color} -- color of piece
         TUP {tuple} -- (PTYPE, COLOR)
         prom {bool or None} -- if piece is promoted
         PROMOTABLE {bool} -- if piece is promotable
@@ -30,9 +30,9 @@ class piece:
             clr {str} -- 1-letter color of piece
         """
 
-        self.PTYPE = ptype(typ)
-        self.MOVES = moves(self.PTYPE, color(clr))
-        self.COLOR = color(clr)
+        self.PTYPE = Ptype(typ)
+        self.MOVES = Moves(self.PTYPE, Color(clr))
+        self.COLOR = Color(clr)
         self.TUP = (self.PTYPE, self.COLOR)
         if self.MOVES.PMOVES is None:
             self.prom = None
@@ -131,12 +131,12 @@ class piece:
         elif magicvar == '1':
             valid.append(Coord(direct))
         elif magicvar == 'T':
-            xy=(direct.x, 2*direct.y)
+            xy = (direct.x, 2*direct.y)
             valid.append(Coord(xy))
         elif magicvar == '+':
             for x in range(9):
-                x=Coord(x)
-                relloc=x*direct
+                x = Coord(x)
+                relloc = x*direct
                 if self.canmove(relloc):
                     valid.append(relloc)
         return valid
@@ -146,9 +146,9 @@ class nopiece(piece):
     """The "null" instance of a piece.
 
     Attributes:
-        PTYPE {ptype} -- type of piece
-        MOVES {moves} -- legal moves for piece
-        COLOR {color} -- color of piece
+        PTYPE {Ptype} -- type of piece
+        MOVES {Moves} -- legal moves for piece
+        COLOR {Color} -- color of piece
         TUP {tuple} -- (PTYPE, COLOR)
         prom {bool or None} -- if piece is promoted
         PROMOTABLE {bool} -- if piece is promotable
