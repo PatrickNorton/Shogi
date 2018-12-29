@@ -34,3 +34,6 @@ class OtherMove(Exception):
 
 class OtherInput(Exception):
     """A non-location input was entered."""
+
+class NullCoordError(Exception):
+    """A null coordinate was referenced."""
