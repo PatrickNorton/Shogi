@@ -21,7 +21,7 @@ def main(input_gen, window):
         **Should always be handled within the function
     """
 
-    theboard = classes.board()
+    theboard = classes.Board()
     game = True
     debug = False
     errstr = ''

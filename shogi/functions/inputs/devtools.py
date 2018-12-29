@@ -16,10 +16,10 @@ def setpos(input_gen, window):
         window {curtsies.FullScreenWindow} -- window displayed
 
     Returns:
-        board -- the newly set-up board
+        Board -- the newly set-up board
     """
 
-    theboard = classes.board()
+    theboard = classes.Board()
     todict = {}
     while True:
         todisp = []
@@ -46,5 +46,5 @@ def setpos(input_gen, window):
             print('Invalid piece\n')
             continue
         todict[loc] = piecenm
-    toreturn = classes.board(todict)
+    toreturn = classes.Board(todict)
     return toreturn

@@ -6,11 +6,11 @@ from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import row
 
 __all__ = [
-    "board"
+    "Board"
 ]
 
 
-class board:
+class Board:
     """Class for main board object.
 
     Attributes:

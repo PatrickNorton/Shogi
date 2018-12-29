@@ -9,7 +9,7 @@ def inputpiece(theboard, pieceloc):
     """Test if input is a valid location/
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         pieceloc {str} -- inputted string
 
     Raises:

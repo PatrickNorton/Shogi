@@ -10,7 +10,7 @@ def piececheck(theboard, pieceloc):
     """Check if inputted piece is valid.
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         pieceloc {str} -- inputted string of location
 
     Raises:

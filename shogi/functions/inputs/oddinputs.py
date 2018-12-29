@@ -17,7 +17,7 @@ def otherconditions(input_gen, window, todisp, theboard, var):
         input_gen {curtsies.Input} -- input generator
         window {curtsies.FullScreenWindow} -- window to print text
         todisp {list} -- what's currrently on screen
-        theboard {board} -- current board setup
+        theboard {Board} -- current board setup
         var {str} -- text inputted by user
 
     Raises:
@@ -51,7 +51,7 @@ def droppiece(input_gen, window, todisp, theboard):
         input_gen {curtsies.Input} -- input generator
         window {curtsies.FullScreenWindow} -- window to print text
         todisp {list} -- list of what's currently on screen
-        theboard {board} -- current state of board
+        theboard {Board} -- current state of board
 
     Raises:
         classes.IllegalMove -- attempted drop of uncaptured piece

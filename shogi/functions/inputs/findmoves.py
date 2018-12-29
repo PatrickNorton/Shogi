@@ -10,7 +10,7 @@ def testspcs(theboard, pieceloc, spacelist):
     """Test which spaces in a list are valid moves.
 
     Arguments:
-        theboard {board} -- current state of the board
+        theboard {Board} -- current state of the board
         pieceloc {Coord} -- location of piece to be moved
         spacelist {list[Coord]} -- list of coords to check
 

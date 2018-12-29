@@ -11,7 +11,7 @@ def checkcheck(theboard, coords, color, earlybreak=False):
     """Find if king is in check.
 
     Arguments:
-        theboard {board} -- current game board
+        theboard {Board} -- current game board
         coords {tuple[Coord]} -- last move (from, to)
         color {color} -- color of king to test
 
@@ -50,7 +50,7 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
     """Test if non-moved pieces can check king.
 
     Arguments:
-        theboard {board} -- current board
+        theboard {Board} -- current board
         coords {tuple[Coord]} -- last move(from, to)
         checklist {list[Coord]} -- list of pieces currently checking king
 

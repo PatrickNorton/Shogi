@@ -11,7 +11,7 @@ def matecheck(theboard, kingpos, checklist):
     """Test if king is in checkmate.
 
     Arguments:
-        theboard {board} -- current board position
+        theboard {Board} -- current board position
         kingpos {Coord} -- location of king
         checklist {list[Coord]} -- list of pieces checking king
 

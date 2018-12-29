@@ -16,7 +16,7 @@ def movecheck(theboard, current, moveloc):
     TODO: deprecate this in favor of direct inputpiece call
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         current {Coord} -- position of piece to be moved
         moveloc {str} -- input of piece to be moved
 
@@ -38,7 +38,7 @@ def movecheck2(theboard, coords):
     """Check if piece can be moved between locations.
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         coords {tuple[Coord]} -- current and new locations of piece
 
     Raises:
@@ -70,7 +70,7 @@ def obscheck(theboard, current, move):
     """Check if piece is obstructing move.
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         current {Coord} -- current piece location
         move {Coord} -- location to move piece
 
@@ -90,7 +90,7 @@ def kingcheck(theboard, coords):
     """Check if king is moving into check.
 
     Arguments:
-        theboard {board} -- current board state
+        theboard {Board} -- current board state
         coords {tuple[Coord]} -- current and new piece location
 
     Raises:

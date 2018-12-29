@@ -20,7 +20,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
     Arguments:
         input_gen {curtsies.Input} -- input generator
         window {curtsies.FullScreenWindow} -- window to display text
-        theboard {board} -- current state of board
+        theboard {Board} -- current state of board
 
     Keyword Arguments:
         filenm {str} -- name of file, if provided (default: {None})
@@ -109,7 +109,7 @@ def helpmenu(input_gen, window, theboard):
     Arguments:
         input_gen {curtsies.Input} -- Input generator
         window {curtsies.FullScreenWindow} -- window on which to print
-        theboard {board} -- current state of the board
+        theboard {Board} -- current state of the board
 
     Returns:
         str -- path of file to open
@@ -141,7 +141,7 @@ def movelistfn(input_gen, window, theboard):
     Arguments:
         input_gen {curtsies.Input} -- input generator
         window {curtsies.FullScreenWindow} -- window to display text
-        theboard {board} -- current gameplay board
+        theboard {Board} -- current gameplay board
     """
 
     movedict = {}
