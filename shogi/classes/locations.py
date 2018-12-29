@@ -1,4 +1,5 @@
 from numpy import sin, cos, sign, pi
+from .exceptions import NullCoordError
 
 __all__ = [
     "Coord",
@@ -22,7 +23,7 @@ class Coord:
 
     Arguments:
         xy {int, str, tuple, list or Coord -- The coordinates of
-            which the Coordis to be made. If xy is an integer, (x, x)
+            which the coord is to be made. If xy is an integer, (x, x)
             is created.
 
         Raises:
@@ -68,7 +69,7 @@ class Coord:
 class Direction(Coord):
     """A direction in which a piece moves.
 
-    This is equivalent to a Coord with length 1, but also with an
+    This is equivalent to a coord with length 1, but also with an
     extra DIR attribute, which specifies the direction in which it is
     facing.
 
@@ -123,3 +124,24 @@ class Direction(Coord):
 
         if not xvar == yvar == 0:
             return self.lis[(sign(xvar), sign(yvar))]
+
+
+class NullCoord(Coord):
+    def __init__(self):
+        self.x = None
+        self.y = None
+        self.TUP = (None, None)
+        self.XSTR = '-'
+        self.YSTR = '-'
+
+    def __eq__(self, other): return isinstance(other, NullCoord)
+
+    def __add__(self, other): raise NullCoordError
+
+    def __sub__(self, other): raise NullCoordError
+
+    def __mul__(self, other): raise NullCoordError
+
+    def __abs__(self): raise NullCoordError
+
+    def __repr__(self): return "NullCoord()"
