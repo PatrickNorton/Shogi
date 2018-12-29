@@ -126,13 +126,31 @@ class Direction(Coord):
             return self.lis[(sign(xvar), sign(yvar))]
 
 
-class NullCoord(Coord):
+class NullCoord(Direction):
+    """The "Null" instance of a coordinate.
+
+    This is to be used when a coordinate does not point to any
+    location on the board, such as attempting to point to the location
+    of a piece which has all of its instances captured by some player.
+    This inherits from Direction so that it may have a DIR attribute,
+    enabling it to be used as a direction as well as a coordinate.
+
+    Attributes:
+        x {None} -- the x-coordinate (None)
+        y {None} -- the y-coordinate (None)
+        TUP {tuple[None]} -- the (x, y) tuple (None, None)
+        XSTR {str} -- the x part of board notation ('-')
+        YSTR {str} -- the y part of board notation ('-')
+        DIR {int} -- which way the direction is going. (8)
+    """
+
     def __init__(self):
         self.x = None
         self.y = None
         self.TUP = (None, None)
         self.XSTR = '-'
         self.YSTR = '-'
+        self.DIR = 8
 
     def __eq__(self, other): return isinstance(other, NullCoord)
 
