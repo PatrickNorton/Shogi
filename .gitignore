@@ -122,4 +122,4 @@ dmypy.json
 .pyre/
 
 # Test file
-.test.py
+.test.*
