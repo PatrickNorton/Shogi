@@ -10,6 +10,11 @@ __all__ = [
 class Coord:
     """A set of (x, y) coordinates.
 
+    These coordinates point to a position on the board, and must be
+    in the range (-9, 9) for both directions. Coordinates in the
+    range (-9, -1) are for relative coordinates only and should not
+    be used for pointing to a position on the board.
+
     Attributes:
         x {int} -- the x-coordinate
         y {int} -- the y-coordinate
@@ -19,7 +24,7 @@ class Coord:
     """
 
     def __init__(self, xy):
-        """Initialise instance of Coord
+        """Initialise instance of Coord.
 
     Arguments:
         xy {int, str, tuple, list or Coord -- The coordinates of
@@ -71,7 +76,9 @@ class Direction(Coord):
 
     This is equivalent to a coord with length 1, but also with an
     extra DIR attribute, which specifies the direction in which it is
-    facing.
+    facing. To be used for vectors and getting from a Moves object,
+    where the moves are specified by direction, and not by absolute or
+    relative coordinates.
 
     Attributes:
         x {int} -- the x-coordinate
