@@ -1,13 +1,18 @@
 from itertools import product
 from shogi import classes
 from .move import movecheck2
+from typing import List
 
 __all__ = [
     "matecheck"
 ]
 
 
-def matecheck(theboard, kingpos, checklist):
+def matecheck(
+    theboard: classes.Board,
+    kingpos: classes.Coord,
+    checklist: List[classes.Coord]
+) -> bool:
     """Test if king is in checkmate.
 
     Arguments:
@@ -31,22 +36,22 @@ def matecheck(theboard, kingpos, checklist):
                 return False
     if len(checklist) > 1:
         return True
-    checklist = checklist[0]
+    checkloc = checklist[0]
     haspieces = theboard.CAPTURED[int(theboard.currplyr)]
-    notknight = str(theboard[checklist].PTYPE) != 'n'
+    notknight = str(theboard[checkloc].PTYPE) != 'n'
     hasspace = not all(x in (-1, 0, 1) for x in newpos)
     if haspieces and notknight and hasspace:
         return False
     for loc in theboard.enemypcs:
         try:
-            movecheck2(theboard, (loc, checklist))
+            movecheck2(theboard, (loc, checkloc))
         except classes.IllegalMove:
             continue
         return False
-    move = kingpos-checklist
+    move = kingpos-checkloc
     movedir = classes.Direction(move)
     for pos, z in product(theboard.enemypcs, range(abs(max(move)))):
-        newpos = z*checklist*classes.Coord(movedir)
+        newpos = checkloc*classes.Coord(movedir)*z
         try:
             movecheck2(theboard, (pos, newpos))
         except classes.IllegalMove:

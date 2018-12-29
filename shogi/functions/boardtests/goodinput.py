@@ -5,7 +5,10 @@ __all__ = [
 ]
 
 
-def inputpiece(theboard, pieceloc):
+def inputpiece(
+    theboard: classes.Board,
+    strloc: str
+) -> bool:
     """Test if input is a valid location/
 
     Arguments:
@@ -20,7 +23,7 @@ def inputpiece(theboard, pieceloc):
     """
 
     try:
-        pieceloc = classes.Coord(pieceloc)
+        pieceloc = classes.Coord(strloc)
         return True
     except (ValueError, IndexError):
         raise classes.OtherInput(pieceloc)
