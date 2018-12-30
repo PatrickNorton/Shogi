@@ -34,7 +34,7 @@ def main(input_gen, window):
             todisp.append(bold(errstr))
             errstr = ''
         todisp += str(theboard).split('\n')
-        todisp.append(f"{repr(theboard.currplyr)}'s turn")
+        todisp.append(f"{theboard.currplyr !r}'s turn")
         maindisp = todisp[:]
         todisp.append('Enter piece location')
         todisp.append(': ')
@@ -42,7 +42,7 @@ def main(input_gen, window):
             pieceloc = functions.getinput(input_gen, window, todisp)
             pieceloc = functions.piececheck(theboard, pieceloc)
             todisp = maindisp[:]
-            astr = f"The piece is a {repr(theboard[pieceloc])} at {pieceloc}."
+            astr = f"The piece is a {theboard[pieceloc] !r} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
@@ -96,7 +96,7 @@ def main(input_gen, window):
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate. {repr(theboard.currplyr)} wins")
+                print(f"Checkmate. {theboard.currplyr !r} wins")
                 game = False
                 break
             else:

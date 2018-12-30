@@ -156,7 +156,7 @@ def movelistfn(input_gen, window, theboard):
         movedict[loc] = movelst
     filestr = ''
     for loc, piece in currpieces.items():
-        filestr += f"{repr(piece)} at {loc}:\n"
+        filestr += f"{piece !r} at {loc}:\n"
         toprint = (str(x) for x in movedict[loc])
         filestr += f"    {', '.join(toprint)}\n"
     filestr = filestr.strip()

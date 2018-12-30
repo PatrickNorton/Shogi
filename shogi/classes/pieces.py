@@ -52,7 +52,7 @@ class Piece:
 
     def __hash__(self): return hash(self.TUP)
 
-    def __repr__(self): return f"{repr(self.COLOR)} {repr(self.PTYPE)}"
+    def __repr__(self): return f"{self.COLOR !r} {self.PTYPE !r}"
 
     def promote(self):
         """Promote piece.
