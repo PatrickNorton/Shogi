@@ -207,6 +207,19 @@ class Piece:
             return str(self.PTYPE) == typ
         return False
 
+    def ispiece(self, typ, clr):
+        """Check if the piece of a certain color and type.
+
+        Arguments:
+            typ {Ptype or str} -- type to check
+            clr {Color, int, or str} -- color to check
+
+        Returns:
+            bool -- if the piece is of the same type and color
+        """
+
+        return self.istype(typ) and self.iscolor(clr)
+
 
 class NoPiece(Piece):
     """The "null" instance of a piece.
