@@ -1,5 +1,5 @@
 from shogi import classes
-from shogi import functions
+from shogi.functions import boardtests
 
 __all__ = [
     "testspcs"

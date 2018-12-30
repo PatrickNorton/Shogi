@@ -1,4 +1,4 @@
-from shogi import functions
+from shogi.functions import boardtests
 
 __all__ = [
     "toquit"
@@ -16,7 +16,7 @@ def toquit(input_gen, window, todisp):
         todisp {list} -- list of current screen content
 
     Raises:
-        functions.PlayerExit -- player wishes to exit
+        classes.PlayerExit -- player wishes to exit
     """
 
     while True:
@@ -31,6 +31,6 @@ def toquit(input_gen, window, todisp):
                 toquit = False
                 break
         if toquit:
-            raise functions.PlayerExit
+            raise classes.PlayerExit
         else:
             break

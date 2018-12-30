@@ -1,6 +1,6 @@
 from shogi import classes
 from .inputfns import getinput
-from shogi import functions
+from shogi.functions import boardtests
 from .oddinputs import otherconditions
 
 __all__ = [
@@ -31,8 +31,8 @@ def setpos(input_gen, window):
             window.render_to_terminal(todisp)
             break
         try:
-            valid = functions.inputpiece(input_gen, window)
-        except functions.OtherInput:
+            valid = boardtests.inputpiece(input_gen, window)
+        except classes.OtherInput:
             otherconditions(input_gen, window, todisp, theboard, loc)
         if not valid:
             print('Invalid location')

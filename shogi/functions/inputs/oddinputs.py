@@ -71,14 +71,14 @@ def droppiece(input_gen, window, todisp, theboard):
             todisp.append('Enter location to place piece')
             todisp.append(': ')
             moveto = getinput(input_gen, window, todisp)
-            if functions.inputpiece(theboard, moveto):
+            if boardtests.inputpiece(theboard, moveto):
                 moveto = classes.Coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
             raise classes.IllegalMove(10)
     except ValueError:
         pass
-    except functions.OtherInput:
+    except classes.OtherInput:
         otherconditions(input_gen, window, todisp, theboard, moveto)
 
 
