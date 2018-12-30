@@ -141,6 +141,72 @@ class Piece:
                     valid.append(relloc)
         return valid
 
+    def samecolor(self, other):
+        """Check if piece has the same color as another piece.
+
+        Arguments:
+            other {Piece} -- the piece to be compared
+
+        Returns:
+            bool -- if they have the same color
+        """
+
+        return self.COLOR == other.COLOR
+
+    def sametype(self, other):
+        """Check if piece is the same type as another piece.
+
+        Arguments:
+            other {Piece} -- the piece to be compared
+
+        Returns:
+            bool -- if they are the same type
+        """
+
+        return self.PTYPE == other.PTYPE
+
+    def iscolor(self, clr):
+        """Check if piece is of a certain color.
+
+        This can take either a color, an int or a str object. It
+        should be used as a replacement for "instance.COLOR ==
+        Color('x')", as that is more verbose than necessary.
+
+        Arguments:
+            clr {Color, int or str} -- color to be tested
+
+        Returns:
+            bool -- if the piece is of that color
+        """
+
+        if isinstance(clr, Color):
+            return self.COLOR == clr
+        elif isinstance(clr, str):
+            return str(self.COLOR) == clr
+        elif isinstance(clr, int):
+            return int(self.COLOR) == clr
+        return False
+
+    def istype(self, typ):
+        """Check if piece is of a certain type.
+
+        This can take either a ptype or a str object. It should be
+        used as a replacement for "instance.PTYPE == Ptype('x')", as
+        that is more verbose than necessary.
+
+        Arguments:
+            typ {Ptype or str} -- type to be tested
+
+        Returns:
+            bool -- if the piece is of that type
+        """
+
+        if isinstance(typ, Ptype):
+            return self.PTYPE == typ
+        elif isinstance(typ, str):
+            return str(self.PTYPE) == typ
+        return False
+
 
 class NoPiece(Piece):
     """The "null" instance of a piece.
