@@ -1,3 +1,5 @@
+from .exceptions import PromotedException, NotPromotableException
+from .exceptions import DemotedException
 from .locations import Direction
 from .information import info
 
@@ -25,6 +27,15 @@ class Color:
     """
 
     def __init__(self, turnnum):
+        """Initialise instance of Color.
+
+        Arguments:
+            turnnum {str or int} -- piece's color (w/b or 0/1)
+
+        Raises:
+            TypeError -- invalid type
+        """
+
         if isinstance(turnnum, int):
             self.INT = turnnum
             self.NAME = 'wb'[self.INT]
@@ -74,10 +85,23 @@ class Ptype:
         NAME {str} -- the full name of the piece
     """
 
-    def __init__(self, typ):
+    def __init__(self, typ, promoted=False):
+        """Initialise instance of Ptype.
+
+        Arguments:
+            typ {str} -- type of piece ('n', 'b', etc.)
+
+        Keyword Arguments:
+            promoted {bool} -- if piece is promoted (default: {False})
+        """
+
         typ = str(typ)
-        self.TYP = typ.lower()
-        self.NAME = info.NAMEDICT[self.TYP]
+        if promoted:
+            self.TYP = typ.lower()
+            self.NAME = f"+{info.NAMEDICT[self.TYP]}"
+        else:
+            self.TYP = typ.lower()
+            self.NAME = info.NAMEDICT[self.TYP]
 
     def __str__(self): return self.TYP
 
@@ -108,19 +132,27 @@ class Moves:
     a certain move can be made.
 
     Attributes:
-        DMOVES {dict} -- dict from direction -> move when unpromoted
-        PMOVES {dict} -- dmoves, but for when promoted
+        NAME {str} -- 1-letter name of piece
+        COLOR {Color} -- color of piece
+        DMOVES {dict[Direction, str]} -- direction -> move: unpromoted
+        PMOVES {dict[Direction, str]} -- dmoves, but for when promoted
         MOVES {list[dict]} -- list [DMOVES, PMOVES]
         ispromoted {bool} -- if the piece is promoted
         CMOVES {dict} -- current set of moves
     """
 
-    def __init__(self, piecenm, clr):
+    def __init__(self, piecenm, clr, promoted=False):
         """Initialise instance of moves.
 
         Arguments:
             piecenm {str} -- 1-letter name of piece
             clr {Color} -- color of piece
+
+        Keyword Arguments:
+            promoted {bool} -- if piece is promoted (default: {False})
+
+        Raises:
+            NotPromotableException -- when unpromotable is promoted
         """
 
         piecenm = str(piecenm)
@@ -130,6 +162,8 @@ class Moves:
                 if var is not None:
                     pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
+        self.NAME = piecenm
+        self.COLOR = clr
         self.DMOVES = {Direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[Direction(8)] = '-'
         mvlist = pcmvlist[1]
@@ -139,8 +173,10 @@ class Moves:
             self.PMOVES = {Direction(x): mvlist[x] for x in range(8)}
             self.PMOVES[Direction(8)] = '-'
         self.MOVES = [self.DMOVES, self.PMOVES]
-        self.ispromoted = False
+        self.ispromoted = promoted
         self.CMOVES = self.MOVES[self.ispromoted]
+        if self.CMOVES is None:
+            raise NotPromotableException
 
     def __getitem__(self, attr): return self.CMOVES[attr]
 
@@ -173,19 +209,25 @@ class Moves:
 
         Returns:
             Moves -- promoted version of self
+
+        Raises:
+            PromotedException -- already promoted
         """
 
-        self.ispromoted = True
-        self.CMOVES = self.MOVES[self.ispromoted]
-        return self
+        if self.ispromoted:
+            raise PromotedException
+        return Moves(self.NAME, self.COLOR, True)
 
     def dem(self):
         """Demote self.
 
         Returns:
             Moves -- demoted version of self
+
+        Raises:
+            DemotedException -- already demoted
         """
 
-        self.ispromoted = False
-        self.CMOVES = self.MOVES[self.ispromoted]
-        return self
+        if not self.ispromoted:
+            raise DemotedException
+        return Moves(self.NAME, self.COLOR, False)
