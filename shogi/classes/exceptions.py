@@ -1,4 +1,5 @@
 __all__ = [
+    "PromotionError",
     "NotPromotableException",
     "PromotedException",
     "DemotedException",
@@ -8,15 +9,20 @@ __all__ = [
     "OtherInput"
 ]
 
-class NotPromotableException(Exception):
+
+class PromotionError(Exception):
+    """Error in promotion"""
+
+
+class NotPromotableException(PromotionError):
     """Piece is not promotable."""
 
 
-class PromotedException(Exception):
+class PromotedException(PromotionError):
     """Piece is already promoted."""
 
 
-class DemotedException(Exception):
+class DemotedException(PromotionError):
     """Piece is already demoted."""
 
 
@@ -34,6 +40,7 @@ class OtherMove(Exception):
 
 class OtherInput(Exception):
     """A non-location input was entered."""
+
 
 class NullCoordError(Exception):
     """A null coordinate was referenced."""
