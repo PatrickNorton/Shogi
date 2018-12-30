@@ -1,4 +1,5 @@
 import json
+from typing import IO, Dict
 
 __all__ = [
     "_flatten_dict",
@@ -8,7 +9,7 @@ __all__ = [
 ]
 
 
-def _flatten_dict(d):
+def _flatten_dict(d: dict) -> dict:
     """Flatten a dictionary.
 
     Arguments:
@@ -29,14 +30,14 @@ def _flatten_dict(d):
     return dict(items())
 
 
-def _opendata(filenm):
+def _opendata(filenm: str) -> IO[str]:
     """Open data file.
 
     Arguments:
         filenm {str} -- relative path (from datafiles) of file
 
     Returns:
-        file -- opened data file
+        IO[str] -- opened data file
     """
 
     import os
@@ -45,14 +46,14 @@ def _opendata(filenm):
     return open(filepath)
 
 
-def _openhelp(filenm):
+def _openhelp(filenm: str) -> IO[str]:
     """Open help file.
 
     Arguments:
         filenm {str} -- relative path (from helpfiles) of file
 
     Returns:
-        file -- opened help file
+        IO[str] -- opened help file
     """
 
     import os
@@ -66,11 +67,14 @@ def _openhelp(filenm):
         return open(filepath)
 
 
-def _getfile(filenm):
+def _getfile(filenm: Dict[str, str]) -> str:
     """Get helpfile path from name
 
     Arguments:
         filenm {str} -- "public" name of file
+
+    Returns:
+        str: path to file
     """
 
     with _opendata('helpindex.json') as f:
@@ -81,3 +85,4 @@ def _getfile(filenm):
             filedict['pieces'][promkey] = filedict['pieces'][key]['promoted']
             filedict['pieces'][key] = filedict['pieces'][key]['unpromoted']
     _flatten_dict(filedict)
+    return filedict[filenm]

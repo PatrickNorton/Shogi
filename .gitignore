@@ -120,6 +120,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.pyre_configuration
 
 # Test file
 .test.*

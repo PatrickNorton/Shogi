@@ -7,3 +7,5 @@ submodule.
 
 from .boardtests import *
 from .inputs import *
+import boardtests
+import inputs
