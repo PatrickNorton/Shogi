@@ -1,9 +1,10 @@
 from .information import info
-from .locations import Coord
+from .locations import Coord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color, Ptype
 from .exceptions import PromotedException, DemotedException, IllegalMove
 from .rows import Row
+from typing import Dict, List, Generator, Iterable
 
 __all__ = [
     "Board"
@@ -32,28 +33,31 @@ class Board:
         nextmove {tuple[Coord]} -- Move about to be performed
     """
 
-    def __init__(self, pieces=None):
+    def __init__(self, pieces: dict = None):
         """Initialise board.
 
         Keyword Arguments:
             pieces {dict} -- for custom board setups (default: {None})
         """
 
+        self.PIECES: Dict[Coord, Piece]
         if pieces is None:
             self.PIECES = {Coord(x): Piece(*y) for x, y in info.LS.items()}
         else:
             self.PIECES = dict(pieces)
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
+        self.CAPTURED: Dict[Color, List[Piece]]
         self.CAPTURED = {Color(x): [] for x in range(2)}
+        self.PCSBYCLR: Dict[Color, Dict[Coord, Piece]]
         self.PCSBYCLR = {Color(0): {}, Color(1): {}}
         self.currplyr = Color(0)
         for x in range(2):
             theclr = Color(x)
-            for x, y in self.PIECES.items():
-                if y.COLOR == theclr:
-                    self.PCSBYCLR[theclr][x] = y
-        self.lastmove = (None, None)
-        self.nextmove = (None, None)
+            for loc, pc in self.PIECES.items():
+                if pc.COLOR == theclr:
+                    self.PCSBYCLR[theclr][loc] = pc
+        self.lastmove = (NullCoord(), NullCoord())
+        self.nextmove = (NullCoord(), NullCoord())
 
     def __str__(self):
         toreturn = ""
@@ -66,25 +70,25 @@ class Board:
         toreturn += f"White pieces: {' '.join(captostr)}\n"
         return toreturn
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: Iterable) -> Piece:
         Coords = Coord(index)
         toreturn = self.PIECES.get(Coords, NoPiece())
         return toreturn
 
-    def it(self):
+    def it(self) -> Generator:
         """Yield from all possible board positions."""
 
         yield from ((x, y) for x in range(9) for y in range(9))
 
-    def occupied(self):
+    def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
 
         yield from self.PIECES
 
-    def move(self, current, new):
+    def move(self, current: Coord, new: Coord):
         """Move a piece between locations.
 
         Arguments:
@@ -99,7 +103,7 @@ class Board:
         del self.PCSBYCLR[self[new].COLOR][Coord(current)]
         self.INVPIECES[self[new]] = new
 
-    def getpiece(self, location):
+    def getpiece(self, location: Piece) -> Coord:
         """Return a location based on piece type.
 
         Arguments:
@@ -111,7 +115,7 @@ class Board:
 
         return self.INVPIECES[location]
 
-    def capture(self, new):
+    def capture(self, new: Coord):
         """Capture a piece at a location.
 
         Arguments:
@@ -133,7 +137,7 @@ class Board:
         else:
             del self.INVPIECES[piece]
 
-    def canpromote(self, space):
+    def canpromote(self, space: Coord) -> bool:
         """Check if a piece is in a promotion zone.
 
         Arguments:
@@ -146,7 +150,7 @@ class Board:
         zonevar = ((0, 1, 2), (8, 7, 6))
         return space.y in zonevar[int(self.currplyr)]
 
-    def autopromote(self, space):
+    def autopromote(self, space: Coord) -> bool:
         """Check if piece must be promoted.
 
         Arguments:
@@ -161,7 +165,7 @@ class Board:
         index = zonevar[plyrint].index(space.y)
         return index < self[space].AUTOPROMOTE
 
-    def promote(self, space):
+    def promote(self, space: Coord):
         """Promote the piece at a location.
 
         Arguments:
@@ -174,7 +178,7 @@ class Board:
         self.PCSBYCLR[piece.COLOR][space] = piece
         self.INVPIECES[piece] = space
 
-    def putinplay(self, piece, movedto):
+    def putinplay(self, piece: Piece, movedto: Coord):
         """Move a piece from capture into play.
 
         Arguments:
@@ -200,18 +204,18 @@ class Board:
         self.INVPIECES[piece] = movedto
 
     @property
-    def currpcs(self):
+    def currpcs(self)  -> Dict[Coord, Piece]:
         """dict: Pieces of the current player."""
 
         return self.PCSBYCLR[self.currplyr]
 
     @property
-    def enemypcs(self):
+    def enemypcs(self) -> Dict[Coord, Piece]:
         """dict: Pieces of opposing player."""
 
         return self.PCSBYCLR[self.currplyr.other]
 
-    def playerpcs(self, player):
+    def playerpcs(self, player: Color) -> Dict[Coord, Piece]:
         """Return pieces of specific player
 
         Arguments:

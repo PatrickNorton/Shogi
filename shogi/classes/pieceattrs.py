@@ -1,5 +1,6 @@
-from .locations import Direction
+from .locations import Direction, Coord
 from .information import info
+from typing import Union, Dict, Optional
 
 __all__ = [
     "Color",
@@ -24,7 +25,9 @@ class Color:
         FULLNM {str} -- the full name (White, Black) of the color
     """
 
-    def __init__(self, turnnum):
+    def __init__(self, turnnum: Union[int, str]):
+        self.INT: int
+        self.NAME: str
         if isinstance(turnnum, int):
             self.INT = turnnum
             self.NAME = 'wb'[self.INT]
@@ -54,7 +57,7 @@ class Color:
     def __hash__(self): return hash((self.INT, self.NAME))
 
     @property
-    def other(self):
+    def other(self) -> Color:
         """Color: Opposite color from first"""
 
         return Color(self.OTHER)
@@ -74,10 +77,10 @@ class Ptype:
         NAME {str} -- the full name of the piece
     """
 
-    def __init__(self, typ):
+    def __init__(self, typ: str):
         typ = str(typ)
-        self.TYP = typ.lower()
-        self.NAME = info.NAMEDICT[self.TYP]
+        self.TYP: str = typ.lower()
+        self.NAME: str = info.NAMEDICT[self.TYP]
 
     def __str__(self): return self.TYP
 
@@ -87,13 +90,13 @@ class Ptype:
 
     def __hash__(self): return hash((self.TYP, self.NAME))
 
-    def prom(self):
+    def prom(self) -> Ptype:
         """Promote the piece."""
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
         return self
 
-    def dem(self):
+    def dem(self) -> Ptype:
         """Demote the piece."""
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
@@ -115,7 +118,7 @@ class Moves:
         CMOVES {dict} -- current set of moves
     """
 
-    def __init__(self, piecenm, clr):
+    def __init__(self, piecenm: str, clr: Color):
         """Initialise instance of moves.
 
         Arguments:
@@ -130,9 +133,11 @@ class Moves:
                 if var is not None:
                     pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
+        self.DMOVES: Dict[Direction, str]
         self.DMOVES = {Direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[Direction(8)] = '-'
         mvlist = pcmvlist[1]
+        self.PMOVES: Optional[Dict[Direction, str]]
         if mvlist is None:
             self.PMOVES = None
         else:
@@ -146,7 +151,7 @@ class Moves:
 
     def __iter__(self): yield from self.CMOVES
 
-    def canmove(self, relloc):  # Takes Coord object
+    def canmove(self, relloc: Coord) -> bool:
         """Check if piece can move there.
 
         Arguments:
@@ -167,8 +172,9 @@ class Moves:
             return True
         elif magicvar == 'T':
             return abs(relloc.x) == 1 and abs(relloc.y) == 2
+        return False
 
-    def prom(self):
+    def prom(self) -> Moves:
         """Promote self.
 
         Returns:
@@ -179,7 +185,7 @@ class Moves:
         self.CMOVES = self.MOVES[self.ispromoted]
         return self
 
-    def dem(self):
+    def dem(self) -> Moves:
         """Demote self.
 
         Returns:

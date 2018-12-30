@@ -1,5 +1,6 @@
 from numpy import sin, cos, sign, pi
 from .exceptions import NullCoordError
+from typing import Sequence, Union
 
 __all__ = [
     "Coord",
@@ -23,7 +24,7 @@ class Coord:
         YSTR {str} -- the y part of board notation
     """
 
-    def __init__(self, xy):
+    def __init__(self, xy: Sequence):
         """Initialise instance of Coord.
 
     Arguments:
@@ -38,9 +39,9 @@ class Coord:
         if isinstance(xy, str):
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
-        elif isinstance(xy, int) and abs(xy) in range(9):
-            self.x = xy
-            self.y = xy
+        elif isinstance(xy, int) and abs(xy) in range(9): # ! Broken
+            self.x: int = xy[0]
+            self.y: int = xy[0]
         elif all(abs(x) in range(9) for x in xy):
             self.x = int(xy[0])
             self.y = int(xy[1])
@@ -95,7 +96,7 @@ class Direction(Coord):
     lis = {(round(sin(pi*x/4)), -round(cos(pi*x/4))): x for x in range(8)}
     invlis = [(round(sin(pi*x/4)), -round(cos(pi*x/4))) for x in range(8)]
 
-    def __init__(self, direction):
+    def __init__(self, direction: Union[Sequence, int]):
         if direction == (0, 0):
             self.DIR = 8
         elif isinstance(direction, Coord):
@@ -118,7 +119,7 @@ class Direction(Coord):
 
     def __hash__(self): return hash(self.TUP)
 
-    def _make(self, xvar, yvar):
+    def _make(self, xvar: int, yvar: int) -> int:
         """Turn (x, y) coordinates into a direction.
 
         Arguments:
@@ -131,6 +132,7 @@ class Direction(Coord):
 
         if not xvar == yvar == 0:
             return self.lis[(sign(xvar), sign(yvar))]
+        return 8
 
 
 class NullCoord(Direction):
