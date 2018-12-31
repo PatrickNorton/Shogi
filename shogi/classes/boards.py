@@ -50,7 +50,7 @@ class Board:
         for x in range(2):
             theclr = Color(x)
             for x, y in self.PIECES.items():
-                if y.COLOR == theclr:
+                if y.iscolor(theclr):
                     self.PCSBYCLR[theclr][x] = y
         self.lastmove = (None, None)
         self.nextmove = (None, None)
@@ -189,10 +189,10 @@ class Board:
         player = self.currplyr
         if not isinstance(self[movedto], NoPiece):
             raise IllegalMove(8)
-        if piece.PTYPE == Ptype('p'):
+        if piece.istype('p'):
             rowtotest = Row(movedto, 0)
             for loc in rowtotest.notoriginal():
-                if self[loc] == Piece('p', player):
+                if self[loc].ispiece('p', player):
                     raise IllegalMove(9)
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece
