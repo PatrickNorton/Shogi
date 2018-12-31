@@ -111,7 +111,7 @@ def kingcheck(theboard, coords):
         except (ValueError, IndexError):
             continue
         except classes.IllegalMove as e:
-            if str(e) == '2':
+            if int(e) == '2':
                 break
             else:
                 continue

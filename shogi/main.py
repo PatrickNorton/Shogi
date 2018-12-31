@@ -56,9 +56,9 @@ def main(input_gen, window):
             if check:
                 raise classes.IllegalMove(6)
         except classes.IllegalMove as e:
-            var = int(str(e))
+            var = int(e)
             if var:
-                errstr = f"Error: {errorlist[var]}"
+                errstr = f"Error: {e}"
             continue
         except classes.OtherInput as e:
             pieceloc = e.args[0]
@@ -66,10 +66,10 @@ def main(input_gen, window):
                 functions.otherconditions(
                     input_gen, window, todisp, theboard, pieceloc
                 )
-            except classes.IllegalMove as e:
-                var = int(str(e))
+            except classes.IllegalMove as f:
+                var = int(f)
                 if var:
-                    errstr = f"Error: {errorlist[var]}"
+                    errstr = f"Error: {f}"
                 continue
             except classes.OtherMove:
                 theboard.currplyr = theboard.currplyr.other
