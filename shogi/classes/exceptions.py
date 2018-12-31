@@ -31,9 +31,12 @@ class IllegalMove(Exception):
     def __init__(self, errornum):
         from .information import info
         super().__init__(errornum)
+        self.int = errornum
         self.message = info.ERRORS[errornum]
 
     def __str__(self): return self.message
+
+    def __int__(self): return self.int
 
 
 class PlayerExit(Exception):
