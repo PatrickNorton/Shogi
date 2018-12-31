@@ -28,6 +28,12 @@ class DemotedException(PromotionError):
 
 class IllegalMove(Exception):
     """The move cannot be made."""
+    def __init__(self, errornum):
+        from .information import info
+        super().__init__(errornum)
+        self.message = info.ERRORS[errornum]
+
+    def __str__(self): return self.message
 
 
 class PlayerExit(Exception):
