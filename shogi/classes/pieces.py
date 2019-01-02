@@ -1,6 +1,7 @@
 from .pieceattrs import Moves, Color, Ptype
 from .locations import Coord
-from .exceptions import NotPromotableException, PromotedException, DemotedException
+from .exceptions import (
+    NotPromotableException, PromotedException, DemotedException)
 from .information import info
 
 __all__ = [
@@ -187,7 +188,7 @@ class Piece:
             return int(self.COLOR) == clr
         return False
 
-    def istype(self, typ):
+    def hastype(self, typ):
         """Check if piece is of a certain type.
 
         This can take either a ptype or a str object. It should be
@@ -218,7 +219,7 @@ class Piece:
             bool -- if the piece is of the same type and color
         """
 
-        return self.istype(typ) and self.iscolor(clr)
+        return self.hastype(typ) and self.iscolor(clr)
 
 
 class NoPiece(Piece):

@@ -189,7 +189,7 @@ class Board:
         player = self.currplyr
         if not isinstance(self[movedto], NoPiece):
             raise IllegalMove(8)
-        if piece.istype('p'):
+        if piece.hastype('p'):
             rowtotest = Row(movedto, 0)
             for loc in rowtotest.notoriginal():
                 if self[loc].ispiece('p', player):

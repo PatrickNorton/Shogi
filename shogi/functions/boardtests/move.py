@@ -60,7 +60,7 @@ def movecheck2(theboard, coords):
         raise classes.IllegalMove(4)
     elif magicvar == 'T':
         pass
-    elif piece.istype('k'):
+    elif piece.hastype('k'):
         kingcheck(theboard, (current, new))
     else:
         obscheck(theboard, current, move)
