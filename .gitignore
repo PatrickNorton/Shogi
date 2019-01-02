@@ -122,5 +122,8 @@ dmypy.json
 .pyre/
 .pyre_configuration
 
+.idea
+.pyre
+
 # Test file
 .test.*
