@@ -1,6 +1,7 @@
 from numpy import sin, cos, sign, pi
 from .exceptions import NullCoordError
 from typing import Sequence, Union
+import collections
 
 __all__ = [
     "Coord",
@@ -8,7 +9,7 @@ __all__ = [
 ]
 
 
-class Coord:
+class Coord(collections.abc.Sequence):
     """A set of (x, y) coordinates.
 
     These coordinates point to a position on the board, and must be
@@ -39,7 +40,7 @@ class Coord:
         if isinstance(xy, str):
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
-        elif isinstance(xy, int) and abs(xy) in range(9): # ! Broken
+        elif isinstance(xy, int) and abs(xy) in range(9):  # ! Broken
             self.x: int = xy[0]
             self.y: int = xy[0]
         elif all(abs(x) in range(9) for x in xy):

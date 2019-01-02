@@ -1,6 +1,7 @@
 from .pieceattrs import Moves, Color, Ptype
 from .locations import Coord
-from .exceptions import NotPromotableException, PromotedException, DemotedException
+from .exceptions import (
+    NotPromotableException, PromotedException, DemotedException)
 from .information import info
 
 __all__ = [

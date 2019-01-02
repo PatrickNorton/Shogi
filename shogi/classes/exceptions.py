@@ -8,6 +8,7 @@ __all__ = [
     "OtherInput"
 ]
 
+
 class NotPromotableException(Exception):
     """Piece is not promotable."""
 

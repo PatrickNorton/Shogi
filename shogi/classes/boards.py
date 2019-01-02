@@ -2,16 +2,17 @@ from .information import info
 from .locations import Coord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color, Ptype
-from .exceptions import PromotedException, DemotedException, IllegalMove
+from .exceptions import DemotedException, IllegalMove
 from .rows import Row
-from typing import Dict, List, Generator, Iterable
+from typing import Dict, List, Generator, Sequence, Optional
+import collections
 
 __all__ = [
     "Board"
 ]
 
 
-class Board:
+class Board(collections.abc.Sequence):
     """Class for main board object.
 
     This is the object representing the main game board, and has,
@@ -33,7 +34,7 @@ class Board:
         nextmove {tuple[Coord]} -- Move about to be performed
     """
 
-    def __init__(self, pieces: dict = None):
+    def __init__(self, pieces: Optional[dict] = None):
         """Initialise board.
 
         Keyword Arguments:
@@ -73,7 +74,7 @@ class Board:
     def __iter__(self) -> Generator:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
-    def __getitem__(self, index: Iterable) -> Piece:
+    def __getitem__(self, index: Sequence) -> Piece:
         Coords = Coord(index)
         toreturn = self.PIECES.get(Coords, NoPiece())
         return toreturn
@@ -195,7 +196,7 @@ class Board:
             raise IllegalMove(8)
         if piece.PTYPE == Ptype('p'):
             rowtotest = Row(movedto, 0)
-            for loc in rowtotest.notoriginal():
+            for loc in rowtotest.notoriginal:
                 if self[loc] == Piece('p', player):
                     raise IllegalMove(9)
         self.CAPTURED[player].remove(piece)
@@ -204,7 +205,7 @@ class Board:
         self.INVPIECES[piece] = movedto
 
     @property
-    def currpcs(self)  -> Dict[Coord, Piece]:
+    def currpcs(self) -> Dict[Coord, Piece]:
         """dict: Pieces of the current player."""
 
         return self.PCSBYCLR[self.currplyr]

@@ -1,6 +1,7 @@
 from .locations import Direction, Coord
 from .information import info
 from typing import Union, Dict, Optional
+import collections
 
 __all__ = [
     "Color",
@@ -25,7 +26,7 @@ class Color:
         FULLNM {str} -- the full name (White, Black) of the color
     """
 
-    def __init__(self, turnnum: Union[int, str]):
+    def __init__(self, turnnum: Union[int, str, 'Color']):
         self.INT: int
         self.NAME: str
         if isinstance(turnnum, int):
@@ -57,7 +58,7 @@ class Color:
     def __hash__(self): return hash((self.INT, self.NAME))
 
     @property
-    def other(self) -> Color:
+    def other(self) -> 'Color':
         """Color: Opposite color from first"""
 
         return Color(self.OTHER)
@@ -90,20 +91,20 @@ class Ptype:
 
     def __hash__(self): return hash((self.TYP, self.NAME))
 
-    def prom(self) -> Ptype:
+    def prom(self) -> 'Ptype':
         """Promote the piece."""
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
         return self
 
-    def dem(self) -> Ptype:
+    def dem(self) -> 'Ptype':
         """Demote the piece."""
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
         return self
 
 
-class Moves:
+class Moves(collections.abc.Sequence):
     """The class containing the set of moves the piece can do.
 
     This class contains a dictionary relating directions to the moves
@@ -174,7 +175,7 @@ class Moves:
             return abs(relloc.x) == 1 and abs(relloc.y) == 2
         return False
 
-    def prom(self) -> Moves:
+    def prom(self) -> 'Moves':
         """Promote self.
 
         Returns:
@@ -185,7 +186,7 @@ class Moves:
         self.CMOVES = self.MOVES[self.ispromoted]
         return self
 
-    def dem(self) -> Moves:
+    def dem(self) -> 'Moves':
         """Demote self.
 
         Returns:
