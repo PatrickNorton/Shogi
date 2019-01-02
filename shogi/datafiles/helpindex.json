@@ -27,6 +27,7 @@
         },
         "gold general": "pieces/gold general.txt"
     },
+    "main": "main.txt",
     "rules": "rules.txt",
     "prompt": "prompt.txt",
     "commands": "commands.txt",
