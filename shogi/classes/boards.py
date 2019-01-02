@@ -1,8 +1,8 @@
 from .information import info
 from .locations import Coord
 from .pieces import Piece, NoPiece
-from .pieceattrs import Color, Ptype
-from .exceptions import PromotedException, DemotedException, IllegalMove
+from .pieceattrs import Color
+from .exceptions import DemotedException, IllegalMove
 from .rows import Row
 
 __all__ = [
