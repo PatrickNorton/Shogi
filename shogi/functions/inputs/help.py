@@ -30,7 +30,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
     """
 
     todisp = []
-    with open('shogihelp.txt') as helpf:
+    with _openhelp('main.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
         if filenm == 'moves':
@@ -46,7 +46,7 @@ def helpdesk(input_gen, window, theboard, filenm=None):
             prompt = 'Press Esc to return to game'
             filedisp(input_gen, window, prompt, thefile)
             raise classes.IllegalMove(0)
-        except FileNotFoundError as f:
+        except FileNotFoundError:
             toout = 'Invalid help command. Type "help" for command list.'
             print(toout)
         return
