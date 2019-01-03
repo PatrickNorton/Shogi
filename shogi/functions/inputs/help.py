@@ -36,7 +36,7 @@ def helpdesk(
     """
 
     todisp: List[str] = []
-    with open('shogihelp.txt') as helpf:
+    with _openhelp('main.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
         if filenm == 'moves':
@@ -52,7 +52,7 @@ def helpdesk(
             prompt = 'Press Esc to return to game'
             filedisp(input_gen, window, prompt, thefile)
             raise classes.IllegalMove(0)
-        except FileNotFoundError as f:
+        except FileNotFoundError:
             toout = 'Invalid help command. Type "help" for command list.'
             print(toout)
         return
@@ -162,7 +162,7 @@ def movelistfn(input_gen, window, theboard):
         movedict[loc] = movelst
     filestr = ''
     for loc, piece in currpieces.items():
-        filestr += f"{repr(piece)} at {loc}:\n"
+        filestr += f"{piece !r} at {loc}:\n"
         toprint = (str(x) for x in movedict[loc])
         filestr += f"    {', '.join(toprint)}\n"
     filestr = filestr.strip()

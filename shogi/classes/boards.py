@@ -55,10 +55,11 @@ class Board(collections.abc.Sequence):
         for x in range(2):
             theclr = Color(x)
             for loc, pc in self.PIECES.items():
-                if pc.COLOR == theclr:
+                if pc.iscolor(theclr):
                     self.PCSBYCLR[theclr][loc] = pc
         self.lastmove = (NullCoord(), NullCoord())
         self.nextmove = (NullCoord(), NullCoord())
+
 
     def __str__(self):
         toreturn = ""
@@ -196,10 +197,10 @@ class Board(collections.abc.Sequence):
         player = self.currplyr
         if not isinstance(self[movedto], NoPiece):
             raise IllegalMove(8)
-        if piece.PTYPE == Ptype('p'):
+        if piece.hastype('p'):
             rowtotest = Row(movedto, 0)
             for loc in rowtotest.notoriginal:
-                if self[loc] == Piece('p', player):
+                if self[loc].ispiece('p', player):
                     raise IllegalMove(9)
         self.CAPTURED[player].remove(piece)
         self.PCSBYCLR[piece.COLOR][movedto] = piece

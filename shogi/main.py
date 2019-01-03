@@ -27,14 +27,13 @@ def main(input_gen: Input, window: FullscreenWindow):
     errstr = ''
     if debug:
         theboard = functions.setpos(input_gen, window)
-    errorlist = classes.info.ERRORS
     while game:
         todisp = []
         if errstr:
             todisp.append(bold(errstr))
             errstr = ''
         todisp += str(theboard).split('\n')
-        todisp.append(f"{repr(theboard.currplyr)}'s turn")
+        todisp.append(f"{theboard.currplyr !r}'s turn")
         maindisp = todisp[:]
         todisp.append('Enter piece location')
         todisp.append(': ')
@@ -42,7 +41,7 @@ def main(input_gen: Input, window: FullscreenWindow):
             pieceloc = functions.getinput(input_gen, window, todisp)
             pieceloc = functions.piececheck(theboard, pieceloc)
             todisp = maindisp[:]
-            astr = f"The piece is a {repr(theboard[pieceloc])} at {pieceloc}."
+            astr = f"The piece is a {theboard[pieceloc] !r} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
@@ -56,9 +55,9 @@ def main(input_gen: Input, window: FullscreenWindow):
             if check:
                 raise classes.IllegalMove(6)
         except classes.IllegalMove as e:
-            var = int(str(e))
+            var = int(e)
             if var:
-                errstr = f"Error: {errorlist[var]}"
+                errstr = f"Error: {e}"
             continue
         except classes.OtherInput as e:
             pieceloc = e.args[0]
@@ -66,10 +65,10 @@ def main(input_gen: Input, window: FullscreenWindow):
                 functions.otherconditions(
                     input_gen, window, todisp, theboard, pieceloc
                 )
-            except classes.IllegalMove as e:
-                var = int(str(e))
+            except classes.IllegalMove as f:
+                var = int(f)
                 if var:
-                    errstr = f"Error: {errorlist[var]}"
+                    errstr = f"Error: {f}"
                 continue
             except classes.OtherMove:
                 theboard.currplyr = theboard.currplyr.other
@@ -96,7 +95,7 @@ def main(input_gen: Input, window: FullscreenWindow):
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate. {repr(theboard.currplyr)} wins")
+                print(f"Checkmate. {theboard.currplyr !r} wins")
                 game = False
                 break
             else:

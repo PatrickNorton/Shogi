@@ -64,11 +64,11 @@ def movecheck2(
         raise classes.IllegalMove(3)
     elif not piece.canmove(move):
         raise classes.IllegalMove(1)
-    elif theboard[new].COLOR == theboard[current].COLOR:
+    elif theboard[new].samecolor(theboard[current]):
         raise classes.IllegalMove(4)
     elif magicvar == 'T':
         pass
-    elif str(piece.PTYPE) == 'k':
+    elif piece.hastype('k'):
         kingcheck(theboard, (current, new))
     else:
         obscheck(theboard, current, move)
@@ -113,13 +113,13 @@ def kingcheck(theboard, coords):
         dist = classes.Coord(dist)
         try:
             loctotest = newloc+x*dist
-            if theboard[loctotest].COLOR == theboard[oldloc].COLOR:
+            if theboard[loctotest].samecolor(theboard[oldloc]):
                 raise classes.IllegalMove(4)
             movecheck2(theboard, (loctotest, newloc))
         except (ValueError, IndexError):
             continue
         except classes.IllegalMove as e:
-            if str(e) == '2':
+            if int(e) == '2':
                 break
             else:
                 continue
