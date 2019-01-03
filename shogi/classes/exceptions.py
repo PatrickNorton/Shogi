@@ -6,9 +6,9 @@ __all__ = [
     "IllegalMove",
     "PlayerExit",
     "OtherMove",
-    "OtherInput"
+    "OtherInput",
+    "NullCoordError"
 ]
-
 
 
 class PromotionError(Exception):
