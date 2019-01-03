@@ -1,6 +1,6 @@
 from .locations import Direction, Coord
 from .information import info
-from typing import Union, Dict, Optional
+from typing import Union, Dict, Optional, Generator
 import collections
 
 __all__ = [
@@ -70,8 +70,6 @@ class Ptype:
     This class is what determines which type the piece is (e.g. king,
     rook, knight, etc.). It should be used for comparisons between
     two piece's types.
-
-    TODO: Add kwarg for promotion to get promoted piece
 
     Attributes:
         TYP {str} -- the short name of the piece -- see "help names"
@@ -148,9 +146,17 @@ class Moves(collections.abc.Sequence):
         self.ispromoted = False
         self.CMOVES = self.MOVES[self.ispromoted]
 
-    def __getitem__(self, attr): return self.CMOVES[attr]
+    def __getitem__(self, attr: Direction) -> str:
+        if isinstance(attr, Direction):
+            return self.CMOVES[attr]
+        elif isinstance(attr, int):
+            return self.CMOVES[Direction(attr)]
+        else:
+            raise TypeError
 
-    def __iter__(self): yield from self.CMOVES
+    def __iter__(self) -> Generator: yield from self.CMOVES.values()
+
+    def __len__(self) -> int: return len(self.CMOVES)
 
     def canmove(self, relloc: Coord) -> bool:
         """Check if piece can move there.

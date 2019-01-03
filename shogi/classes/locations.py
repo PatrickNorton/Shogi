@@ -70,6 +70,8 @@ class Coord(collections.abc.Sequence):
 
     def __abs__(self): return Coord((abs(self.x), abs(self.y)))
 
+    def __len__(self): return len(self.TUP)
+
     def __repr__(self): return f"Coord'{self}')"
 
 

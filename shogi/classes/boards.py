@@ -79,6 +79,8 @@ class Board(collections.abc.Sequence):
         toreturn = self.PIECES.get(Coords, NoPiece())
         return toreturn
 
+    def __len__(self) -> int: return len(tuple(self))
+
     def it(self) -> Generator:
         """Yield from all possible board positions."""
 
