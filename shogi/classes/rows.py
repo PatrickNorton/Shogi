@@ -1,5 +1,5 @@
 from .locations import Coord, Direction
-from typing import Sequence, Union
+from typing import Sequence, Union, Set
 import collections
 
 __all__ = [
@@ -26,19 +26,20 @@ class Row(collections.abc.Iterable):
 
         loc = Coord(loc)
         vect = Direction(vect)
-        self.FIRSTSPACE = loc
-        self.VECT = vect
+        self.FIRSTSPACE: Coord = loc
+        self.VECT: Direction = vect
         self.SPACES = set()
         for x in range(9):
             if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
                 break
-            x = Coord(x)
+            x = Coord([x])
             self.SPACES.add(loc+x*vect)
         for x in range(0, -9, -1):
             if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
                 break
-            x = Coord(x)
+            x = Coord([x])
             self.SPACES.add(loc+x*vect)
+        self._notoriginal: Set[Coord] = set(x for x in self if x != self.FIRSTSPACE)
 
     def __iter__(self): yield from self.SPACES
 
@@ -53,6 +54,7 @@ class Row(collections.abc.Iterable):
 
     def __repr__(self): return f"Row({self.FIRSTSPACE}, {self.VECT})"
 
+    @property
     def notoriginal(self) -> set:
         """Get all non-original spaces in row
 
@@ -60,4 +62,4 @@ class Row(collections.abc.Iterable):
             set -- set of spaces
         """
 
-        return set(x for x in self if x != self.FIRSTSPACE)
+        return self._notoriginal
