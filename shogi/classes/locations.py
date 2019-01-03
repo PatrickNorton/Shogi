@@ -5,7 +5,8 @@ import collections
 
 __all__ = [
     "Coord",
-    "Direction"
+    "Direction",
+    "NullCoord"
 ]
 
 
@@ -25,7 +26,7 @@ class Coord(collections.abc.Sequence):
         YSTR {str} -- the y part of board notation
     """
 
-    def __init__(self, xy: Sequence):
+    def __init__(self, xy: Union[Sequence, int]):
         """Initialise instance of Coord.
 
     Arguments:
@@ -40,9 +41,9 @@ class Coord(collections.abc.Sequence):
         if isinstance(xy, str):
             self.x = '987654321'.index(xy[1])
             self.y = 'abcdefghi'.index(xy[0])
-        elif isinstance(xy, int) and abs(xy) in range(9):  # ! Broken
-            self.x: int = xy[0]
-            self.y: int = xy[0]
+        elif isinstance(xy, int) and abs(xy) in range(9):
+            self.x: int = xy
+            self.y: int = xy
         elif all(abs(x) in range(9) for x in xy):
             self.x = int(xy[0])
             self.y = int(xy[1])
@@ -157,12 +158,12 @@ class NullCoord(Direction):
     """
 
     def __init__(self):
+        super().__init__(8)
         self.x = None
         self.y = None
         self.TUP = (None, None)
         self.XSTR = '-'
         self.YSTR = '-'
-        self.DIR = 8
 
     def __eq__(self, other): return isinstance(other, NullCoord)
 
