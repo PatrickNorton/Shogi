@@ -1,7 +1,7 @@
 from .information import info
 from .locations import Coord, NullCoord
 from .pieces import Piece, NoPiece
-from .pieceattrs import Color, Ptype
+from .pieceattrs import Color
 from .exceptions import DemotedException, IllegalMove
 from .rows import Row
 from typing import Dict, List, Generator, Sequence, Optional
@@ -60,7 +60,6 @@ class Board(collections.abc.Sequence):
         self.lastmove = (NullCoord(), NullCoord())
         self.nextmove = (NullCoord(), NullCoord())
 
-
     def __str__(self):
         toreturn = ""
         captostr = [str(x) for x in self.CAPTURED[Color(1)]]
@@ -76,13 +75,14 @@ class Board(collections.abc.Sequence):
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index: Sequence) -> Piece:
-        Coords = Coord(index)
-        toreturn = self.PIECES.get(Coords, NoPiece())
+        coords = Coord(index)
+        toreturn = self.PIECES.get(coords, NoPiece())
         return toreturn
 
     def __len__(self) -> int: return len(tuple(self))
 
-    def it(self) -> Generator:
+    @staticmethod
+    def it() -> Generator:
         """Yield from all possible board positions."""
 
         yield from ((x, y) for x in range(9) for y in range(9))
