@@ -119,11 +119,11 @@ class Moves(collections.abc.Sequence):
         CMOVES {dict} -- current set of moves
     """
 
-    def __init__(self, piecenm: str, clr: Color):
+    def __init__(self, piecenm: Union[str, Ptype], clr: Color):
         """Initialise instance of moves.
 
         Arguments:
-            piecenm {str} -- 1-letter name of piece
+            piecenm {str or Ptype} -- 1-letter name of piece
             clr {Color} -- color of piece
         """
 
