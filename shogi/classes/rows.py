@@ -32,12 +32,12 @@ class Row(collections.abc.Iterable):
         for x in range(9):
             if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
                 break
-            x = Coord([x])
+            x = Coord(x)
             self.SPACES.add(loc+x*vect)
         for x in range(0, -9, -1):
             if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
                 break
-            x = Coord([x])
+            x = Coord(x)
             self.SPACES.add(loc+x*vect)
         self._notoriginal: Set[Coord] = set(x for x in self if x != self.FIRSTSPACE)
 
