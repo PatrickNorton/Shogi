@@ -1,12 +1,17 @@
 from shogi import classes
-from shogi import functions
+from shogi.functions import boardtests
+from typing import List
 
 __all__ = [
     "testspcs"
 ]
 
 
-def testspcs(theboard, pieceloc, spacelist):
+def testspcs(
+    theboard: classes.Board,
+    pieceloc: classes.Coord,
+    spacelist: List[classes.Coord]
+):
     """Test which spaces in a list are valid moves.
 
     Arguments:
@@ -22,7 +27,7 @@ def testspcs(theboard, pieceloc, spacelist):
     for relloc in spacelist:
         try:
             absloc = pieceloc+relloc
-            functions.movecheck2(theboard, (pieceloc, absloc))
+            boardtests.movecheck2(theboard, (pieceloc, absloc))
         except (TypeError, ValueError, classes.IllegalMove):
             continue
         else:

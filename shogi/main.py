@@ -4,7 +4,7 @@ from . import functions
 from . import classes
 
 
-def main(input_gen, window):
+def main(input_gen: Input, window: FullscreenWindow):
     """Play a complete game of Shogi.
 
     This uses a window to completely cover the screen, leaving no

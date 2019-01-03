@@ -1,7 +1,9 @@
 from .exceptions import PromotedException, NotPromotableException
 from .exceptions import DemotedException
-from .locations import Direction
+from .locations import Direction, Coord
 from .information import info
+from typing import Union, Dict, Optional, Generator
+import collections
 
 __all__ = [
     "Color",
@@ -26,7 +28,8 @@ class Color:
         FULLNM {str} -- the full name (White, Black) of the color
     """
 
-    def __init__(self, turnnum):
+
+    def __init__(self, turnnum: Union[int, str, 'Color']):
         """Initialise instance of Color.
 
         Arguments:
@@ -35,7 +38,8 @@ class Color:
         Raises:
             TypeError -- invalid type
         """
-
+        self.INT: int
+        self.NAME: str
         if isinstance(turnnum, int):
             self.INT = turnnum
             self.NAME = 'wb'[self.INT]
@@ -65,7 +69,7 @@ class Color:
     def __hash__(self): return hash((self.INT, self.NAME))
 
     @property
-    def other(self):
+    def other(self) -> 'Color':
         """Color: Opposite color from first"""
 
         return Color(self.OTHER)
@@ -78,14 +82,13 @@ class Ptype:
     rook, knight, etc.). It should be used for comparisons between
     two piece's types.
 
-    TODO: Add kwarg for promotion to get promoted piece
-
     Attributes:
         TYP {str} -- the short name of the piece -- see "help names"
         NAME {str} -- the full name of the piece
     """
 
-    def __init__(self, typ, promoted=False):
+
+    def __init__(self, typ: str, promoted: bool = False):
         """Initialise instance of Ptype.
 
         Arguments:
@@ -96,6 +99,8 @@ class Ptype:
         """
 
         typ = str(typ)
+        self.TYP: str
+        self.NAME: str
         if promoted:
             self.TYP = typ.lower()
             self.NAME = f"+{info.NAMEDICT[self.TYP]}"
@@ -111,20 +116,20 @@ class Ptype:
 
     def __hash__(self): return hash((self.TYP, self.NAME))
 
-    def prom(self):
+    def prom(self) -> 'Ptype':
         """Promote the piece."""
         self.TYP = self.TYP.upper()
         self.NAME = '+'+self.NAME
         return self
 
-    def dem(self):
+    def dem(self) -> 'Ptype':
         """Demote the piece."""
         self.TYP = self.TYP.lower()
         self.NAME = self.NAME.replace('+', '')
         return self
 
 
-class Moves:
+class Moves(collections.abc.Sequence):
     """The class containing the set of moves the piece can do.
 
     This class contains a dictionary relating directions to the moves
@@ -141,11 +146,13 @@ class Moves:
         CMOVES {dict} -- current set of moves
     """
 
-    def __init__(self, piecenm, clr, promoted=False):
+
+    def __init__(self, piecenm: Union[str, Ptype], clr: Color, promoted: bool = False):
+
         """Initialise instance of moves.
 
         Arguments:
-            piecenm {str} -- 1-letter name of piece
+            piecenm {str or Ptype} -- 1-letter name of piece
             clr {Color} -- color of piece
 
         Keyword Arguments:
@@ -162,11 +169,13 @@ class Moves:
                 if var is not None:
                     pcmvlist[y] = var[4:]+var[:4]
         mvlist = pcmvlist[0]
+        self.DMOVES: Dict[Direction, str]
         self.NAME = piecenm
         self.COLOR = clr
         self.DMOVES = {Direction(x): mvlist[x] for x in range(8)}
         self.DMOVES[Direction(8)] = '-'
         mvlist = pcmvlist[1]
+        self.PMOVES: Optional[Dict[Direction, str]]
         if mvlist is None:
             self.PMOVES = None
         else:
@@ -178,11 +187,19 @@ class Moves:
         if self.CMOVES is None:
             raise NotPromotableException
 
-    def __getitem__(self, attr): return self.CMOVES[attr]
+    def __getitem__(self, attr: Direction) -> str:
+        if isinstance(attr, Direction):
+            return self.CMOVES[attr]
+        elif isinstance(attr, int):
+            return self.CMOVES[Direction(attr)]
+        else:
+            raise TypeError
 
-    def __iter__(self): yield from self.CMOVES
+    def __iter__(self) -> Generator: yield from self.CMOVES.values()
 
-    def canmove(self, relloc):  # Takes Coord object
+    def __len__(self) -> int: return len(self.CMOVES)
+
+    def canmove(self, relloc: Coord) -> bool:
         """Check if piece can move there.
 
         Arguments:
@@ -203,8 +220,9 @@ class Moves:
             return True
         elif magicvar == 'T':
             return abs(relloc.x) == 1 and abs(relloc.y) == 2
+        return False
 
-    def prom(self):
+    def prom(self) -> 'Moves':
         """Promote self.
 
         Returns:
@@ -218,7 +236,7 @@ class Moves:
             raise PromotedException
         return Moves(self.NAME, self.COLOR, True)
 
-    def dem(self):
+    def dem(self) -> 'Moves':
         """Demote self.
 
         Returns:

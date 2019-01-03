@@ -10,6 +10,7 @@ __all__ = [
 ]
 
 
+
 class PromotionError(Exception):
     """Error in promotion"""
     def __init__(self, errornum=0):

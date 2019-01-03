@@ -1,4 +1,5 @@
 import curtsies
+from typing import List
 
 __all__ = [
     "getinput",
@@ -6,13 +7,17 @@ __all__ = [
 ]
 
 
-def getinput(input_gen, window, todisp):
+def getinput(
+    input_gen: curtsies.Input,
+    window: curtsies.FullscreenWindow,
+    todisp: List[str]
+) -> str:
     """Get player input and return a string
 
     Arguments:
         input_gen {curtsies.Input} -- generates input
         window {curtsies.FullScreenWindow} -- window to print text
-        todisp {str} -- prompt to print before input
+        todisp {list[str]} -- prompt to print before input
 
     Returns:
         str -- text entered by user
@@ -47,13 +52,17 @@ def getinput(input_gen, window, todisp):
     return toreturn
 
 
-def yninput(input_gen, window, todisp):
+def yninput(
+    input_gen: curtsies.Input,
+    window: curtsies.FullscreenWindow,
+    todisp: List[str]
+) -> bool:
     """Get binary (y/n) input from user.
 
     Arguments:
         input_gen {curtsies.Input} -- generate input
         window {curtsies.FullScreenWindow} -- window to print text
-        todisp {str} -- prompt to print before input
+        todisp {list[str]} -- prompt to print before input
 
     Returns:
         bool -- y/n entered by user
@@ -66,3 +75,4 @@ def yninput(input_gen, window, todisp):
         if c == 'n':
             return False
         window.render_to_terminal(todisp)
+    return False

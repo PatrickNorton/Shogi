@@ -1,6 +1,7 @@
 from itertools import product
 from shogi import classes
 from .goodinput import inputpiece
+from typing import Tuple
 
 __all__ = [
     "movecheck",
@@ -10,7 +11,11 @@ __all__ = [
 ]
 
 
-def movecheck(theboard, current, moveloc):
+def movecheck(
+    theboard: classes.Board,
+    current: classes.Coord,
+    movestr: str
+) -> Tuple[classes.Coord, classes.Coord]:
     """Check if inputted piece is a valid piece
 
     TODO: deprecate this in favor of direct inputpiece call
@@ -27,14 +32,17 @@ def movecheck(theboard, current, moveloc):
         tuple[Coord] -- coords of movement
     """
 
-    validpiece = inputpiece(theboard, moveloc)
+    validpiece = inputpiece(theboard, movestr)
     if not validpiece:
         raise classes.IllegalMove(11)
-    moveloc = classes.Coord(moveloc)
+    moveloc = classes.Coord(movestr)
     return (current, moveloc)
 
 
-def movecheck2(theboard, coords):
+def movecheck2(
+    theboard: classes.Board,
+    coords: Tuple[classes.Coord, classes.Coord]
+):
     """Check if piece can be moved between locations.
 
     Arguments:

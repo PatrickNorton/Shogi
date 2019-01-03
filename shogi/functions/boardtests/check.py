@@ -1,5 +1,6 @@
 from shogi import classes
 from .move import movecheck2
+from typing import List, Tuple
 
 __all__ = [
     "checkcheck",
@@ -7,7 +8,12 @@ __all__ = [
 ]
 
 
-def checkcheck(theboard, coords, color, earlybreak=False):
+def checkcheck(
+    theboard: classes.Board,
+    coords: Tuple[classes.Coord, classes.Coord],
+    color: classes.Color,
+    earlybreak: bool = False
+) -> Tuple[bool, classes.Coord, List[classes.Coord]]:
     """Find if king is in check.
 
     Arguments:
@@ -26,27 +32,38 @@ def checkcheck(theboard, coords, color, earlybreak=False):
     """
 
     oldloc, newloc = coords
-    check, checklist = False, []
-    toget = classes.Piece('k', color)
-    kingpos = theboard.getpiece(toget)
+    check: bool = False
+    checklist: List[classes.Coord] = []
+    toget: classes.Piece = classes.Piece('k', color)
+    kingpos: classes.Coord = theboard.getpiece(toget)
     try:
         movecheck2(theboard, (newloc, kingpos))
     except classes.IllegalMove:
-        tocc2 = ((oldloc, kingpos), [], earlybreak)
-        check, checklist = checkcheck2(theboard, *tocc2)
+        check, checklist = checkcheck2(
+            theboard,
+            (oldloc, kingpos),
+            checklist,
+            earlybreak)
     else:
         if earlybreak:
             checklist.append(newloc)
             return True, kingpos, checklist
         else:
             checklist.append(newloc)
-            tocc2 = ((oldloc, kingpos), checklist, earlybreak)
-            check, checklist = checkcheck2(theboard, *tocc2)
+            check, checklist = checkcheck2(
+                theboard,
+                (oldloc, kingpos),
+                checklist)
             return True, kingpos, checklist
     return check, kingpos, checklist
 
 
-def checkcheck2(theboard, coords, checklist, earlybreak=False):
+def checkcheck2(
+    theboard: classes.Board,
+    coords: Tuple[classes.Coord, classes.Coord],
+    checklist: List[classes.Coord],
+    earlybreak: bool = False
+):
     """Test if non-moved pieces can check king.
 
     Arguments:
@@ -63,8 +80,8 @@ def checkcheck2(theboard, coords, checklist, earlybreak=False):
     """
 
     oldloc, kingpos = coords
-    relcoord = kingpos-oldloc
-    mvmt = abs(relcoord)
+    relcoord: classes.Coord = kingpos-oldloc
+    mvmt: classes.Coord = abs(relcoord)
     if mvmt.x != mvmt.y and min(mvmt):
         return False, checklist
     toking = classes.Direction(relcoord)

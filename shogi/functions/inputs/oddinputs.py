@@ -1,7 +1,9 @@
+import curtsies
 from shogi import classes
-from shogi import functions
+from shogi.functions import boardtests
 from .help import helpdesk
 from .inputfns import getinput
+from typing import List
 
 __all__ = [
     "otherconditions",
@@ -10,13 +12,19 @@ __all__ = [
 ]
 
 
-def otherconditions(input_gen, window, todisp, theboard, var):
+def otherconditions(
+    input_gen: curtsies.Input,
+    window: curtsies.FullscreenWindow,
+    todisp: List[str],
+    theboard: classes.Board,
+    var: str
+) -> bool:
     """Check if string is an action, then do the action.
 
     Arguments:
         input_gen {curtsies.Input} -- input generator
         window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list} -- what's currrently on screen
+        todisp {list[str]} -- what's currrently on screen
         theboard {Board} -- current board setup
         var {str} -- text inputted by user
 
@@ -37,14 +45,19 @@ def otherconditions(input_gen, window, todisp, theboard, var):
         helpdesk(input_gen, window, theboard)
         raise classes.IllegalMove(0)
     if var[:4] == 'help':
-        filenm = var[4:]
+        filenm: str = var[4:]
         filenm = filenm.strip()
         helpdesk(input_gen, window, theboard, filenm)
         raise classes.IllegalMove(0)
     return False
 
 
-def droppiece(input_gen, window, todisp, theboard):
+def droppiece(
+    input_gen: curtsies.Input,
+    window: curtsies.FullscreenWindow,
+    todisp: List[str],
+    theboard: classes.Board
+):
     """Prompt to add a piece to the board.
 
     Arguments:
@@ -62,6 +75,7 @@ def droppiece(input_gen, window, todisp, theboard):
         raise classes.IllegalMove(7)
     todisp.append('Enter piece name to put in play')
     todisp.append('> ')
+    moved = getinput(input_gen, window, todisp)
     if moved.startswith('k'):
         moved = 'n'
     try:
@@ -70,19 +84,23 @@ def droppiece(input_gen, window, todisp, theboard):
         if thepiece in theboard.CAPTURED[theboard.currplyr]:
             todisp.append('Enter location to place piece')
             todisp.append(': ')
-            moveto = getinput(input_gen, window, todisp)
-            if functions.inputpiece(theboard, moveto):
+            movetostr = getinput(input_gen, window, todisp)
+            if boardtests.inputpiece(theboard, movetostr):
                 moveto = classes.Coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
             raise classes.IllegalMove(10)
     except ValueError:
         pass
-    except functions.OtherInput:
-        otherconditions(input_gen, window, todisp, theboard, moveto)
+    except classes.OtherInput:
+        otherconditions(input_gen, window, todisp, theboard, movetostr)
 
 
-def toquit(input_gen, window, todisp):
+def toquit(
+    input_gen: curtsies.Input,
+    window: curtsies.FullscreenWindow,
+    todisp: List[str]
+):
     """Check if player really wants to quit.
 
     Arguments:

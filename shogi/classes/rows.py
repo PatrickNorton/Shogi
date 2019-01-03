@@ -1,11 +1,13 @@
 from .locations import Coord, Direction
+from typing import Sequence, Union
+import collections
 
 __all__ = [
     "Row"
 ]
 
 
-class Row:
+class Row(collections.abc.Iterable):
     """The class representing a row of coordinates.
 
     Attributes:
@@ -14,7 +16,7 @@ class Row:
         SPACES {set} -- set of spaces in row
     """
 
-    def __init__(self, loc, vect):
+    def __init__(self, loc: Sequence, vect: Union[Sequence, int]):
         """Initialise instance of Row.
 
         Arguments:
@@ -40,7 +42,7 @@ class Row:
 
     def __iter__(self): yield from self.SPACES
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'Row') -> bool:
         if isinstance(other, Row):
             if other.FIRSTSPACE in self:
                 return abs(self.VECT) == abs(other.VECT)
@@ -51,11 +53,11 @@ class Row:
 
     def __repr__(self): return f"Row({self.FIRSTSPACE}, {self.VECT})"
 
-    def notoriginal(self):
+    def notoriginal(self) -> set:
         """Get all non-original spaces in row
 
         Returns:
             set -- set of spaces
         """
 
-        return (x for x in self if x != self.FIRSTSPACE)
+        return set(x for x in self if x != self.FIRSTSPACE)

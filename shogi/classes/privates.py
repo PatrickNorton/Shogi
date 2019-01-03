@@ -1,4 +1,5 @@
 import json
+from typing import Dict, List, Union, TextIO
 
 __all__ = [
     "_Infocls",
@@ -22,20 +23,20 @@ class _Infocls:
         """Initialise instance of Piece."""
 
         with _opendata('moves.json') as f:
-            self.MOVEDICT = json.load(f)
+            self.MOVEDICT: Dict[str, List[str]] = json.load(f)
         with _opendata('names.json') as f:
-            self.NAMEDICT = json.load(f)
+            self.NAMEDICT: Dict[str, str] = json.load(f)
         with _opendata('board.json') as f:
-            self.LS = json.load(f)
+            self.LS: Dict[str, List[str]] = json.load(f)
         with _opendata('other.json') as f:
-            self.PCINFO = json.load(f)
+            self.PCINFO: Dict[str, dict] = json.load(f)
         with _opendata('errors.json') as f:
-            self.ERRORS = json.load(f)
+            self.ERRORS: List[str] = json.load(f)
         with _opendata('helpindex.json') as f:
-            self.HELPINDEX = json.load(f)
+            self.HELPINDEX: Dict[str, Union[str, dict]] = json.load(f)
 
 
-def _opendata(filenm):
+def _opendata(filenm: str) -> TextIO:
     """Open data file.
 
     Arguments:

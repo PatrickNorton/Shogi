@@ -6,7 +6,10 @@ __all__ = [
 ]
 
 
-def piececheck(theboard, pieceloc):
+def piececheck(
+    theboard: classes.Board,
+    piecestr: str
+):
     """Check if inputted piece is valid.
 
     Arguments:
@@ -21,10 +24,10 @@ def piececheck(theboard, pieceloc):
         Coord -- location inputted
     """
 
-    validpiece = inputpiece(theboard, pieceloc)
+    validpiece = inputpiece(theboard, piecestr)
     if not validpiece:
         raise classes.IllegalMove(11)
-    pieceloc = classes.Coord(pieceloc)
+    pieceloc = classes.Coord(piecestr)
     if theboard[pieceloc].COLOR != theboard.currplyr:
         raise classes.IllegalMove(5)
     return pieceloc

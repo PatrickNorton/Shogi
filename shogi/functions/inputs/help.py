@@ -1,10 +1,12 @@
 import json
+import curtsies
 from .printers import filedisp
 from shogi import classes
 from .inputfns import getinput
 from .quitting import toquit
 from .privates import _openhelp, _opendata
 from .findmoves import testspcs
+from typing import List
 
 __all__ = [
     "helpdesk",
@@ -14,7 +16,11 @@ __all__ = [
 ]
 
 
-def helpdesk(input_gen, window, theboard, filenm=None):
+def helpdesk(
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        theboard: classes.Board,
+        filenm: str = ''):
     """Run help functions.
 
     Arguments:
@@ -23,13 +29,13 @@ def helpdesk(input_gen, window, theboard, filenm=None):
         theboard {Board} -- current state of board
 
     Keyword Arguments:
-        filenm {str} -- name of file, if provided (default: {None})
+        filenm {str} -- name of file, if provided (default: {''})
 
     Raises:
         classes.IllegalMove -- return to game and continue with next turn
     """
 
-    todisp = []
+    todisp: List[str] = []
     with _openhelp('main.txt') as helpf:
         filetxt = helpf.read()
     if filenm is not None:
