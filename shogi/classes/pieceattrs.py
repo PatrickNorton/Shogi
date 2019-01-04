@@ -88,11 +88,11 @@ class Ptype:
     """
 
 
-    def __init__(self, typ: str, promoted: bool = False):
+    def __init__(self, typ: Union[str, 'Ptype'], promoted: bool = False):
         """Initialise instance of Ptype.
 
         Arguments:
-            typ {str} -- type of piece ('n', 'b', etc.)
+            typ {str or Ptype} -- type of piece ('n', 'b', etc.)
 
         Keyword Arguments:
             promoted {bool} -- if piece is promoted (default: {False})

@@ -24,7 +24,7 @@ class Piece:
         AUTOPROMOTE {int} -- where must the piece promote
     """
 
-    def __init__(self, typ: str, clr: str):
+    def __init__(self, typ: Union[str, Ptype], clr: Union[int, str, Color]):
         """Initialise instance of piece.
 
         Arguments:
