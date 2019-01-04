@@ -1,8 +1,9 @@
 from .pieceattrs import Moves, Color, Ptype
-from .locations import Coord
+from .locations import Coord, Direction
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException)
 from .information import info
+from typing import Tuple, Optional, List, Union
 
 __all__ = [
     "Piece",
@@ -23,7 +24,7 @@ class Piece:
         AUTOPROMOTE {int} -- where must the piece promote
     """
 
-    def __init__(self, typ, clr):
+    def __init__(self, typ: str, clr: str):
         """Initialise instance of piece.
 
         Arguments:
@@ -31,23 +32,25 @@ class Piece:
             clr {str} -- 1-letter color of piece
         """
 
-        self.PTYPE = Ptype(typ)
-        self.MOVES = Moves(self.PTYPE, Color(clr))
-        self.COLOR = Color(clr)
-        self.TUP = (self.PTYPE, self.COLOR)
+        self.PTYPE: Ptype = Ptype(typ)
+        self.MOVES: Moves = Moves(self.PTYPE, Color(clr))
+        self.COLOR: Color = Color(clr)
+        self.TUP: Tuple[Ptype, Color] = (self.PTYPE, self.COLOR)
+        self.prom: Optional[bool]
+        self.PROMOTABLE: bool
         if self.MOVES.PMOVES is None:
             self.prom = None
             self.PROMOTABLE = False
         else:
             self.prom = False
             self.PROMOTABLE = True
-        otherattrs = info.PCINFO[str(typ)]
-        self.AUTOPROMOTE = otherattrs['autopromote']
+        otherattrs: dict = info.PCINFO[str(typ)]
+        self.AUTOPROMOTE: int = otherattrs['autopromote']
 
     def __str__(self):
         return str(self.PTYPE)+str(self.COLOR)
 
-    def __eq__(self, other): return self.TUP == other.TUP
+    def __eq__(self, other: 'Piece') -> bool: return self.TUP == other.TUP
 
     def __bool__(self): return not isinstance(self, NoPiece)
 
@@ -55,7 +58,7 @@ class Piece:
 
     def __repr__(self): return f"{self.COLOR !r} {self.PTYPE !r}"
 
-    def promote(self):
+    def promote(self) -> 'Piece':
         """Promote piece.
 
         Raises:
@@ -76,7 +79,7 @@ class Piece:
             self.prom = True
             return self
 
-    def demote(self):
+    def demote(self) -> 'Piece':
         """Demote piece.
 
         Raises:
@@ -94,7 +97,7 @@ class Piece:
             self.prom = False
             return self
 
-    def flipsides(self):
+    def flipsides(self) -> 'Piece':
         """Change sides piece is on.
 
         Returns:
@@ -103,11 +106,11 @@ class Piece:
 
         return Piece(str(self.PTYPE), self.COLOR.OTHER)
 
-    def canmove(self, relloc):
+    def canmove(self, relloc: Coord) -> bool:
         """Check if piece can move to location.
 
         Arguments:
-            relloc {Coord  -- relative location of move
+            relloc {Coord}  -- relative location of move
 
         Returns:
             bool -- whether or not piece can move
@@ -115,7 +118,7 @@ class Piece:
 
         return self.MOVES.canmove(relloc)
 
-    def validspaces(self, direct):
+    def validspaces(self, direct: Direction) -> List[Coord]:
         """Get spaces piece could move in a direction
 
         Arguments:
@@ -142,7 +145,7 @@ class Piece:
                     valid.append(relloc)
         return valid
 
-    def samecolor(self, other):
+    def samecolor(self, other: 'Piece') -> bool:
         """Check if piece has the same color as another piece.
 
         Arguments:
@@ -154,7 +157,7 @@ class Piece:
 
         return self.COLOR == other.COLOR
 
-    def sametype(self, other):
+    def sametype(self, other: 'Piece') -> bool:
         """Check if piece is the same type as another piece.
 
         Arguments:
@@ -166,7 +169,7 @@ class Piece:
 
         return self.PTYPE == other.PTYPE
 
-    def iscolor(self, clr):
+    def iscolor(self, clr: Union[Color, int, str]) -> bool:
         """Check if piece is of a certain color.
 
         This can take either a color, an int or a str object. It
@@ -188,7 +191,7 @@ class Piece:
             return int(self.COLOR) == clr
         return False
 
-    def hastype(self, typ):
+    def hastype(self, typ: Union[Ptype, str]) -> bool:
         """Check if piece is of a certain type.
 
         This can take either a ptype or a str object. It should be
@@ -208,7 +211,10 @@ class Piece:
             return str(self.PTYPE) == typ
         return False
 
-    def ispiece(self, typ, clr):
+    def ispiece(self,
+                typ: Union[Ptype, str],
+                clr: Union[Color, int, str]
+                ) -> bool:
         """Check if the piece of a certain color and type.
 
         Arguments:
