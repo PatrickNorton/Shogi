@@ -22,7 +22,6 @@ def check_check(
     :param break_early: break after first finding of check
     :return: location of king, list of coordinates attacking king
     """
-    # TODO: Reduce number of returns (eliminate check, king_location)
 
     old_location, new_location = coordinates
     places_attacking: List[classes.Coord] = []
@@ -64,7 +63,6 @@ def check_check_2(
     :param break_early: break after first check
     :return: pieces checking king
     """
-    # TODO: Reduce number of returns
 
     old_location, king_location = coordinates
     relative_move: classes.Coord = king_location - old_location
