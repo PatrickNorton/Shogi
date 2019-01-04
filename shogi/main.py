@@ -39,18 +39,18 @@ def main(input_gen: Input, window: FullscreenWindow):
         todisp.append(': ')
         try:
             pieceloc = functions.getinput(input_gen, window, todisp)
-            pieceloc = functions.piececheck(theboard, pieceloc)
+            pieceloc = functions.piece_check(theboard, pieceloc)
             todisp = maindisp[:]
             astr = f"The piece is a {theboard[pieceloc] !r} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
             moveloc = functions.getinput(input_gen, window, todisp)
-            coords = functions.movecheck(theboard, pieceloc, moveloc)
-            functions.movecheck2(theboard, coords)
+            coords = functions.move_check(theboard, pieceloc, moveloc)
+            functions.move_check_2(theboard, coords)
             theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
-            ccvars = functions.checkcheck(*tocc)
+            ccvars = functions.check_check(*tocc)
             check = ccvars[0]
             if check:
                 raise classes.IllegalMove(6)
@@ -88,10 +88,10 @@ def main(input_gen: Input, window: FullscreenWindow):
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other
-        ccvars = functions.checkcheck(theboard, theboard.lastmove, clr)
+        ccvars = functions.check_check(theboard, theboard.lastmove, clr)
         check, kingpos, checklist = ccvars
         if check and game:
-            mate = functions.matecheck(theboard, kingpos, checklist)
+            mate = functions.mate_check(theboard, kingpos, checklist)
             game = not mate
             if mate:
                 print(theboard)

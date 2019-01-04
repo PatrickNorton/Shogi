@@ -91,7 +91,7 @@ class Piece:
         else:
             self.PTYPE = self.PTYPE.dem()
             self.MOVES = self.MOVES.dem()
-            self.dem = False
+            self.prom = False
             return self
 
     def flipsides(self):
