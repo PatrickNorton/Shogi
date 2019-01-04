@@ -9,7 +9,7 @@ __all__ = [
 def piece_check(
     current_board: classes.Board,
     piece_string: str
-):
+) -> classes.Coord:
     """Check if inputted piece is valid.
 
     :param current_board: current board state
