@@ -45,7 +45,7 @@ class Board(collections.abc.Sequence):
         if pieces is None:
             self.PIECES = {Coord(x): Piece(*y) for x, y in info.LS.items()}
         else:
-            self.PIECES = dict(pieces)
+            self.PIECES = {Coord(x): Piece(*y) for x, y in pieces.items()}
         self.INVPIECES = {v: x for x, v in self.PIECES.items()}
         self.CAPTURED: Dict[Color, List[Piece]]
         self.CAPTURED = {Color(x): [] for x in range(2)}
