@@ -73,7 +73,7 @@ class Coord(collections.abc.Sequence):
 
     def __len__(self): return len(self.TUP)
 
-    def __repr__(self): return f"Coord'{self}')"
+    def __repr__(self): return f"Coord('{self}')"
 
 
 class Direction(Coord):
