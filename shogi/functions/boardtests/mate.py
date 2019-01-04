@@ -37,9 +37,10 @@ def matecheck(
     if len(checklist) > 1:
         return True
     checkloc = checklist[0]
+    relpos = kingpos-checkloc
     haspieces = theboard.CAPTURED[int(theboard.currplyr)]
     notknight = str(theboard[checkloc].PTYPE) != 'n'
-    hasspace = not all(x in (-1, 0, 1) for x in newpos)
+    hasspace = not all(x in (-1, 0, 1) for x in relpos)
     if haspieces and notknight and hasspace:
         return False
     for loc in theboard.enemypcs:
