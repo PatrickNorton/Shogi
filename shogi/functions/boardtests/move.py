@@ -77,8 +77,8 @@ def obstruction_check(
 
     move_direction = classes.Direction(move_position)
     for x in range(1, max(abs(move_position))):
-        relative_position = [x * k for k in move_direction]  # TODO: Change to Coord
-        test_position = current_position + classes.Coord(relative_position)
+        relative_position = classes.Coord(x)*move_direction
+        test_position = current_position + relative_position
         if current_board[test_position]:
             raise classes.IllegalMove(2)
 
