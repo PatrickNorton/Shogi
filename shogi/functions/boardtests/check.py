@@ -13,14 +13,14 @@ def check_check(
         coordinates: Tuple[classes.Coord, classes.Coord],
         king_color: classes.Color,
         break_early: bool = False
-) -> Tuple[bool, classes.Coord, List[classes.Coord]]:
+) -> Tuple[classes.Coord, List[classes.Coord]]:
     """Find if king is in check.
 
     :param current_board: current game board
     :param coordinates: last move(from, to)
     :param king_color: color of king to test
     :param break_early: break after first finding of check
-    :return: if king is in check, location of king, list of coordinates attacking king
+    :return: location of king, list of coordinates attacking king
     """
     # TODO: Reduce number of returns (eliminate check, king_location)
 
@@ -31,7 +31,7 @@ def check_check(
     try:
         move_check_2(current_board, (new_location, king_location))
     except classes.IllegalMove:
-        check, places_attacking = check_check_2(
+        places_attacking = check_check_2(
             current_board,
             (old_location, king_location),
             places_attacking,
@@ -39,15 +39,15 @@ def check_check(
     else:
         if break_early:
             places_attacking.append(new_location)
-            return True, king_location, places_attacking
+            return king_location, places_attacking
         else:
             places_attacking.append(new_location)
-            check, places_attacking = check_check_2(
+            places_attacking = check_check_2(
                 current_board,
                 (old_location, king_location),
                 places_attacking)
-            return True, king_location, places_attacking
-    return check, king_location, places_attacking
+            return king_location, places_attacking
+    return king_location, places_attacking
 
 
 def check_check_2(
@@ -55,7 +55,7 @@ def check_check_2(
         coordinates: Tuple[classes.Coord, classes.Coord],
         places_attacking: List[classes.Coord],
         break_early: bool = False
-):
+) -> List[classes.Coord]:
     """Test if non-moved pieces can check king.
 
     :param current_board: current board
@@ -70,7 +70,7 @@ def check_check_2(
     relative_move: classes.Coord = king_location - old_location
     absolute_move: classes.Coord = abs(relative_move)
     if absolute_move.x != absolute_move.y and min(absolute_move):
-        return False, places_attacking
+        return places_attacking
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
     attacking_color: classes.Color = current_board[king_location].COLOR.other
@@ -84,7 +84,7 @@ def check_check_2(
         else:
             places_attacking.append(x)
             if break_early or len(places_attacking) > 1:
-                return True, places_attacking
+                return places_attacking
             else:
                 continue
-    return False, places_attacking
+    return places_attacking

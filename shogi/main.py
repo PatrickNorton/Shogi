@@ -51,8 +51,8 @@ def main(input_gen: Input, window: FullscreenWindow):
             theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
             ccvars = functions.check_check(*tocc)
-            check = ccvars[0]
-            if check:
+            checklist = ccvars[1]
+            if checklist:
                 raise classes.IllegalMove(6)
         except classes.IllegalMove as e:
             var = int(e)
@@ -89,8 +89,8 @@ def main(input_gen: Input, window: FullscreenWindow):
         theboard.lastmove = theboard.nextmove
         clr = theboard.currplyr.other
         ccvars = functions.check_check(theboard, theboard.lastmove, clr)
-        check, kingpos, checklist = ccvars
-        if check and game:
+        kingpos, checklist = ccvars
+        if checklist and game:
             mate = functions.mate_check(theboard, kingpos, checklist)
             game = not mate
             if mate:
