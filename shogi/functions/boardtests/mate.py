@@ -9,19 +9,16 @@ __all__ = [
 
 
 def mate_check(
-    current_board: classes.Board,
-    king_location: classes.Coord,
-    places_attacking: List[classes.Coord]
+        current_board: classes.Board,
+        king_location: classes.Coord,
+        places_attacking: List[classes.Coord]
 ) -> bool:
     """Test if king is in checkmate.
 
-    Arguments:
-        current_board {Board} -- current board position
-        king_location {Coord} -- location of king
-        places_attacking {list[Coord]} -- list of pieces checking king
-
-    Returns:
-        bool -- if king is in checkmate
+    :param current_board:
+    :param king_location:
+    :param places_attacking:
+    :return: if king is in checkmate
     """
 
     king_moves = (classes.Direction(x) for x in range(8))
@@ -52,7 +49,7 @@ def mate_check(
     move = king_location - check_location
     move_direction = classes.Direction(move)
     for pos, z in product(current_board.enemypcs, range(abs(max(move)))):
-        new_location = check_location*classes.Coord(move_direction)*z
+        new_location = check_location * classes.Coord(move_direction) * z
         try:
             move_check_2(current_board, (pos, new_location))
         except classes.IllegalMove:

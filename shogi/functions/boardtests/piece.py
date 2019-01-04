@@ -12,16 +12,11 @@ def piece_check(
 ):
     """Check if inputted piece is valid.
 
-    Arguments:
-        current_board {Board} -- current board state
-        piece_string {str} -- inputted string of location
-
-    Raises:
-        classes.IllegalMove -- invalid entry of piece
-        classes.IllegalMove -- entry of location without their piece
-
-    Returns:
-        Coord -- location inputted
+    :param current_board: current board state
+    :param piece_string: inputted string of location
+    :raises classes.IllegalMove: invalid entry of piece
+    :raises classes.IllegalMove: entry of location without right piece
+    :return: location inputted
     """
 
     is_valid: bool = input_piece(piece_string)

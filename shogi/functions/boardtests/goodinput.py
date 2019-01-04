@@ -1,4 +1,4 @@
-from shogi import classes, Coord
+from shogi import classes
 
 __all__ = [
     "input_piece"
@@ -6,16 +6,11 @@ __all__ = [
 
 
 def input_piece(entered_text: str) -> classes.Coord:
-    """Test if input is a valid location/
+    """Test if input is a valid location.
 
-    Arguments:
-        entered_text {str} -- inputted string
-
-    Raises:
-        classes.OtherInput -- if input is not a valid location
-
-    Returns:
-        bool -- is input valid
+    :param entered_text: inputted string
+    :raises classes.OtherInput: if non-coordinate input entered
+    :return: coordinate entered
     """
 
     try:

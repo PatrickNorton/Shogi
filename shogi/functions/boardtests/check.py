@@ -9,27 +9,20 @@ __all__ = [
 
 
 def check_check(
-    current_board: classes.Board,
-    coordinates: Tuple[classes.Coord, classes.Coord],
-    king_color: classes.Color,
-    break_early: bool = False
+        current_board: classes.Board,
+        coordinates: Tuple[classes.Coord, classes.Coord],
+        king_color: classes.Color,
+        break_early: bool = False
 ) -> Tuple[bool, classes.Coord, List[classes.Coord]]:
     """Find if king is in check.
 
-    Arguments:
-        current_board {Board} -- current game board
-        coordinates {tuple[Coord]} -- last move (from, to)
-        king_color {Color} -- king_color of king to test
-
-    Keyword Arguments:
-        break_early {bool} -- break after first or second check
-            (default: {False})
-
-    Returns:
-        bool -- if king is in check
-        Coord -- location of king
-        list[Coord] -- list of coordinates attacking king
+    :param current_board: current game board
+    :param coordinates: last move(from, to)
+    :param king_color: color of king to test
+    :param break_early: break after first finding of check
+    :return: if king is in check, location of king, list of coordinates attacking king
     """
+    # TODO: Reduce number of returns (eliminate check, king_location)
 
     old_location, new_location = coordinates
     places_attacking: List[classes.Coord] = []
@@ -58,28 +51,23 @@ def check_check(
 
 
 def check_check_2(
-    current_board: classes.Board,
-    coordinates: Tuple[classes.Coord, classes.Coord],
-    places_attacking: List[classes.Coord],
-    break_early: bool = False
+        current_board: classes.Board,
+        coordinates: Tuple[classes.Coord, classes.Coord],
+        places_attacking: List[classes.Coord],
+        break_early: bool = False
 ):
     """Test if non-moved pieces can check king.
 
-    Arguments:
-        current_board {Board} -- current board
-        coordinates {tuple[Coord]} -- old location of piece, king location
-        places_attacking {list[Coord]} -- list of pieces currently checking king
-
-    Keyword Arguments:
-        break_early {bool} -- break after first check (default: {False})
-
-    Returns:
-        bool -- king in check
-        list[Coord] -- pieces checking king
+    :param current_board: current board
+    :param coordinates: old location of piece, king location
+    :param places_attacking: list of places currently checking king
+    :param break_early: break after first check
+    :return: if king in check, pieces checking king
     """
+    # TODO: Reduce number of returns
 
     old_location, king_location = coordinates
-    relative_move: classes.Coord = king_location-old_location
+    relative_move: classes.Coord = king_location - old_location
     absolute_move: classes.Coord = abs(relative_move)
     if absolute_move.x != absolute_move.y and min(absolute_move):
         return False, places_attacking

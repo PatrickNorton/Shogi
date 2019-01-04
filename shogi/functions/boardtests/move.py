@@ -15,19 +15,12 @@ def move_check(
         current_location: classes.Coord,
         move_string: str
 ) -> Tuple[classes.Coord, classes.Coord]:
-    """Check if inputted piece is a valid piece
+    """Check if inputted piece is a valid piece.
 
-    TODO: deprecate this in favor of direct input_piece call
-
-    Arguments:
-        current_location {Coord} -- position of piece to be moved
-        move_string {str} -- input of piece to be moved
-
-    Raises:
-        classes.IllegalMove -- invalid entry
-
-    Returns:
-        tuple[Coord] -- coords of movement
+    :param current_location: position of piece to be moved
+    :param move_string:  input of piece to be moved
+    :raises classes.IllegalMove: invalid entry
+    :return: coordinates of movement
     """
 
     valid_piece = input_piece(move_string)
@@ -43,14 +36,11 @@ def move_check_2(
 ):
     """Check if piece can be moved between locations.
 
-    Arguments:
-        current_board {Board} -- current board state
-        coordinates {tuple[Coord]} -- current and new locations of piece
-
-    Raises:
-        classes.IllegalMove -- attempted zero-move of piece
-        classes.IllegalMove -- move to illegal location
-        classes.IllegalMove -- capture of own piece
+    :param current_board: current board state
+    :param coordinates: current and new locations of piece
+    :raises classes.IllegalMove: attempted 0-move of piece
+    :raises classes.IllegalMove: move to illegal location
+    :raises classes.IllegalMove: capture of own piece
     """
 
     current, new = coordinates
@@ -73,15 +63,12 @@ def move_check_2(
 
 
 def obstruction_check(current_board, current_position, move_position):
-    """Check if piece is obstructing move_position.
+    """Check if piece is obstructing move.
 
-    Arguments:
-        current_board {Board} -- current_position board state
-        current_position {Coord} -- current_position piece location
-        move_position {Coord} -- location to move_position piece
-
-    Raises:
-        classes.IllegalMove -- obstruction found
+    :param current_board: current board state
+    :param current_position: current piece location
+    :param move_position: location to move piece to
+    :raises classes.IllegalMove: obstruction found
     """
     # TODO: Type hints
 
@@ -96,16 +83,12 @@ def obstruction_check(current_board, current_position, move_position):
 def king_check(current_board, coordinates):
     """Check if king is moving into check.
 
-    Arguments:
-        current_board {Board} -- current board state
-        coordinates {tuple[Coord]} -- current and new piece location
-
-    Raises:
-        classes.IllegalMove -- attempted capture of own piece
-        classes.IllegalMove -- attempted move into check
-        classes.IllegalMove -- attempted move into check
+    :param current_board: current board state
+    :param coordinates: current and new piece location
+    :raises classes.IllegalMove: attempted capture of piece
+    :raises classes.IllegalMove: attempted move into check
+    :raises classes.IllegalMove: attempted move into check
     """
-
     # TODO: Type hints
 
     old_location, new_location = coordinates
