@@ -62,7 +62,7 @@ def check_check_2(
     :param coordinates: old location of piece, king location
     :param places_attacking: list of places currently checking king
     :param break_early: break after first check
-    :return: if king in check, pieces checking king
+    :return: pieces checking king
     """
     # TODO: Reduce number of returns
 
