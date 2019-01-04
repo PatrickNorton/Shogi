@@ -36,7 +36,7 @@ def setpos(
             window.render_to_terminal(todisp)
             break
         try:
-            valid = boardtests.inputpiece(input_gen, window)
+            valid = boardtests.input_piece(window)
         except classes.OtherInput:
             otherconditions(input_gen, window, todisp, theboard, loc)
         if not valid:

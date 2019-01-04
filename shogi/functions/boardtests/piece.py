@@ -1,20 +1,20 @@
 from shogi import classes
-from .goodinput import inputpiece
+from .goodinput import input_piece
 
 __all__ = [
-    "piececheck"
+    "piece_check"
 ]
 
 
-def piececheck(
-    theboard: classes.Board,
-    piecestr: str
+def piece_check(
+    current_board: classes.Board,
+    piece_string: str
 ):
     """Check if inputted piece is valid.
 
     Arguments:
-        theboard {Board} -- current board state
-        pieceloc {str} -- inputted string of location
+        current_board {Board} -- current board state
+        piece_string {str} -- inputted string of location
 
     Raises:
         classes.IllegalMove -- invalid entry of piece
@@ -24,10 +24,10 @@ def piececheck(
         Coord -- location inputted
     """
 
-    validpiece = inputpiece(theboard, piecestr)
-    if not validpiece:
+    is_valid: bool = input_piece(piece_string)
+    if not is_valid:
         raise classes.IllegalMove(11)
-    pieceloc = classes.Coord(piecestr)
-    if theboard[pieceloc].COLOR != theboard.currplyr:
+    piece_location = classes.Coord(piece_string)
+    if current_board[piece_location].COLOR != current_board.currplyr:
         raise classes.IllegalMove(5)
-    return pieceloc
+    return piece_location

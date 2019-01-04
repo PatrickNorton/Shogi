@@ -1,29 +1,27 @@
 from itertools import product
 from shogi import classes
-from .goodinput import inputpiece
+from .goodinput import input_piece
 from typing import Tuple
 
 __all__ = [
-    "movecheck",
-    "movecheck2",
-    "obscheck",
-    "kingcheck"
+    "move_check",
+    "move_check_2",
+    "obstruction_check",
+    "king_check"
 ]
 
 
-def movecheck(
-    theboard: classes.Board,
-    current: classes.Coord,
-    movestr: str
+def move_check(
+        current_location: classes.Coord,
+        move_string: str
 ) -> Tuple[classes.Coord, classes.Coord]:
     """Check if inputted piece is a valid piece
 
-    TODO: deprecate this in favor of direct inputpiece call
+    TODO: deprecate this in favor of direct input_piece call
 
     Arguments:
-        theboard {Board} -- current board state
-        current {Coord} -- position of piece to be moved
-        moveloc {str} -- input of piece to be moved
+        current_location {Coord} -- position of piece to be moved
+        move_string {str} -- input of piece to be moved
 
     Raises:
         classes.IllegalMove -- invalid entry
@@ -32,22 +30,22 @@ def movecheck(
         tuple[Coord] -- coords of movement
     """
 
-    validpiece = inputpiece(theboard, movestr)
-    if not validpiece:
+    valid_piece = input_piece(move_string)
+    if not valid_piece:
         raise classes.IllegalMove(11)
-    moveloc = classes.Coord(movestr)
-    return (current, moveloc)
+    move_location = classes.Coord(move_string)
+    return current_location, move_location
 
 
-def movecheck2(
-    theboard: classes.Board,
-    coords: Tuple[classes.Coord, classes.Coord]
+def move_check_2(
+    current_board: classes.Board,
+    coordinates: Tuple[classes.Coord, classes.Coord]
 ):
     """Check if piece can be moved between locations.
 
     Arguments:
-        theboard {Board} -- current board state
-        coords {tuple[Coord]} -- current and new locations of piece
+        current_board {Board} -- current board state
+        coordinates {tuple[Coord]} -- current and new locations of piece
 
     Raises:
         classes.IllegalMove -- attempted zero-move of piece
@@ -55,51 +53,52 @@ def movecheck2(
         classes.IllegalMove -- capture of own piece
     """
 
-    current, new = coords
-    piece = theboard[current]
+    current, new = coordinates
+    piece = current_board[current]
     move = new-current
-    movedir = classes.Direction(move)
-    magicvar = piece.MOVES[movedir]
-    if movedir == classes.Direction(8):
+    move_direction = classes.Direction(move)
+    move_variable = piece.MOVES[move_direction]
+    if move_direction == classes.Direction(8):
         raise classes.IllegalMove(3)
     elif not piece.canmove(move):
         raise classes.IllegalMove(1)
-    elif theboard[new].samecolor(theboard[current]):
+    elif current_board[new].samecolor(current_board[current]):
         raise classes.IllegalMove(4)
-    elif magicvar == 'T':
+    elif move_variable == 'T':
         pass
     elif piece.hastype('k'):
-        kingcheck(theboard, (current, new))
+        king_check(current_board, (current, new))
     else:
-        obscheck(theboard, current, move)
+        obstruction_check(current_board, current, move)
 
 
-def obscheck(theboard, current, move):
-    """Check if piece is obstructing move.
+def obstruction_check(current_board, current_position, move_position):
+    """Check if piece is obstructing move_position.
 
     Arguments:
-        theboard {Board} -- current board state
-        current {Coord} -- current piece location
-        move {Coord} -- location to move piece
+        current_board {Board} -- current_position board state
+        current_position {Coord} -- current_position piece location
+        move_position {Coord} -- location to move_position piece
 
     Raises:
         classes.IllegalMove -- obstruction found
     """
+    # TODO: Type hints
 
-    movedir = classes.Direction(move)
-    for x in range(1, max(abs(move))):
-        relcoord = [x*k for k in movedir]
-        testpos = current+classes.Coord(relcoord)
-        if theboard[testpos]:
+    move_direction = classes.Direction(move_position)
+    for x in range(1, max(abs(move_position))):
+        relative_position = [x*k for k in move_direction]  # TODO: Change to Coord
+        test_position = current_position + classes.Coord(relative_position)
+        if current_board[test_position]:
             raise classes.IllegalMove(2)
 
 
-def kingcheck(theboard, coords):
+def king_check(current_board, coordinates):
     """Check if king is moving into check.
 
     Arguments:
-        theboard {Board} -- current board state
-        coords {tuple[Coord]} -- current and new piece location
+        current_board {Board} -- current board state
+        coordinates {tuple[Coord]} -- current and new piece location
 
     Raises:
         classes.IllegalMove -- attempted capture of own piece
@@ -107,15 +106,17 @@ def kingcheck(theboard, coords):
         classes.IllegalMove -- attempted move into check
     """
 
-    oldloc, newloc = coords
-    rowlist = (classes.Direction(x) for x in range(8))
-    for x, dist in product(rowlist, range(9)):
-        dist = classes.Coord(dist)
+    # TODO: Type hints
+
+    old_location, new_location = coordinates
+    direction_set = (classes.Direction(x) for x in range(8))
+    for direction, distance in product(direction_set, range(9)):
+        distance = classes.Coord(distance)
         try:
-            loctotest = newloc+x*dist
-            if theboard[loctotest].samecolor(theboard[oldloc]):
+            current_test = new_location+direction*distance
+            if current_board[current_test].samecolor(current_board[old_location]):
                 raise classes.IllegalMove(4)
-            movecheck2(theboard, (loctotest, newloc))
+            move_check_2(current_board, (current_test, new_location))
         except (ValueError, IndexError):
             continue
         except classes.IllegalMove as e:
@@ -125,11 +126,11 @@ def kingcheck(theboard, coords):
                 continue
         else:
             raise classes.IllegalMove(6)
-    for delx, dely in product((-1, 1), (-1, 1)):
-        relcoord = classes.Coord((delx, 2*dely))
+    for move_x, move_y in product((-1, 1), (-1, 1)):
+        relative_position = classes.Coord((move_x, 2*move_y))
         try:
-            abscoord = newloc+relcoord
-            movecheck2(theboard, (abscoord, newloc))
+            absolute_position = new_location+relative_position
+            move_check_2(current_board, (absolute_position, new_location))
         except (ValueError, IndexError):
             continue
         except classes.IllegalMove:

@@ -27,7 +27,7 @@ def testspcs(
     for relloc in spacelist:
         try:
             absloc = pieceloc+relloc
-            boardtests.movecheck2(theboard, (pieceloc, absloc))
+            boardtests.move_check_2(theboard, (pieceloc, absloc))
         except (TypeError, ValueError, classes.IllegalMove):
             continue
         else:

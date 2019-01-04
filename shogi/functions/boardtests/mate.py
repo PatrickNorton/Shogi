@@ -1,60 +1,60 @@
 from itertools import product
 from shogi import classes
-from .move import movecheck2
+from .move import move_check_2
 from typing import List
 
 __all__ = [
-    "matecheck"
+    "mate_check"
 ]
 
 
-def matecheck(
-    theboard: classes.Board,
-    kingpos: classes.Coord,
-    checklist: List[classes.Coord]
+def mate_check(
+    current_board: classes.Board,
+    king_location: classes.Coord,
+    places_attacking: List[classes.Coord]
 ) -> bool:
     """Test if king is in checkmate.
 
     Arguments:
-        theboard {Board} -- current board position
-        kingpos {Coord} -- location of king
-        checklist {list[Coord]} -- list of pieces checking king
+        current_board {Board} -- current board position
+        king_location {Coord} -- location of king
+        places_attacking {list[Coord]} -- list of pieces checking king
 
     Returns:
         bool -- if king is in checkmate
     """
 
-    kingmovepos = (classes.Direction(x) for x in range(8))
-    for kmpiter in kingmovepos:
-        newpos = kmpiter+kingpos
-        if tuple(newpos) in theboard.it():
+    king_moves = (classes.Direction(x) for x in range(8))
+    for king_move_tested in king_moves:
+        new_location = king_move_tested + king_location
+        if tuple(new_location) in current_board.it():
             try:
-                movecheck2(theboard, (kingpos, newpos))
+                move_check_2(current_board, (king_location, new_location))
             except classes.IllegalMove:
                 continue
             else:
                 return False
-    if len(checklist) > 1:
+    if len(places_attacking) > 1:
         return True
-    checkloc = checklist[0]
-    relpos = kingpos-checkloc
-    haspieces = theboard.CAPTURED[int(theboard.currplyr)]
-    notknight = str(theboard[checkloc].PTYPE) != 'n'
-    hasspace = not all(x in (-1, 0, 1) for x in relpos)
-    if haspieces and notknight and hasspace:
+    check_location = places_attacking[0]
+    relative_position = king_location - check_location
+    has_pieces = current_board.CAPTURED[int(current_board.currplyr)]
+    not_a_knight = str(current_board[check_location].PTYPE) != 'n'
+    has_space = not all(x in (-1, 0, 1) for x in relative_position)
+    if has_pieces and not_a_knight and has_space:
         return False
-    for loc in theboard.enemypcs:
+    for loc in current_board.enemypcs:
         try:
-            movecheck2(theboard, (loc, checkloc))
+            move_check_2(current_board, (loc, check_location))
         except classes.IllegalMove:
             continue
         return False
-    move = kingpos-checkloc
-    movedir = classes.Direction(move)
-    for pos, z in product(theboard.enemypcs, range(abs(max(move)))):
-        newpos = checkloc*classes.Coord(movedir)*z
+    move = king_location - check_location
+    move_direction = classes.Direction(move)
+    for pos, z in product(current_board.enemypcs, range(abs(max(move)))):
+        new_location = check_location*classes.Coord(move_direction)*z
         try:
-            movecheck2(theboard, (pos, newpos))
+            move_check_2(current_board, (pos, new_location))
         except classes.IllegalMove:
             continue
         return False

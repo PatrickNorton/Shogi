@@ -1,19 +1,15 @@
-from shogi import classes
+from shogi import classes, Coord
 
 __all__ = [
-    "inputpiece"
+    "input_piece"
 ]
 
 
-def inputpiece(
-    theboard: classes.Board,
-    strloc: str
-) -> bool:
+def input_piece(entered_text: str) -> classes.Coord:
     """Test if input is a valid location/
 
     Arguments:
-        theboard {Board} -- current board state
-        pieceloc {str} -- inputted string
+        entered_text {str} -- inputted string
 
     Raises:
         classes.OtherInput -- if input is not a valid location
@@ -23,7 +19,7 @@ def inputpiece(
     """
 
     try:
-        pieceloc = classes.Coord(strloc)
-        return True
+        piece_location: classes.Coord = classes.Coord(entered_text)
+        return piece_location
     except (ValueError, IndexError):
-        raise classes.OtherInput(pieceloc)
+        raise classes.OtherInput(entered_text)

@@ -46,7 +46,7 @@ def main(input_gen: Input, window: FullscreenWindow):
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
             moveloc = functions.getinput(input_gen, window, todisp)
-            coords = functions.move_check(theboard, pieceloc, moveloc)
+            coords = functions.move_check(pieceloc, moveloc)
             functions.move_check_2(theboard, coords)
             theboard.nextmove = coords
             tocc = (theboard, theboard.nextmove, theboard.currplyr, True)

@@ -85,7 +85,7 @@ def droppiece(
             todisp.append('Enter location to place piece')
             todisp.append(': ')
             movetostr = getinput(input_gen, window, todisp)
-            if boardtests.inputpiece(theboard, movetostr):
+            if boardtests.input_piece(movetostr):
                 moveto = classes.Coord(moveto)
                 theboard.putinplay(thepiece, moveto)
         else:
