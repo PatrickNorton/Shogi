@@ -1,78 +1,73 @@
 import curtsies
+from curtsies import events
 from typing import List
 
 __all__ = [
-    "getinput",
-    "yninput"
+    "get_input",
+    "binary_input"
 ]
 
 
-def getinput(
+def get_input(
     input_gen: curtsies.Input,
     window: curtsies.FullscreenWindow,
-    todisp: List[str]
+    to_print: List[str]
 ) -> str:
-    """Get player input and return a string
+    """Get player input and return a string.
 
-    Arguments:
-        input_gen {curtsies.Input} -- generates input
-        window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list[str]} -- prompt to print before input
-
-    Returns:
-        str -- text entered by user
+    :param input_gen: input generator
+    :param window: window to print text
+    :param to_print: prompt to print before input
+    :return: text entered by user
     """
 
-    toreturn = ''
-    window.render_to_terminal(todisp)
-    esccode = 0
+    to_return = ''
+    window.render_to_terminal(curtsies.fsarray(to_print))
+    escape_code = 0
     for c in input_gen:
-        if esccode:
-            esccode -= 1
+        if escape_code:
+            escape_code -= 1
             continue
-        if isinstance(c, curtsies.events.PasteEvent):
+        if isinstance(c, events.PasteEvent):
             continue
         if c == '<Ctrl-j>':
             break
         elif c == '<BACKSPACE>':
-            todisp[-1] = todisp[-1][:-1]
-            toreturn = toreturn[:-1]
+            to_print[-1] = to_print[-1][:-1]
+            to_return = to_return[:-1]
         elif c == '<SPACE>':
-            todisp[-1] += ' '
-            toreturn += ' '
+            to_print[-1] += ' '
+            to_return += ' '
         elif c.startswith('<'):
             continue
         elif len(c) > 1:
-            esccode = 3
+            escape_code = 3
             continue
         else:
-            todisp[-1] += c
-            toreturn += c
-        window.render_to_terminal(todisp)
-    return toreturn
+            to_print[-1] += c
+            to_return += c
+        window.render_to_terminal(curtsies.fsarray(to_print))
+    return to_return
 
 
-def yninput(
+def binary_input(
     input_gen: curtsies.Input,
     window: curtsies.FullscreenWindow,
-    todisp: List[str]
+    to_print: List[str]
 ) -> bool:
     """Get binary (y/n) input from user.
 
-    Arguments:
-        input_gen {curtsies.Input} -- generate input
-        window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list[str]} -- prompt to print before input
-
-    Returns:
-        bool -- y/n entered by user
+    :param input_gen: generate input
+    :param window: window to print text
+    :param to_print: prompt to print before input
+    :return: y/n entered by user
     """
 
-    window.render_to_terminal(todisp)
+    window.render_to_terminal(curtsies.fsarray(to_print))
     for c in input_gen:
         if c == 'y':
             return True
         if c == 'n':
             return False
-        window.render_to_terminal(todisp)
+        window.render_to_terminal(curtsies.fsarray(to_print))
     return False

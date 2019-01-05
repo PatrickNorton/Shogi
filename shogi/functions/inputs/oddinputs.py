@@ -1,129 +1,108 @@
 import curtsies
 from shogi import classes
 from shogi.functions import boardtests
-from .help import helpdesk
-from .inputfns import getinput
+from .help import help_desk
+from .inputfns import get_input, binary_input
 from typing import List
 
 __all__ = [
-    "otherconditions",
-    "droppiece",
-    "toquit"
+    "other_conditions",
+    "drop_piece",
+    "may_quit"
 ]
 
 
-def otherconditions(
+def other_conditions(
     input_gen: curtsies.Input,
     window: curtsies.FullscreenWindow,
-    todisp: List[str],
-    theboard: classes.Board,
-    var: str
+    to_display: List[str],
+    current_board: classes.Board,
+    entered_text: str
 ) -> bool:
     """Check if string is an action, then do the action.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list[str]} -- what's currrently on screen
-        theboard {Board} -- current board setup
-        var {str} -- text inputted by user
-
-    Raises:
-        classes.IllegalMove -- Restart move with current player
-
-    Returns:
-        bool -- if a valid turn was held
+    :param input_gen: input generator
+    :param window: window to print text
+    :param to_display: what's currently on screen
+    :param current_board: current board setup
+    :param entered_text: text inputted by user
+    :raises classes.IllegalMove: restart move with current player
+    :return: if a valid turn was held
     """
 
-    if var == 'drop':
-        droppiece(input_gen, window, todisp, theboard)
+    if entered_text == 'drop':
+        drop_piece(input_gen, window, to_display, current_board)
         return True
-    if var == 'quit':
-        toquit(input_gen, window, todisp)
+    if entered_text == 'quit':
+        may_quit(input_gen, window, to_display)
         raise classes.IllegalMove(0)
-    if var == 'help':
-        helpdesk(input_gen, window, theboard)
+    if entered_text == 'help':
+        help_desk(input_gen, window, current_board)
         raise classes.IllegalMove(0)
-    if var[:4] == 'help':
-        filenm: str = var[4:]
-        filenm = filenm.strip()
-        helpdesk(input_gen, window, theboard, filenm)
+    if entered_text[:4] == 'help':
+        file_name: str = entered_text[4:]
+        file_name = file_name.strip()
+        help_desk(input_gen, window, current_board, file_name)
         raise classes.IllegalMove(0)
     return False
 
 
-def droppiece(
+def drop_piece(
     input_gen: curtsies.Input,
     window: curtsies.FullscreenWindow,
-    todisp: List[str],
-    theboard: classes.Board
+    to_display: List[str],
+    current_board: classes.Board
 ):
     """Prompt to add a piece to the board.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list} -- list of what's currently on screen
-        theboard {Board} -- current state of board
-
-    Raises:
-        classes.IllegalMove -- attempted drop of uncaptured piece
-        classes.IllegalMove -- illegal drop attempted
+    :param input_gen: input generator
+    :param window: window to print text
+    :param to_display: list of what's currently on screen
+    :param current_board: current state of board
+    :raises classes.IllegalMove: attempted drop of un-captured piece
+    :raises classes.IllegalMove: illegal drop attempted
     """
 
-    if not theboard.CAPTURED[theboard.currplyr]:
+    if not current_board.CAPTURED[current_board.currplyr]:
         raise classes.IllegalMove(7)
-    todisp.append('Enter piece name to put in play')
-    todisp.append('> ')
-    moved = getinput(input_gen, window, todisp)
+    to_display.append('Enter piece name to put in play')
+    to_display.append('> ')
+    moved = get_input(input_gen, window, to_display)
     if moved.startswith('k'):
         moved = 'n'
+    to_display = to_display[:-2]
     try:
-        todisp = todisp[:-2]
-        thepiece = classes.Piece(moved[0], theboard.currplyr)
-        if thepiece in theboard.CAPTURED[theboard.currplyr]:
-            todisp.append('Enter location to place piece')
-            todisp.append(': ')
-            movetostr = getinput(input_gen, window, todisp)
-            if boardtests.input_piece(movetostr):
-                moveto = classes.Coord(moveto)
-                theboard.putinplay(thepiece, moveto)
-        else:
-            raise classes.IllegalMove(10)
+        to_drop = classes.Piece(moved[0], current_board.currplyr)
     except ValueError:
-        pass
-    except classes.OtherInput:
-        otherconditions(input_gen, window, todisp, theboard, movetostr)
+        return
+    if to_drop in current_board.CAPTURED[current_board.currplyr]:
+        to_display.append('Enter location to place piece')
+        to_display.append(': ')
+        entered_str: str = get_input(input_gen, window, to_display)
+        try:
+            move_to: classes.Coord = boardtests.input_piece(entered_str)
+        except classes.OtherInput:
+            other_conditions(input_gen, window, to_display, current_board, entered_str)
+        else:
+            current_board.putinplay(to_drop, move_to)
 
 
-def toquit(
+def may_quit(
     input_gen: curtsies.Input,
     window: curtsies.FullscreenWindow,
-    todisp: List[str]
+    to_display: List[str]
 ):
     """Check if player really wants to quit.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window to print text
-        todisp {list} -- list of stuff on screen
-
-    Raises:
-        classes.PlayerExit -- player wishes to exit
+    :param input_gen: input generator
+    :param window: window to print text
+    :param to_display: list of stuff on screen
+    :raises classes.PlayerExit: player wishes to exit
     """
 
     while True:
-        todisp.append('You are about to quit the game of Shogi')
-        todisp.append('Are you sure you want to quit?')
-        window.render_to_terminal(todisp)
-        for c in input_gen:
-            if c == 'y':
-                toquit = True
-                break
-            elif c == 'n':
-                toquit = False
-                break
-        if toquit:
+        to_display.append('You are about to quit the game.')
+        to_display.append('Are you sure you want to quit?')
+        to_quit: bool = binary_input(input_gen, window, to_display)
+        if to_quit:
             raise classes.PlayerExit
-        else:
-            break

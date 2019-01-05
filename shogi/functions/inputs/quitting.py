@@ -1,4 +1,4 @@
-from shogi.functions import boardtests
+from shogi.functions import classes
 
 __all__ = [
     "toquit"
@@ -8,7 +8,7 @@ __all__ = [
 def toquit(input_gen, window, todisp):
     """Check if player wants to quit.
 
-    Depreciated: use .oddinputs.toquit() instead
+    Depreciated: use .oddinputs.may_quit() instead
 
     Arguments:
         input_gen {curtsies.Input} -- input generator

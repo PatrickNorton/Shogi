@@ -1,55 +1,46 @@
 import curtsies
 from shogi import classes
-from .inputfns import getinput
+from .inputfns import get_input
 from shogi.functions import boardtests
-from .oddinputs import otherconditions
-from typing import Dict
+from typing import Dict, List
 
 __all__ = [
-    "setpos"
+    "setup_board"
 ]
 
 
-def setpos(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow
-    ):
-    """Set up a board in mid-game.
+def setup_board(
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow
+):
+    """Set up an already-started board.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window displayed
-
-    Returns:
-        Board -- the newly set-up board
+    :param input_gen: input generator
+    :param window: window displayed
+    :return: newly set-up board
     """
 
-    theboard = classes.Board()
-    todict: Dict[classes.Coord, classes.Piece] = {}
+    piece_dict: Dict[classes.Coord, classes.Piece] = {}
     while True:
-        todisp = []
-        todisp.append('Choose location')
-        loc = getinput(input_gen, window, todisp)
-        loc = loc.strip()
-        if loc == 'done':
-            todisp.append('Board completed')
-            window.render_to_terminal(todisp)
+        to_display: List[str] = ['Choose location']
+        inputted_text: str = get_input(input_gen, window, to_display)
+        inputted_text = inputted_text.strip()
+        if inputted_text == 'done':
+            to_display.append('Board completed')
+            window.render_to_terminal(curtsies.fsarray(to_display))
             break
         try:
-            valid = boardtests.input_piece(window)
+            coordinate: classes.Coord = boardtests.input_piece(inputted_text)
         except classes.OtherInput:
-            otherconditions(input_gen, window, todisp, theboard, loc)
-        if not valid:
-            print('Invalid location')
+            to_display.append("Invalid input")
             continue
-        loc = classes.Coord(loc)
-        todisp.append('Choose piece and color ')
-        pcstr = getinput(input_gen, window, todisp)
+        to_display.append('Choose piece and color ')
+        piece_string: str = get_input(input_gen, window, to_display)
         try:
-            piecenm = classes.Piece(*pcstr)
+            piece_name: classes.Piece = classes.Piece(*piece_string)
         except (ValueError, IndexError):
             print('Invalid piece\n')
             continue
-        todict[loc] = piecenm
-    toreturn = classes.Board(todict)
-    return toreturn
+        piece_dict[coordinate] = piece_name
+    to_return = classes.Board(piece_dict)
+    return to_return

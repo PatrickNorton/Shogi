@@ -26,7 +26,7 @@ def main(input_gen: Input, window: FullscreenWindow):
     debug = False
     errstr = ''
     if debug:
-        theboard = functions.setpos(input_gen, window)
+        theboard = functions.setup_board(input_gen, window)
     while game:
         todisp = []
         if errstr:
@@ -38,14 +38,14 @@ def main(input_gen: Input, window: FullscreenWindow):
         todisp.append('Enter piece location')
         todisp.append(': ')
         try:
-            pieceloc = functions.getinput(input_gen, window, todisp)
+            pieceloc = functions.get_input(input_gen, window, todisp)
             pieceloc = functions.piece_check(theboard, pieceloc)
             todisp = maindisp[:]
             astr = f"The piece is a {theboard[pieceloc] !r} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
-            moveloc = functions.getinput(input_gen, window, todisp)
+            moveloc = functions.get_input(input_gen, window, todisp)
             coords = functions.move_check(pieceloc, moveloc)
             functions.move_check_2(theboard, coords)
             theboard.nextmove = coords
@@ -62,7 +62,7 @@ def main(input_gen: Input, window: FullscreenWindow):
         except classes.OtherInput as e:
             pieceloc = e.args[0]
             try:
-                functions.otherconditions(
+                functions.other_conditions(
                     input_gen, window, todisp, theboard, pieceloc
                 )
             except classes.IllegalMove as f:
@@ -83,7 +83,7 @@ def main(input_gen: Input, window: FullscreenWindow):
                 theboard.promote(moveloc)
             else:
                 todisp.append('Promote this piece? ')
-                topromote = functions.yninput(input_gen, window, todisp)
+                topromote = functions.binary_input(input_gen, window, todisp)
                 if topromote:
                     theboard.promote(moveloc)
         theboard.lastmove = theboard.nextmove

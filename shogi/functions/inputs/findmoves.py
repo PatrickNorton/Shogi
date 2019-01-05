@@ -3,33 +3,33 @@ from shogi.functions import boardtests
 from typing import List
 
 __all__ = [
-    "testspcs"
+    "test_spaces"
 ]
 
 
-def testspcs(
-    theboard: classes.Board,
-    pieceloc: classes.Coord,
-    spacelist: List[classes.Coord]
-):
+def test_spaces(
+    current_board: classes.Board,
+    piece_location: classes.Coord,
+    space_list: List[classes.Coord]
+) -> List[classes.Coord]:
     """Test which spaces in a list are valid moves.
 
-    Arguments:
-        theboard {Board} -- current state of the board
-        pieceloc {Coord} -- location of piece to be moved
-        spacelist {list[Coord]} -- list of coords to check
-
-    Returns:
-        list -- list of valid spaces
+    :param current_board: current state of the board
+    :param piece_location: location of piece to be moved
+    :param space_list: list of coordinates ot check
+    :return: list of valid spaces
     """
 
-    toreturn = []
-    for relloc in spacelist:
+    to_return: List[classes.Coord] = []
+    for relative_location in space_list:
         try:
-            absloc = pieceloc+relloc
-            boardtests.move_check_2(theboard, (pieceloc, absloc))
+            absolute_location = piece_location + relative_location
+            boardtests.move_check_2(
+                current_board,
+                (piece_location, absolute_location)
+            )
         except (TypeError, ValueError, classes.IllegalMove):
             continue
         else:
-            toreturn.append(absloc)
-    return toreturn
+            to_return.append(absolute_location)
+    return to_return
