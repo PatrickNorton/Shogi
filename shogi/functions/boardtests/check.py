@@ -26,7 +26,7 @@ def check_check(
     old_location, new_location = coordinates
     places_attacking: List[classes.Coord] = []
     king_tested: classes.Piece = classes.Piece('k', king_color)
-    king_location: classes.Coord = current_board.getpiece(king_tested)
+    king_location: classes.Coord = current_board.get_piece(king_tested)
     try:
         move_check_2(current_board, (new_location, king_location))
     except classes.IllegalMove:
@@ -71,8 +71,8 @@ def check_check_2(
         return places_attacking
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
-    attacking_color: classes.Color = current_board[king_location].COLOR.other
-    current_pieces = current_board.playerpcs(attacking_color)
+    attacking_color: classes.Color = current_board[king_location].color.other
+    current_pieces = current_board.player_pieces(attacking_color)
     pieces = (x for x in direction_of_attack if x in current_pieces)
     for x in pieces:
         try:

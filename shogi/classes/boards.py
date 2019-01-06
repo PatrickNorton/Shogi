@@ -6,6 +6,7 @@ from .exceptions import DemotedException, IllegalMove
 from .rows import Row
 from typing import Dict, List, Generator, Sequence, Optional
 import collections
+import string
 
 __all__ = [
     "Board"
@@ -15,74 +16,74 @@ __all__ = [
 class Board(collections.abc.Sequence):
     """Class for main board object.
 
-    This is the object representing the main game board, and has,
-    additionally, several functions related to gameplay. An instance
-    of this should be passed any functions with an input parameter of
-    "theboard", and should represent the current state of the game, up
-    to, but not including, the current move, unless the current move
-    has been checked and validized. The move to be checked should be
-    stored in the "nextmove" attribute, while the previous move made
-    should be stored in the "lastmove" attribute.
 
-    Attributes:
-        PIECES {dict} -- Each coord and its corresponding piece
-        INVPIECES {dict} -- Inverse of PIECES
-        CAPTURED {dict} -- List of captured pieces for each color
-        PCSBYCLR {dict} -- Same as pieces, but seperated by color
-        currplyr {Color} -- Active player
-        lastmove {tuple[Coord]} -- Previous move performed
-        nextmove {tuple[Coord]} -- Move about to be performed
+    This is the object representing the main game board, and has,
+    additionally, several functions related to play of game. An
+    instance of this should be passed any functions with an input
+    parameter of "current_board", and should represent the current
+    state of the game, up to, but not including, the current move,
+    unless the current move has been checked. The move to be checked
+    should be stored in the "next_move" attribute, while the previous
+    move made should be stored in the "last_move" attribute.
+
+    :ivar pieces: Each coordinate and corresponding piece
+    :ivar inverse_pieces: Inverse of pieces
+    :ivar captured: List of captured pieces for each color
+    :ivar by_color: Same as pieces, but separated by color
+    :ivar current_player: Active player
+    :ivar last_move: Previous move performed
+    :ivar next_move: Move about to be performed
     """
 
     def __init__(self, pieces: Optional[dict] = None):
         """Initialise board.
 
-        Keyword Arguments:
-            pieces {dict} -- for custom board setups (default: {None})
+        :param pieces: for custom board setups
         """
 
-        self.PIECES: Dict[Coord, Piece]
+        self.pieces: Dict[Coord, Piece]
         if pieces is None:
-            self.PIECES = {Coord(x): Piece(*y) for x, y in info.LS.items()}
+            self.pieces = {Coord(x): Piece(*y) for x, y in info.board_info.items()}
         else:
-            self.PIECES = {Coord(x): Piece(*y) for x, y in pieces.items()}
-        self.INVPIECES = {v: x for x, v in self.PIECES.items()}
-        self.CAPTURED: Dict[Color, List[Piece]]
-        self.CAPTURED = {Color(x): [] for x in range(2)}
-        self.PCSBYCLR: Dict[Color, Dict[Coord, Piece]]
-        self.PCSBYCLR = {Color(0): {}, Color(1): {}}
-        self.currplyr = Color(0)
+            self.pieces = {Coord(x): Piece(*y) for x, y in pieces.items()}
+        self.inverse_pieces = {v: x for x, v in self.pieces.items()}
+        self.captured: Dict[Color, List[Piece]]
+        self.captured = {Color(x): [] for x in range(2)}
+        self.by_color: Dict[Color, Dict[Coord, Piece]]
+        self.by_color = {Color(0): {}, Color(1): {}}
+        self.current_player = Color(0)
         for x in range(2):
-            theclr = Color(x)
-            for loc, pc in self.PIECES.items():
-                if pc.iscolor(theclr):
-                    self.PCSBYCLR[theclr][loc] = pc
-        self.lastmove = (NullCoord(), NullCoord())
-        self.nextmove = (NullCoord(), NullCoord())
+            x_color = Color(x)
+            for loc, pc in self.pieces.items():
+                if pc.is_color(x_color):
+                    self.by_color[x_color][loc] = pc
+        self.last_move = (NullCoord(), NullCoord())
+        self.next_move = (NullCoord(), NullCoord())
 
     def __str__(self):
-        toreturn = ""
-        captostr = [str(x) for x in self.CAPTURED[Color(1)]]
-        toreturn += f"Black pieces: {' '.join(captostr)}\n\n"
-        toreturn += f"  {'  '.join('987654321')}\n"
+        to_return = ""
+        captured_string = [str(x) for x in self.captured[Color(1)]]
+        to_return += f"Black pieces: {' '.join(captured_string)}\n\n"
+        to_return += f"  {'  '.join('987654321')}\n"
+        letters: str = string.ascii_lowercase[:9]
         for x, var in enumerate(self):
-            toreturn += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
-        captostr = [str(x) for x in self.CAPTURED[Color(0)]]
-        toreturn += f"White pieces: {' '.join(captostr)}\n"
-        return toreturn
+            to_return += f"{letters[x]} {' '.join(str(k) for k in var)}\n"
+        captured_string = [str(x) for x in self.captured[Color(0)]]
+        to_return += f"White pieces: {' '.join(captured_string)}\n"
+        return to_return
 
     def __iter__(self) -> Generator:
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index: Sequence) -> Piece:
-        coords = Coord(index)
-        toreturn = self.PIECES.get(coords, NoPiece())
-        return toreturn
+        coordinates = Coord(index)
+        to_return = self.pieces.get(coordinates, NoPiece())
+        return to_return
 
     def __len__(self) -> int: return len(tuple(self))
 
     @staticmethod
-    def it() -> Generator:
+    def iterate() -> Generator:
         """Yield from all possible board positions."""
 
         yield from ((x, y) for x in range(9) for y in range(9))
@@ -90,40 +91,35 @@ class Board(collections.abc.Sequence):
     def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
 
-        yield from self.PIECES
+        yield from self.pieces
 
     def move(self, current: Coord, new: Coord):
         """Move a piece between locations.
 
-        Arguments:
-            current {Coord} -- location of piece
-            new {Coord} -- location to move piece to
+        :param current: location of piece
+        :param new: location to move piece to
         """
 
         if not isinstance(self[new], NoPiece):
             self.capture(new)
-        self.PIECES[Coord(new)] = self.PIECES.pop(current)
-        self.PCSBYCLR[self[new].COLOR][Coord(new)] = self[new]
-        del self.PCSBYCLR[self[new].COLOR][Coord(current)]
-        self.INVPIECES[self[new]] = new
+        self.pieces[Coord(new)] = self.pieces.pop(current)
+        self.by_color[self[new].color][Coord(new)] = self[new]
+        del self.by_color[self[new].color][Coord(current)]
+        self.inverse_pieces[self[new]] = new
 
-    def getpiece(self, location: Piece) -> Coord:
+    def get_piece(self, location: Piece) -> Coord:
         """Return a location based on piece type.
 
-        Arguments:
-            location {Piece} -- piece type to check
-
-        Returns:
-            Coord -- location of piece
+        :param location: piece type to check
+        :return: location of piece
         """
 
-        return self.INVPIECES[location]
+        return self.inverse_pieces[location]
 
     def capture(self, new: Coord):
         """Capture a piece at a location.
 
-        Arguments:
-            new {Coord} -- location of to-be-captured piece
+        :param new: location of to-be-captured piece
         """
 
         piece = self[new]
@@ -131,102 +127,90 @@ class Board(collections.abc.Sequence):
             piece.demote()
         except DemotedException:
             pass
-        piece = piece.flipsides()
-        self.CAPTURED[self.currplyr].append(piece)
-        del self.PIECES[new]
-        del self.PCSBYCLR[piece.COLOR.other][Coord(new)]
-        if piece in self.PIECES:
-            gen = [loc for loc, x in self.PIECES.items() if x == piece]
-            self.INVPIECES[piece] = gen[0]
+        piece = piece.flip_sides()
+        self.captured[self.current_player].append(piece)
+        del self.pieces[new]
+        del self.by_color[piece.color.other][Coord(new)]
+        if piece in self.pieces:
+            gen = [loc for loc, x in self.pieces.items() if x == piece]
+            self.inverse_pieces[piece] = gen[0]
         else:
-            del self.INVPIECES[piece]
+            del self.inverse_pieces[piece]
 
-    def canpromote(self, space: Coord) -> bool:
+    def can_promote(self, space: Coord) -> bool:
         """Check if a piece is in a promotion zone.
 
-        Arguments:
-            space {Coord} -- location to be checked
-
-        Returns:
-            bool -- if piece is promotable
+        :param space: location to be checked
+        :return: if piece is promotable
         """
 
-        zonevar = ((0, 1, 2), (8, 7, 6))
-        return space.y in zonevar[int(self.currplyr)]
+        promotion_zones = ((0, 1, 2), (8, 7, 6))
+        return space.y in promotion_zones[int(self.current_player)]
 
-    def autopromote(self, space: Coord) -> bool:
+    def auto_promote(self, space: Coord) -> bool:
         """Check if piece must be promoted.
 
-        Arguments:
-            space {Coord} -- location to be checked
-
-        Returns:
-            bool -- if piece must promote
+        :param space: location to be checked
+        :return: if piece must promote
         """
 
-        zonevar = ((0, 1, 2), (8, 7, 6))
-        plyrint = int(self.currplyr)
-        index = zonevar[plyrint].index(space.y)
-        return index < self[space].AUTOPROMOTE
+        promotion_zones = ((0, 1, 2), (8, 7, 6))
+        player_int = int(self.current_player)
+        index = promotion_zones[player_int].index(space.y)
+        return index < self[space].auto_promote
 
     def promote(self, space: Coord):
         """Promote the piece at a location.
 
-        Arguments:
-            space {Coord} -- space to promote piece at
+        :param space: space to promote piece at
+        :return:
         """
 
         piece = self[space]
         piece = piece.promote()
-        self.PIECES[space] = piece
-        self.PCSBYCLR[piece.COLOR][space] = piece
-        self.INVPIECES[piece] = space
+        self.pieces[space] = piece
+        self.by_color[piece.color][space] = piece
+        self.inverse_pieces[piece] = space
 
-    def putinplay(self, piece: Piece, movedto: Coord):
+    def put_in_play(self, piece: Piece, moved_to: Coord):
         """Move a piece from capture into play.
 
-        Arguments:
-            piece {Piece} -- the piece to put in play
-            movedto {Coord} -- where to put the piece
-
-        Raises:
-            IllegalMove -- if capturing on drop
-            IllegalMove -- if violating two-pawn rule
+        :param piece: the piece to put in play
+        :param moved_to: where to put the piece
+        :raises IllegalMove: if capturing on drop
+        :raises IllegalMove: if capturing 2-pawn rule
         """
 
-        player = self.currplyr
-        if not isinstance(self[movedto], NoPiece):
+        player = self.current_player
+        if not isinstance(self[moved_to], NoPiece):
             raise IllegalMove(8)
-        if piece.hastype('p'):
-            rowtotest = Row(movedto, 0)
-            for loc in rowtotest.notoriginal:
-                if self[loc].ispiece('p', player):
+        if piece.has_type('p'):
+            row_to_test = Row(moved_to, 0)
+            for loc in row_to_test.not_original:
+                if self[loc].is_piece('p', player):
                     raise IllegalMove(9)
-        self.CAPTURED[player].remove(piece)
-        self.PCSBYCLR[piece.COLOR][movedto] = piece
-        self.PIECES[movedto] = piece
-        self.INVPIECES[piece] = movedto
+        self.captured[player].remove(piece)
+        self.by_color[piece.color][moved_to] = piece
+        self.pieces[moved_to] = piece
+        self.inverse_pieces[piece] = moved_to
 
     @property
-    def currpcs(self) -> Dict[Coord, Piece]:
+    def current_pieces(self) -> Dict[Coord, Piece]:
         """dict: Pieces of the current player."""
 
-        return self.PCSBYCLR[self.currplyr]
+        return self.by_color[self.current_player]
 
     @property
-    def enemypcs(self) -> Dict[Coord, Piece]:
+    def enemy_pieces(self) -> Dict[Coord, Piece]:
         """dict: Pieces of opposing player."""
 
-        return self.PCSBYCLR[self.currplyr.other]
+        return self.by_color[self.current_player.other]
 
-    def playerpcs(self, player: Color) -> Dict[Coord, Piece]:
+    def player_pieces(self, player: Color) -> Dict[Coord, Piece]:
         """Return pieces of specific player
 
-        Arguments:
-            player {Color} -- player to return
-
-        Returns:
-            dict -- Coords: pieces of player
+        :param player: player to return
+        :return: pieces of player
         """
 
-        return self.PCSBYCLR[player]
+        return self.by_color[player]

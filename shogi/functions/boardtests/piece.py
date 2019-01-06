@@ -23,6 +23,6 @@ def piece_check(
     if not is_valid:
         raise classes.IllegalMove(11)
     piece_location = classes.Coord(piece_string)
-    if current_board[piece_location].COLOR != current_board.currplyr:
+    if current_board[piece_location].color != current_board.current_player:
         raise classes.IllegalMove(5)
     return piece_location

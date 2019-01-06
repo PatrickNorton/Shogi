@@ -1,4 +1,4 @@
-from shogi.functions import classes
+from shogi import classes
 
 __all__ = [
     "toquit"

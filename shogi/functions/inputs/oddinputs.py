@@ -63,7 +63,7 @@ def drop_piece(
     :raises classes.IllegalMove: illegal drop attempted
     """
 
-    if not current_board.CAPTURED[current_board.currplyr]:
+    if not current_board.captured[current_board.current_player]:
         raise classes.IllegalMove(7)
     to_display.append('Enter piece name to put in play')
     to_display.append('> ')
@@ -72,10 +72,10 @@ def drop_piece(
         moved = 'n'
     to_display = to_display[:-2]
     try:
-        to_drop = classes.Piece(moved[0], current_board.currplyr)
+        to_drop = classes.Piece(moved[0], current_board.current_player)
     except ValueError:
         return
-    if to_drop in current_board.CAPTURED[current_board.currplyr]:
+    if to_drop in current_board.captured[current_board.current_player]:
         to_display.append('Enter location to place piece')
         to_display.append(': ')
         entered_str: str = get_input(input_gen, window, to_display)
@@ -84,7 +84,7 @@ def drop_piece(
         except classes.OtherInput:
             other_conditions(input_gen, window, to_display, current_board, entered_str)
         else:
-            current_board.putinplay(to_drop, move_to)
+            current_board.put_in_play(to_drop, move_to)
 
 
 def may_quit(

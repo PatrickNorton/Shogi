@@ -33,7 +33,7 @@ def main(input_gen: Input, window: FullscreenWindow):
             todisp.append(bold(errstr))
             errstr = ''
         todisp += str(theboard).split('\n')
-        todisp.append(f"{theboard.currplyr !r}'s turn")
+        todisp.append(f"{theboard.current_player !r}'s turn")
         maindisp = todisp[:]
         todisp.append('Enter piece location')
         todisp.append(': ')
@@ -48,8 +48,8 @@ def main(input_gen: Input, window: FullscreenWindow):
             moveloc = functions.get_input(input_gen, window, todisp)
             coords = functions.move_check(pieceloc, moveloc)
             functions.move_check_2(theboard, coords)
-            theboard.nextmove = coords
-            tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
+            theboard.next_move = coords
+            tocc = (theboard, theboard.next_move, theboard.current_player, True)
             ccvars = functions.check_check(*tocc)
             checklist = ccvars[1]
             if checklist:
@@ -71,36 +71,36 @@ def main(input_gen: Input, window: FullscreenWindow):
                     errstr = f"Error: {f}"
                 continue
             except classes.OtherMove:
-                theboard.currplyr = theboard.currplyr.other
+                theboard.current_player = theboard.current_player.other
                 continue
-        theboard.move(*theboard.nextmove)
-        moveloc = theboard.nextmove[1]
-        promote = theboard.canpromote(moveloc)
-        canpromote = theboard[moveloc].PROMOTABLE
+        theboard.move(*theboard.next_move)
+        moveloc = theboard.next_move[1]
+        promote = theboard.can_promote(moveloc)
+        canpromote = theboard[moveloc].is_promotable
         ispromoted = theboard[moveloc].prom
         if promote and canpromote and not ispromoted:
-            if theboard.autopromote(moveloc):
+            if theboard.auto_promote(moveloc):
                 theboard.promote(moveloc)
             else:
                 todisp.append('Promote this piece? ')
                 topromote = functions.binary_input(input_gen, window, todisp)
                 if topromote:
                     theboard.promote(moveloc)
-        theboard.lastmove = theboard.nextmove
-        clr = theboard.currplyr.other
-        ccvars = functions.check_check(theboard, theboard.lastmove, clr)
+        theboard.last_move = theboard.next_move
+        clr = theboard.current_player.other
+        ccvars = functions.check_check(theboard, theboard.last_move, clr)
         kingpos, checklist = ccvars
         if checklist and game:
             mate = functions.mate_check(theboard, kingpos, checklist)
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate. {theboard.currplyr !r} wins")
+                print(f"Checkmate. {theboard.current_player !r} wins")
                 game = False
                 break
             else:
                 print('Check')
-        theboard.currplyr = theboard.currplyr.other
+        theboard.current_player = theboard.current_player.other
 
 
 def playgame():

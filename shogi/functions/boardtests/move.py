@@ -47,16 +47,16 @@ def move_check_2(
     piece = current_board[current]
     move = new - current
     move_direction = classes.Direction(move)
-    move_variable = piece.MOVES[move_direction]
+    move_variable = piece.moves[move_direction]
     if move_direction == classes.Direction(8):
         raise classes.IllegalMove(3)
-    elif not piece.canmove(move):
+    elif not piece.can_move(move):
         raise classes.IllegalMove(1)
-    elif current_board[new].samecolor(current_board[current]):
+    elif current_board[new].same_color(current_board[current]):
         raise classes.IllegalMove(4)
     elif move_variable == 'T':
         pass
-    elif piece.hastype('k'):
+    elif piece.has_type('k'):
         king_check(current_board, (current, new))
     else:
         obstruction_check(current_board, current, move)
@@ -102,7 +102,7 @@ def king_check(
         distance = classes.Coord(distance)
         try:
             current_test = new_location + direction * distance
-            if current_board[current_test].samecolor(current_board[old_location]):
+            if current_board[current_test].same_color(current_board[old_location]):
                 raise classes.IllegalMove(4)
             move_check_2(current_board, (current_test, new_location))
         except (ValueError, IndexError):

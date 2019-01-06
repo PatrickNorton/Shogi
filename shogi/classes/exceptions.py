@@ -13,15 +13,15 @@ __all__ = [
 
 class PromotionError(Exception):
     """Error in promotion"""
-    def __init__(self, errornum=0):
-        super().__init__(errornum)
+    def __init__(self, error_num=0):
+        super().__init__(error_num)
         messages = [
             "Promotion error",
             "Piece is not promotable",
             "Piece is already promoted",
             "Piece is already not promoted"
         ]
-        self.message = messages[errornum]
+        self.message = messages[error_num]
 
     def __str__(self): return self.message
 
@@ -46,11 +46,11 @@ class DemotedException(PromotionError):
 
 class IllegalMove(Exception):
     """The move cannot be made."""
-    def __init__(self, errornum=0):
+    def __init__(self, error_num=0):
         from .information import info
-        super().__init__(errornum)
-        self.int = errornum
-        self.message = info.ERRORS[errornum]
+        super().__init__(error_num)
+        self.int = error_num
+        self.message = info.error_info[error_num]
 
     def __str__(self): return self.message
 

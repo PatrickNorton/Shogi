@@ -2,38 +2,37 @@ import json
 from typing import Dict, List, Union, TextIO
 
 __all__ = [
-    "_Infocls",
+    "_InfoClass",
     "_opendata"
 ]
 
 
-class _Infocls:
-    """The class that gets all the info from json.
+class _InfoClass:
+    """The class that gets all the info from json files.
 
-    Properties:
-        MOVEDICT {dict} -- moves.json
-        NAMEDICT {dict} -- names.json
-        LS {dict} -- board.json
-        PCINFO {dict} -- other.json
-        ERRORS {list} -- errors.json
-        HELPINDEX {dict} -- helpindex.json
+    :ivar move_info: moves.json
+    :ivar name_info: names.json
+    :ivar board_info: board.json
+    :ivar piece_info: other.json
+    :ivar error_info: errors.json
+    :ivar help_index: helpindex.json
     """
 
     def __init__(self):
         """Initialise instance of Piece."""
 
         with _opendata('moves.json') as f:
-            self.MOVEDICT: Dict[str, List[str]] = json.load(f)
+            self.move_info: Dict[str, List[str]] = json.load(f)
         with _opendata('names.json') as f:
-            self.NAMEDICT: Dict[str, str] = json.load(f)
+            self.name_info: Dict[str, str] = json.load(f)
         with _opendata('board.json') as f:
-            self.LS: Dict[str, List[str]] = json.load(f)
+            self.board_info: Dict[str, List[str]] = json.load(f)
         with _opendata('other.json') as f:
-            self.PCINFO: Dict[str, dict] = json.load(f)
+            self.piece_info: Dict[str, dict] = json.load(f)
         with _opendata('errors.json') as f:
-            self.ERRORS: List[str] = json.load(f)
+            self.error_info: List[str] = json.load(f)
         with _opendata('helpindex.json') as f:
-            self.HELPINDEX: Dict[str, Union[str, dict]] = json.load(f)
+            self.help_index: Dict[str, Union[str, dict]] = json.load(f)
 
 
 def _opendata(filenm: str) -> TextIO:
@@ -48,5 +47,5 @@ def _opendata(filenm: str) -> TextIO:
 
     import os
     cwd = os.path.dirname(__file__)
-    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
-    return open(filepath)
+    file_path = os.path.join(cwd, f'../datafiles/{filenm}')
+    return open(file_path)

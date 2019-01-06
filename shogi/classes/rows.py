@@ -10,56 +10,53 @@ __all__ = [
 class Row(collections.abc.Iterable):
     """The class representing a row of coordinates.
 
-    Attributes:
-        FIRSTSPACE {Coord} -- original space added
-        VECT {Direction} -- direction of row
-        SPACES {set} -- set of spaces in row
+    :ivar first_space: original space added
+    :ivar vector: direction of row
+    :ivar spaces: set of spaces in row
     """
 
-    def __init__(self, loc: Sequence, vect: Union[Sequence, int]):
+    def __init__(self, location: Sequence, vector: Union[Sequence, int]):
         """Initialise instance of Row.
 
-        Arguments:
-            loc {Coord} -- location of original space
-            vect {Direction} -- direction of row
+        :param location: location of original space
+        :param vector: direction of row
         """
 
-        loc = Coord(loc)
-        vect = Direction(vect)
-        self.FIRSTSPACE: Coord = loc
-        self.VECT: Direction = vect
-        self.SPACES = set()
+        location = Coord(location)
+        vector = Direction(vector)
+        self.first_space: Coord = location
+        self.vector: Direction = vector
+        self.spaces = set()
         for x in range(9):
-            if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
+            if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
             x = Coord(x)
-            self.SPACES.add(loc+x*vect)
+            self.spaces.add(location + x * vector)
         for x in range(0, -9, -1):
-            if any(y*x+z not in range(8) for y, z in zip(vect, loc)):
+            if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
             x = Coord(x)
-            self.SPACES.add(loc+x*vect)
-        self._notoriginal: Set[Coord] = set(x for x in self if x != self.FIRSTSPACE)
+            self.spaces.add(location + x * vector)
+        self._not_original: Set[Coord] = set(x for x in self if x != self.first_space)
 
-    def __iter__(self): yield from self.SPACES
+    def __iter__(self): yield from self.spaces
 
     def __eq__(self, other: 'Row') -> bool:
         if isinstance(other, Row):
-            if other.FIRSTSPACE in self:
-                return abs(self.VECT) == abs(other.VECT)
+            if other.first_space in self:
+                return abs(self.vector) == abs(other.vector)
             else:
                 return False
         else:
             return False
 
-    def __repr__(self): return f"Row({self.FIRSTSPACE}, {self.VECT})"
+    def __repr__(self): return f"Row({self.first_space}, {self.vector})"
 
     @property
-    def notoriginal(self) -> set:
-        """Get all non-original spaces in row
+    def not_original(self) -> set:
+        """Get all non-original spaces in row.
 
-        Returns:
-            set -- set of spaces
+        :return: set of spaces
         """
 
-        return self._notoriginal
+        return self._not_original

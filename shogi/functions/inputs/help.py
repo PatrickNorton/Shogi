@@ -93,7 +93,7 @@ def letter_to_name(file_name: str) -> str:
     :return: full name of piece
     """
 
-    with _open_data('names.json') as f:
+    with _open_data('name_info.json') as f:
         name_dict: Dict[str, str] = json.load(f)
     if file_name.lower() in name_dict:
         if file_name.islower():
@@ -114,7 +114,7 @@ def help_menu(
     :return: path of file to open
     """
 
-    help_index: Dict[str, Union[str, dict]] = classes.info.HELPINDEX
+    help_index: Dict[str, Union[str, dict]] = classes.info.help_index
     while True:
         to_display: List[str] = list(help_index)
         to_display.extend(['', '', ''])
@@ -147,12 +147,12 @@ def list_moves(
     """
 
     moves = {}
-    current_pieces = current_board.currpcs
+    current_pieces = current_board.current_pieces
     for location, piece in current_pieces.items():
         move_list = []
         direction_list = (classes.Direction(x) for x in range(8))
         for x in direction_list:
-            to_list = piece.validspaces(x)
+            to_list = piece.valid_spaces(x)
             to_list = test_spaces(current_board, location, to_list)
             move_list += to_list
         moves[location] = move_list
