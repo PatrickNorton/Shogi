@@ -1,9 +1,11 @@
 import curtsies
+
 from shogi import classes
 from shogi.functions import boardtests
+from typing import List
+
 from .help import help_desk
 from .inputfns import get_input, binary_input
-from typing import List
 
 __all__ = [
     "other_conditions",

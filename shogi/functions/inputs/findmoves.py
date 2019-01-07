@@ -1,6 +1,7 @@
+from typing import List
+
 from shogi import classes
 from shogi.functions import boardtests
-from typing import List
 
 __all__ = [
     "test_spaces"

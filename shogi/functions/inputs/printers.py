@@ -1,4 +1,5 @@
 import curtsies
+
 from typing import List
 
 __all__ = [

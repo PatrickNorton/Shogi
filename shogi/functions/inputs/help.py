@@ -1,12 +1,15 @@
 import json
 import curtsies
-from .printers import display_file
-from shogi import classes
-from .inputfns import get_input
-from .quitting import toquit
-from .privates import _open_help, _open_data
-from .findmoves import test_spaces
+
 from typing import List, Dict, Union
+
+from shogi import classes
+
+from .findmoves import test_spaces
+from .inputfns import get_input
+from .printers import display_file
+from .privates import _open_help, _open_data
+from .quitting import toquit
 
 __all__ = [
     "help_desk",

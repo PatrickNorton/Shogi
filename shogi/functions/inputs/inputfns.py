@@ -1,4 +1,5 @@
 import curtsies
+
 from curtsies import events
 from typing import List
 
