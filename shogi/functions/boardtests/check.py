@@ -1,6 +1,8 @@
-from shogi import classes
-from .move import move_check_2
 from typing import List, Tuple
+
+from shogi import classes
+
+from .move import move_check_2
 
 __all__ = [
     "check_check",

@@ -1,4 +1,5 @@
 from shogi import classes
+
 from .goodinput import input_piece
 
 __all__ = [

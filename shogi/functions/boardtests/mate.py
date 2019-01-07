@@ -1,7 +1,9 @@
 from itertools import product
-from shogi import classes
-from .move import move_check_2
 from typing import List
+
+from shogi import classes
+
+from .move import move_check_2
 
 __all__ = [
     "mate_check"

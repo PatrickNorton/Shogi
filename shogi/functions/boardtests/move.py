@@ -1,7 +1,9 @@
 from itertools import product
-from shogi import classes
-from .goodinput import input_piece
 from typing import Tuple
+
+from shogi import classes
+
+from .goodinput import input_piece
 
 __all__ = [
     "move_check",
