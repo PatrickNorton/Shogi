@@ -2,13 +2,14 @@ from .exceptions import PromotedException, NotPromotableException
 from .exceptions import DemotedException
 from .locations import Direction, RelativeCoord
 from .information import info
-from typing import Union, Dict, Optional, Generator
+from typing import Union, Dict, Optional, Generator, Callable
 import collections
 
 __all__ = [
     "Color",
     "PieceType",
-    "Moves"
+    "Moves",
+    "Move",
 ]
 
 
@@ -229,3 +230,50 @@ class Moves(collections.abc.Sequence):
         if not self.is_promoted:
             raise DemotedException
         return Moves(self.name, self.color, False)
+
+
+class Move:
+    """The class representing a single move.
+
+    This class is used for the representation of a single move for
+    the piece.
+
+    :ivar move_function: function for move
+    """
+    def __init__(self, move_var: str):
+        """Initialise instance of Move.
+
+        :param move_var: string detailing the move
+        """
+        self.move_function = self._move_functions[move_var]
+
+    def try_move(self, move: RelativeCoord) -> bool:
+        return self.move_function(move)
+
+    @staticmethod
+    def hyphen(move: RelativeCoord) -> bool:
+        return move and not move
+
+    @staticmethod
+    def one(move: RelativeCoord) -> bool:
+        return all(x in range(2) for x in abs(move))
+
+    @staticmethod
+    def plus(move: RelativeCoord) -> bool:
+        if move.x == move.y:
+            return True
+        elif any(move) and not all(move):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def t_move(move: RelativeCoord) -> bool:
+        return abs(move.x) == 1 and abs(move.y) == 2
+
+    _move_functions: Dict[str, Callable] = {
+        '-': hyphen,
+        '1': one,
+        '+': plus,
+        'T': t_move,
+    }
