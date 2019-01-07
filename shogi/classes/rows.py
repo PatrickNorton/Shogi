@@ -1,6 +1,8 @@
-from .locations import AbsoluteCoord, Direction
-from typing import Sequence, Union, Set
 import collections
+
+from typing import Sequence, Union, Set
+
+from .locations import AbsoluteCoord, Direction
 
 __all__ = [
     "Row"

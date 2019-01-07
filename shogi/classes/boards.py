@@ -1,12 +1,13 @@
+import collections
+
+from typing import Dict, List, Generator, Sequence, Optional
+
 from .information import info
 from .locations import AbsoluteCoord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color
 from .exceptions import DemotedException, IllegalMove
 from .rows import Row
-from typing import Dict, List, Generator, Sequence, Optional
-import collections
-import string
 
 __all__ = [
     "Board"
@@ -65,9 +66,8 @@ class Board(collections.abc.Sequence):
         captured_string = [str(x) for x in self.captured[Color(1)]]
         to_return += f"Black pieces: {' '.join(captured_string)}\n\n"
         to_return += f"  {'  '.join('987654321')}\n"
-        letters: str = string.ascii_lowercase[:9]
         for x, var in enumerate(self):
-            to_return += f"{letters[x]} {' '.join(str(k) for k in var)}\n"
+            to_return += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
         captured_string = [str(x) for x in self.captured[Color(0)]]
         to_return += f"White pieces: {' '.join(captured_string)}\n"
         return to_return

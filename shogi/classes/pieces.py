@@ -1,9 +1,11 @@
-from .pieceattrs import Moves, Color, PieceType
-from .locations import RelativeCoord, Direction
-from .exceptions import (
-    NotPromotableException, PromotedException, DemotedException)
-from .information import info
 from typing import Tuple, Optional, List, Union
+
+from .exceptions import (
+    NotPromotableException, PromotedException, DemotedException
+)
+from .information import info
+from .locations import RelativeCoord, Direction
+from .pieceattrs import Moves, Color, PieceType
 
 __all__ = [
     "Piece",

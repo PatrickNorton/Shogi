@@ -1,7 +1,9 @@
-from numpy import sin, cos, sign, pi
-from .exceptions import NullCoordError
-from typing import Sequence, Union, Tuple
 import collections
+
+from numpy import sin, cos, sign, pi
+from typing import Sequence, Union, Tuple
+
+from .exceptions import NullCoordError
 
 __all__ = [
     "BaseCoord",

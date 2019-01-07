@@ -1,9 +1,12 @@
-from .exceptions import PromotedException, NotPromotableException
-from .exceptions import DemotedException
-from .locations import Direction, RelativeCoord
-from .information import info
-from typing import Union, Dict, Optional, Generator, Callable
 import collections
+
+from typing import Union, Dict, Optional, Generator, Callable
+
+from .exceptions import (
+    PromotedException, NotPromotableException, DemotedException
+)
+from .information import info
+from .locations import Direction, RelativeCoord
 
 __all__ = [
     "Color",
