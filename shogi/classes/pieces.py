@@ -1,5 +1,5 @@
 from .pieceattrs import Moves, Color, PieceType
-from .locations import Coord, Direction
+from .locations import RelativeCoord, Direction
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException)
 from .information import info
@@ -101,7 +101,7 @@ class Piece:
 
         return Piece(str(self.type), self.color.other_color)
 
-    def can_move(self, relative_location: Coord) -> bool:
+    def can_move(self, relative_location: RelativeCoord) -> bool:
         """Check if piece can move to location.
 
         :param relative_location: relative location of move
@@ -110,7 +110,7 @@ class Piece:
 
         return self.moves.can_move(relative_location)
 
-    def valid_spaces(self, direct: Direction) -> List[Coord]:
+    def valid_spaces(self, direct: Direction) -> List[RelativeCoord]:
         """Get spaces piece could move in a direction
 
         :param direct: direction to be checked
@@ -122,14 +122,14 @@ class Piece:
         if magic_var == '-':
             return []
         elif magic_var == '1':
-            valid.append(Coord(direct))
+            valid.append(RelativeCoord(direct))
         elif magic_var == 'T':
             xy = (direct.x, 2*direct.y)
-            valid.append(Coord(xy))
+            valid.append(RelativeCoord(xy))
         elif magic_var == '+':
             for x in range(9):
-                x = Coord(x)
-                relative_location = x*direct
+                x = RelativeCoord(x)
+                relative_location = RelativeCoord(x*direct)
                 if self.can_move(relative_location):
                     valid.append(relative_location)
         return valid

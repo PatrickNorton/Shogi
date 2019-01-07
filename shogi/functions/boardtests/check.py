@@ -10,10 +10,10 @@ __all__ = [
 
 def check_check(
         current_board: classes.Board,
-        coordinates: Tuple[classes.Coord, classes.Coord],
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
         king_color: classes.Color,
         break_early: bool = False
-) -> Tuple[classes.Coord, List[classes.Coord]]:
+) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
     :param current_board: current game board
@@ -24,9 +24,9 @@ def check_check(
     """
 
     old_location, new_location = coordinates
-    places_attacking: List[classes.Coord] = []
+    places_attacking: List[classes.AbsoluteCoord] = []
     king_tested: classes.Piece = classes.Piece('k', king_color)
-    king_location: classes.Coord = current_board.get_piece(king_tested)
+    king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
     try:
         move_check_2(current_board, (new_location, king_location))
     except classes.IllegalMove:
@@ -51,10 +51,10 @@ def check_check(
 
 def check_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.Coord, classes.Coord],
-        places_attacking: List[classes.Coord],
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        places_attacking: List[classes.AbsoluteCoord],
         break_early: bool = False
-) -> List[classes.Coord]:
+) -> List[classes.AbsoluteCoord]:
     """Test if non-moved pieces can check king.
 
     :param current_board: current board
@@ -65,8 +65,8 @@ def check_check_2(
     """
 
     old_location, king_location = coordinates
-    relative_move: classes.Coord = king_location - old_location
-    absolute_move: classes.Coord = abs(relative_move)
+    relative_move = classes.RelativeCoord(king_location - old_location)
+    absolute_move: classes.RelativeCoord = abs(relative_move)
     if absolute_move.x != absolute_move.y and min(absolute_move):
         return places_attacking
     king_direction = classes.Direction(relative_move)

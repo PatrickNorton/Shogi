@@ -9,7 +9,7 @@ __all__ = [
 def piece_check(
     current_board: classes.Board,
     piece_string: str
-) -> classes.Coord:
+) -> classes.AbsoluteCoord:
     """Check if inputted piece is valid.
 
     :param current_board: current board state
@@ -22,7 +22,7 @@ def piece_check(
     is_valid: bool = input_piece(piece_string)
     if not is_valid:
         raise classes.IllegalMove(11)
-    piece_location = classes.Coord(piece_string)
+    piece_location = classes.AbsoluteCoord(piece_string)
     if current_board[piece_location].color != current_board.current_player:
         raise classes.IllegalMove(5)
     return piece_location

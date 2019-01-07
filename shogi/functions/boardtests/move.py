@@ -12,9 +12,9 @@ __all__ = [
 
 
 def move_check(
-        current_location: classes.Coord,
+        current_location: classes.AbsoluteCoord,
         move_string: str
-) -> Tuple[classes.Coord, classes.Coord]:
+) -> Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]:
     """Check if inputted piece is a valid piece.
 
     :param current_location: position of piece to be moved
@@ -26,13 +26,13 @@ def move_check(
     valid_piece = input_piece(move_string)
     if not valid_piece:
         raise classes.IllegalMove(11)
-    move_location = classes.Coord(move_string)
+    move_location = classes.AbsoluteCoord(move_string)
     return current_location, move_location
 
 
 def move_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.Coord, classes.Coord]
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]
 ):
     """Check if piece can be moved between locations.
 
@@ -64,8 +64,8 @@ def move_check_2(
 
 def obstruction_check(
         current_board: classes.Board,
-        current_position: classes.Coord,
-        move_position: classes.Coord
+        current_position: classes.AbsoluteCoord,
+        move_position: classes.AbsoluteCoord
 ):
     """Check if piece is obstructing move.
 
@@ -77,7 +77,7 @@ def obstruction_check(
 
     move_direction = classes.Direction(move_position)
     for x in range(1, max(abs(move_position))):
-        relative_position = classes.Coord(x)*move_direction
+        relative_position = classes.RelativeCoord(x) * move_direction
         test_position = current_position + relative_position
         if current_board[test_position]:
             raise classes.IllegalMove(2)
@@ -85,7 +85,7 @@ def obstruction_check(
 
 def king_check(
         current_board: classes.Board,
-        coordinates: Tuple[classes.Coord, classes.Coord]
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]
 ):
     """Check if king is moving into check.
 
@@ -99,7 +99,7 @@ def king_check(
     old_location, new_location = coordinates
     direction_set = (classes.Direction(x) for x in range(8))
     for direction, distance in product(direction_set, range(9)):
-        distance = classes.Coord(distance)
+        distance = classes.AbsoluteCoord(distance)
         try:
             current_test = new_location + direction * distance
             if current_board[current_test].same_color(current_board[old_location]):
@@ -115,7 +115,7 @@ def king_check(
         else:
             raise classes.IllegalMove(6)
     for move_x, move_y in product((-1, 1), (-1, 1)):
-        relative_position = classes.Coord((move_x, 2 * move_y))
+        relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         try:
             absolute_position = new_location + relative_position
             move_check_2(current_board, (absolute_position, new_location))

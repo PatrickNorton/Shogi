@@ -1,4 +1,4 @@
-from .locations import Coord, Direction
+from .locations import AbsoluteCoord, Direction
 from typing import Sequence, Union, Set
 import collections
 
@@ -22,22 +22,22 @@ class Row(collections.abc.Iterable):
         :param vector: direction of row
         """
 
-        location = Coord(location)
+        location = AbsoluteCoord(location)
         vector = Direction(vector)
-        self.first_space: Coord = location
+        self.first_space: AbsoluteCoord = location
         self.vector: Direction = vector
         self.spaces = set()
         for x in range(9):
             if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
-            x = Coord(x)
+            x = AbsoluteCoord(x)
             self.spaces.add(location + x * vector)
         for x in range(0, -9, -1):
             if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
-            x = Coord(x)
+            x = AbsoluteCoord(x)
             self.spaces.add(location + x * vector)
-        self._not_original: Set[Coord] = set(x for x in self if x != self.first_space)
+        self._not_original: Set[AbsoluteCoord] = set(x for x in self if x != self.first_space)
 
     def __iter__(self): yield from self.spaces
 

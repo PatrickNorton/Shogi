@@ -20,7 +20,7 @@ def setup_board(
     :return: newly set-up board
     """
 
-    piece_dict: Dict[classes.Coord, classes.Piece] = {}
+    piece_dict: Dict[classes.AbsoluteCoord, classes.Piece] = {}
     while True:
         to_display: List[str] = ['Choose location']
         inputted_text: str = get_input(input_gen, window, to_display)
@@ -30,7 +30,7 @@ def setup_board(
             window.render_to_terminal(curtsies.fsarray(to_display))
             break
         try:
-            coordinate: classes.Coord = boardtests.input_piece(inputted_text)
+            coordinate: classes.AbsoluteCoord = boardtests.input_piece(inputted_text)
         except classes.OtherInput:
             to_display.append("Invalid input")
             continue

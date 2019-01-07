@@ -1,5 +1,5 @@
 from .information import info
-from .locations import Coord, NullCoord
+from .locations import AbsoluteCoord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color
 from .exceptions import DemotedException, IllegalMove
@@ -41,15 +41,15 @@ class Board(collections.abc.Sequence):
         :param pieces: for custom board setups
         """
 
-        self.pieces: Dict[Coord, Piece]
+        self.pieces: Dict[AbsoluteCoord, Piece]
         if pieces is None:
-            self.pieces = {Coord(x): Piece(*y) for x, y in info.board_info.items()}
+            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()}
         else:
-            self.pieces = {Coord(x): Piece(*y) for x, y in pieces.items()}
+            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()}
         self.inverse_pieces = {v: x for x, v in self.pieces.items()}
         self.captured: Dict[Color, List[Piece]]
         self.captured = {Color(x): [] for x in range(2)}
-        self.by_color: Dict[Color, Dict[Coord, Piece]]
+        self.by_color: Dict[Color, Dict[AbsoluteCoord, Piece]]
         self.by_color = {Color(0): {}, Color(1): {}}
         self.current_player = Color(0)
         for x in range(2):
@@ -76,7 +76,7 @@ class Board(collections.abc.Sequence):
         yield from ([self[x, y] for x in range(9)] for y in range(9))
 
     def __getitem__(self, index: Sequence) -> Piece:
-        coordinates = Coord(index)
+        coordinates = AbsoluteCoord(index)
         to_return = self.pieces.get(coordinates, NoPiece())
         return to_return
 
@@ -93,7 +93,7 @@ class Board(collections.abc.Sequence):
 
         yield from self.pieces
 
-    def move(self, current: Coord, new: Coord):
+    def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
         """Move a piece between locations.
 
         :param current: location of piece
@@ -102,12 +102,12 @@ class Board(collections.abc.Sequence):
 
         if not isinstance(self[new], NoPiece):
             self.capture(new)
-        self.pieces[Coord(new)] = self.pieces.pop(current)
-        self.by_color[self[new].color][Coord(new)] = self[new]
-        del self.by_color[self[new].color][Coord(current)]
+        self.pieces[AbsoluteCoord(new)] = self.pieces.pop(current)
+        self.by_color[self[new].color][AbsoluteCoord(new)] = self[new]
+        del self.by_color[self[new].color][AbsoluteCoord(current)]
         self.inverse_pieces[self[new]] = new
 
-    def get_piece(self, location: Piece) -> Coord:
+    def get_piece(self, location: Piece) -> AbsoluteCoord:
         """Return a location based on piece type.
 
         :param location: piece type to check
@@ -116,7 +116,7 @@ class Board(collections.abc.Sequence):
 
         return self.inverse_pieces[location]
 
-    def capture(self, new: Coord):
+    def capture(self, new: AbsoluteCoord):
         """Capture a piece at a location.
 
         :param new: location of to-be-captured piece
@@ -130,14 +130,14 @@ class Board(collections.abc.Sequence):
         piece = piece.flip_sides()
         self.captured[self.current_player].append(piece)
         del self.pieces[new]
-        del self.by_color[piece.color.other][Coord(new)]
+        del self.by_color[piece.color.other][AbsoluteCoord(new)]
         if piece in self.pieces:
             gen = [loc for loc, x in self.pieces.items() if x == piece]
             self.inverse_pieces[piece] = gen[0]
         else:
             del self.inverse_pieces[piece]
 
-    def can_promote(self, space: Coord) -> bool:
+    def can_promote(self, space: AbsoluteCoord) -> bool:
         """Check if a piece is in a promotion zone.
 
         :param space: location to be checked
@@ -147,7 +147,7 @@ class Board(collections.abc.Sequence):
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         return space.y in promotion_zones[int(self.current_player)]
 
-    def auto_promote(self, space: Coord) -> bool:
+    def auto_promote(self, space: AbsoluteCoord) -> bool:
         """Check if piece must be promoted.
 
         :param space: location to be checked
@@ -159,7 +159,7 @@ class Board(collections.abc.Sequence):
         index = promotion_zones[player_int].index(space.y)
         return index < self[space].auto_promote
 
-    def promote(self, space: Coord):
+    def promote(self, space: AbsoluteCoord):
         """Promote the piece at a location.
 
         :param space: space to promote piece at
@@ -172,7 +172,7 @@ class Board(collections.abc.Sequence):
         self.by_color[piece.color][space] = piece
         self.inverse_pieces[piece] = space
 
-    def put_in_play(self, piece: Piece, moved_to: Coord):
+    def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
         """Move a piece from capture into play.
 
         :param piece: the piece to put in play
@@ -195,18 +195,18 @@ class Board(collections.abc.Sequence):
         self.inverse_pieces[piece] = moved_to
 
     @property
-    def current_pieces(self) -> Dict[Coord, Piece]:
+    def current_pieces(self) -> Dict[AbsoluteCoord, Piece]:
         """dict: Pieces of the current player."""
 
         return self.by_color[self.current_player]
 
     @property
-    def enemy_pieces(self) -> Dict[Coord, Piece]:
+    def enemy_pieces(self) -> Dict[AbsoluteCoord, Piece]:
         """dict: Pieces of opposing player."""
 
         return self.by_color[self.current_player.other]
 
-    def player_pieces(self, player: Color) -> Dict[Coord, Piece]:
+    def player_pieces(self, player: Color) -> Dict[AbsoluteCoord, Piece]:
         """Return pieces of specific player
 
         :param player: player to return

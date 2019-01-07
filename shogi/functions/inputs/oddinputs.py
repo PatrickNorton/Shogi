@@ -80,7 +80,7 @@ def drop_piece(
         to_display.append(': ')
         entered_str: str = get_input(input_gen, window, to_display)
         try:
-            move_to: classes.Coord = boardtests.input_piece(entered_str)
+            move_to: classes.AbsoluteCoord = boardtests.input_piece(entered_str)
         except classes.OtherInput:
             other_conditions(input_gen, window, to_display, current_board, entered_str)
         else:

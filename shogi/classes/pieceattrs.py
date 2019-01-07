@@ -1,6 +1,6 @@
 from .exceptions import PromotedException, NotPromotableException
 from .exceptions import DemotedException
-from .locations import Direction, Coord
+from .locations import Direction, RelativeCoord
 from .information import info
 from typing import Union, Dict, Optional, Generator
 import collections
@@ -188,7 +188,7 @@ class Moves(collections.abc.Sequence):
 
     def __len__(self) -> int: return len(self.current)
 
-    def can_move(self, relative_location: Coord) -> bool:
+    def can_move(self, relative_location: RelativeCoord) -> bool:
         """Check if piece can move to location.
 
         :param relative_location: relative location of move

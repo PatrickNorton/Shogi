@@ -10,8 +10,8 @@ __all__ = [
 
 def mate_check(
         current_board: classes.Board,
-        king_location: classes.Coord,
-        places_attacking: List[classes.Coord]
+        king_location: classes.AbsoluteCoord,
+        places_attacking: List[classes.AbsoluteCoord]
 ) -> bool:
     """Test if king is in checkmate.
 
@@ -34,7 +34,7 @@ def mate_check(
     if len(places_attacking) > 1:
         return True
     check_location = places_attacking[0]
-    relative_position = king_location - check_location
+    relative_position = classes.RelativeCoord(king_location - check_location)
     has_pieces = current_board.captured[int(current_board.current_player)]
     not_a_knight = str(current_board[check_location].type) != 'n'
     has_space = not all(x in (-1, 0, 1) for x in relative_position)
@@ -49,7 +49,7 @@ def mate_check(
     move = king_location - check_location
     move_direction = classes.Direction(move)
     for pos, z in product(current_board.enemy_pieces, range(abs(max(move)))):
-        new_location = check_location * classes.Coord(move_direction) * z
+        new_location = check_location * classes.AbsoluteCoord(move_direction) * z
         try:
             move_check_2(current_board, (pos, new_location))
         except classes.IllegalMove:

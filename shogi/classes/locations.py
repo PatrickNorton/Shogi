@@ -4,56 +4,35 @@ from typing import Sequence, Union, Tuple
 import collections
 
 __all__ = [
-    "Coord",
+    "BaseCoord",
+    "RelativeCoord",
+    "AbsoluteCoord",
     "Direction",
     "NullCoord"
 ]
 
 
-class Coord(collections.abc.Sequence):
-    """A set of (x, y) coordinates.
+class BaseCoord(collections.abc.Sequence):
+    """The base class for coordinates.
 
-    These coordinates point to a position on the board, and mist be
-    in the range (-9, 9) for both directions. Coordinates in the
-    range(-9, -1) are for relative coordinates only and should not
-    be used for pointing to a position on the board.
+    A BaseCoord should not be used for actual games, but instead
+    should only be used as a base for inheritance.
 
     :ivar x: the x coordinate
     :ivar y: the y coordinate
     :ivar tup: the (x, y) tuple
-    :ivar x_str: the x part of board notation
-    :ivar y_str: the y part of board notation
     """
 
-    def __init__(self, xy: Union[Sequence, int]):
-        """Initialise instance of Coord.
+    def __init__(self, xy: Tuple[int, int]):
+        """Initialise instance of BaseCoord.
 
-        If xy is an integer, the coordinate (xy, xy) is created.
-
-        :param xy: The coordinates of the Coord
+        :param xy: the the coordinates of the AbsoluteCoord.
         """
+        self.x: int = xy[0]
+        self.y: int = xy[1]
+        self.tup: Tuple[int, int] = xy
 
-        self.x: int
-        self.y: int
-        self.tup: Tuple[int, int]
-        self.x_str: str
-        self.y_str: str
-        if isinstance(xy, str):
-            self.x = '987654321'.index(xy[1])
-            self.y = 'abcdefghi'.index(xy[0])
-        elif isinstance(xy, int) and abs(xy) in range(9):
-            self.x: int = xy
-            self.y: int = xy
-        elif all(abs(x) in range(9) for x in xy):
-            self.x = int(xy[0])
-            self.y = int(xy[1])
-        else:
-            raise ValueError(xy)
-        self.tup = (self.x, self.y)
-        self.x_str = '987654321'[abs(self.x)]
-        self.y_str = 'abcdefghi'[abs(self.y)]
-
-    def __str__(self): return self.y_str + self.x_str
+    def __str__(self): return str(self.tup)
 
     def __eq__(self, other): return hash(self) == hash(other)
 
@@ -61,29 +40,151 @@ class Coord(collections.abc.Sequence):
 
     def __getitem__(self, index): return self.tup[index]
 
-    def __add__(self, other): return Coord((self.x+other.x, self.y+other.y))
+    def __add__(self, other: 'BaseCoord'):
+        return BaseCoord((self.x + other.x, self.y + other.y))
 
-    def __sub__(self, other): return Coord((self.x-other.x, self.y-other.y))
+    def __sub__(self, other: 'BaseCoord'):
+        return BaseCoord((self.x - other.x, self.y - other.y))
 
-    def __mul__(self, other): return Coord((self.x*other.x, self.y*other.y))
+    def __mul__(self, other: 'BaseCoord'):
+        return BaseCoord((self.x * other.x, self.y * other.y))
 
     def __hash__(self): return hash(self.tup)
 
-    def __abs__(self): return Coord((abs(self.x), abs(self.y)))
+    def __abs__(self): return AbsoluteCoord((abs(self.x), abs(self.y)))
 
     def __len__(self): return len(self.tup)
 
-    def __repr__(self): return f"Coord('{self}')"
+    def __repr__(self): return f"BaseCoord({self})"
 
 
-class Direction(Coord):
+class RelativeCoord(BaseCoord):
+    """The class for relative coordinates on the board.
+
+    This class should be used for determining relative coordinates,
+    such as for moves, and should not be used for pointing to a
+    position on the board. Both the x and y coordinates must be
+    in the range (-9, 9).
+
+    If the addition or subtraction of a RelativeCoord takes the sum
+    outside of the (-9, 9) range, a ValueError is raised.
+    """
+
+    def __init__(self, xy: Union[Sequence, int]):
+        """Initialise instance of RelativeCoord.
+
+        If xy is an integer, the coordinate (xy, xy) is created.
+
+        :param xy: the coordinates of the RelativeCoord
+        """
+        if isinstance(xy, str):
+            coordinate_tuple = (
+                '987654321'.index(xy[1]),
+                'abcdefghi'.index(xy[0])
+            )
+            super().__init__(coordinate_tuple)
+        elif isinstance(xy, int) and xy in range(-9, 9):
+            super().__init__((xy, xy))
+        elif all(x in range(-9, 9) for x in xy):
+            super().__init__(tuple(xy))
+        else:
+            raise ValueError(xy)
+
+    def __add__(self, other):
+        return RelativeCoord(self + other)
+
+    def __sub__(self, other):
+        return RelativeCoord(self + other)
+
+    def __mul__(self, other):
+        return RelativeCoord(self + other)
+
+    def __hash__(self):
+        return hash(self.tup)
+
+    def __abs__(self):
+        return RelativeCoord(hash(self))
+
+    def __repr__(self):
+        return f"RelativeCoord({self})"
+
+
+class AbsoluteCoord(BaseCoord):
+    """A set of (x, y) coordinates.
+
+    These coordinates point to a position on the board, and must be
+    in the range (0, 9) for both directions. This coordinate should
+    be used for pointing at locations on the board.
+
+    If the addition or subtraction of an AbsoluteCoord takes it out
+    of the (0, 9) range, a RelativeCoord is instead returned.
+
+    :ivar x_str: the x part of board notation
+    :ivar y_str: the y part of board notation
+    """
+
+    def __init__(self, xy: Union[Sequence, int]):
+        """Initialise instance of AbsoluteCoord.
+
+        If xy is an integer, the coordinate (xy, xy) is created.
+
+        :param xy: the coordinates of the AbsoluteCoord
+        """
+
+        if isinstance(xy, str):
+            coordinate_tuple = (
+                '987654321'.index(xy[1]),
+                'abcdefghi'.index(xy[0])
+            )
+            super().__init__(coordinate_tuple)
+        elif isinstance(xy, int) and xy in range(9):
+            super().__init__((xy, xy))
+        elif all(x in range(9) for x in xy):
+            super().__init__(tuple(xy))
+        else:
+            raise ValueError(xy)
+        self.x_str = '987654321'[self.x]
+        self.y_str = 'abcdefghi'[self.y]
+
+    def __str__(self):
+        return self.y_str + self.x_str
+
+    def __add__(self, other):
+        try:
+            return AbsoluteCoord(self + other)
+        except ValueError:
+            return RelativeCoord(self + other)
+
+    def __sub__(self, other):
+        try:
+            return AbsoluteCoord(self - other)
+        except ValueError:
+            return RelativeCoord(self - other)
+
+    def __mul__(self, other):
+        try:
+            return AbsoluteCoord(self - other)
+        except ValueError:
+            return RelativeCoord(self - other)
+
+    def __hash__(self):
+        return hash(self.tup)
+
+    def __abs__(self):
+        return AbsoluteCoord(abs(self))
+
+    def __repr__(self):
+        return f"AbsoluteCoord('{self}')"
+
+
+class Direction(RelativeCoord):
     """A direction in which a piece moves.
 
-    This is equivalent to a Coord with length 1, but also with an
-    extra direction attribute, which specifies the direction in which
-    it is facing. This is to be used for vectors and getting a move
-    from a Moves object, where the moves are specified by direction,
-    and not by absolute or relative coordinates.
+    This is equivalent to a AbsoluteCoord with length 1, but also
+    with an extra direction attribute, which specifies the direction
+    in which it is facing. This is to be used for vectors and getting
+    a move from a Moves object, where the moves are specified by
+    direction, and not by absolute or relative coordinates.
 
     Directions:
 
@@ -107,7 +208,7 @@ class Direction(Coord):
         self.direction: int
         if direction == (0, 0):
             self.direction = 8
-        elif isinstance(direction, Coord):
+        elif isinstance(direction, AbsoluteCoord):
             self.direction = self._make(direction.x, direction.y)
         elif isinstance(direction, tuple):
             self.direction = self._make(*direction)
@@ -121,11 +222,14 @@ class Direction(Coord):
             self.tup = (0, 0)
         super().__init__(self.tup)
 
-    def __repr__(self): return f"Direction({self.direction})"
+    def __repr__(self):
+        return f"Direction({self.direction})"
 
-    def __abs__(self): return Direction(abs(self.direction))
+    def __abs__(self):
+        return Direction(abs(self.direction))
 
-    def __hash__(self): return hash(self.tup)
+    def __hash__(self):
+        return hash(self.tup)
 
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.

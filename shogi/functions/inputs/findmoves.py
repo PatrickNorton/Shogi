@@ -9,9 +9,9 @@ __all__ = [
 
 def test_spaces(
     current_board: classes.Board,
-    piece_location: classes.Coord,
-    space_list: List[classes.Coord]
-) -> List[classes.Coord]:
+    piece_location: classes.AbsoluteCoord,
+    space_list: List[classes.RelativeCoord]
+) -> List[classes.AbsoluteCoord]:
     """Test which spaces in a list are valid moves.
 
     :param current_board: current state of the board
@@ -20,7 +20,7 @@ def test_spaces(
     :return: list of valid spaces
     """
 
-    to_return: List[classes.Coord] = []
+    to_return: List[classes.AbsoluteCoord] = []
     for relative_location in space_list:
         try:
             absolute_location = piece_location + relative_location

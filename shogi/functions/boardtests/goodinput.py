@@ -5,7 +5,7 @@ __all__ = [
 ]
 
 
-def input_piece(entered_text: str) -> classes.Coord:
+def input_piece(entered_text: str) -> classes.AbsoluteCoord:
     """Test if input is a valid location.
 
     :param entered_text: inputted string
@@ -14,7 +14,7 @@ def input_piece(entered_text: str) -> classes.Coord:
     """
 
     try:
-        piece_location: classes.Coord = classes.Coord(entered_text)
+        piece_location: classes.AbsoluteCoord = classes.AbsoluteCoord(entered_text)
         return piece_location
     except (ValueError, IndexError):
         raise classes.OtherInput(entered_text)
