@@ -96,7 +96,6 @@ def main(input_gen: Input, window: FullscreenWindow):
             if mate:
                 print(theboard)
                 print(f"Checkmate. {theboard.current_player !r} wins")
-                game = False
                 break
             else:
                 print('Check')
