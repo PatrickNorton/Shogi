@@ -10,8 +10,9 @@
         pos: 0, root.height-root.width/2
 
 <BoardSquare>:
-    background_normal: "./boardimages/Light square.jpg"
-    background_down: "./boardimages/Light square.jpg"
+    on_press: self.parent.space_pressed(self.board_position)
+    background_normal: "./images/Light square.jpg"
+    background_down: "./images/Light square.jpg"
     canvas.before:
         Color:
             rgba: .5, .5, .5, 1
@@ -20,7 +21,7 @@
             rectangle: self.x, self.y, self.width, self.height
     text: self.get_position()
 #    Image:
-#        source: "./boardimages/Dark square.jpg"
+#        source: "./images/Dark square.jpg"
 #        y: self.parent.y + self.parent.height / 4
 #        x: self.parent.x + self.parent.width / 4
 #        height: self.parent.height / 2
