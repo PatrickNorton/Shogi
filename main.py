@@ -64,7 +64,7 @@ class ChessBoard(GridLayout):
     def update_squares(self, to_update):
         for coordinate in to_update:
             space = self.children_dict[coordinate]
-            space.text = space.set_image(self.board[coordinate])
+            space.text = space.set_string(self.board[coordinate])
 
     def get_piece(self, position): return self.board[position]
 
@@ -98,7 +98,8 @@ class BoardSquare(Button):
         self.color = 1, 1, 1, 1
         self.is_highlighted = False
 
-    def set_image(self, piece):
+    @staticmethod
+    def set_string(piece):
         return str(piece) if piece else ''
 
     def valid_moves(self, current_board):
