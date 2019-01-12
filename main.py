@@ -46,6 +46,8 @@ class ChessBoard(GridLayout):
                 pressed_square.light()
             self.make_move = True
             self.move_from = coordinate
+        else:
+            self.make_move = False
 
     def make_moves(self, current, to):
         try:
