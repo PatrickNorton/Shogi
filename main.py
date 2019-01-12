@@ -20,23 +20,32 @@ class ChessBoard(GridLayout):
             self.add_widget(square)
         self.children_dict = {x.board_position: x for x in self.children}
         self.board = shogi.Board()
+        self.make_move = False
+        self.move_from = shogi.NullCoord()
 
     def space_pressed(self, coordinate):
+        if not self.make_move or self.move_from == coordinate:
+            self.light_moves(coordinate)
+        else:
+            self.make_moves(self.move_from, coordinate)
+
+    def light_moves(self, coordinate):
         pressed_square = self.children_dict[coordinate]
-        highlighted_spaces = {
-            x: y for x, y in self.children_dict.items() if y.is_highlighted
-        }
-        do_highlight = pressed_square.is_highlighted
-        for space in highlighted_spaces.values():
-            space.un_light()
-        if not do_highlight:
+        pressed_piece = self.board[coordinate]
+        do_highlight = not pressed_square.is_highlighted
+        player_piece = pressed_piece.color == self.board.current_player
+        self.un_light_all()
+        if do_highlight and player_piece:
             valid_moves = pressed_square.valid_moves(self.board)
             valid_spaces = [
                 self.children_dict[x] for x in valid_moves
             ]
             for space in valid_spaces:
                 space.light()
-            pressed_square.light()
+            if self.board[coordinate]:
+                pressed_square.light()
+            self.make_move = True
+            self.move_from = coordinate
 
     def make_moves(self, current, to):
         try:
@@ -46,13 +55,23 @@ class ChessBoard(GridLayout):
         else:
             self.board.move(current, to)
             self.update_squares((current, to))
+            self.board.current_player = self.board.current_player.other
+            self.make_move = False
+            self.un_light_all()
 
     def update_squares(self, to_update):
         for coordinate in to_update:
             space = self.children_dict[coordinate]
-            space.set_image(self.board[coordinate])
+            space.text = space.set_image(self.board[coordinate])
 
     def get_piece(self, position): return self.board[position]
+
+    def un_light_all(self):
+        highlighted_spaces = {
+            x: y for x, y in self.children_dict.items() if y.is_highlighted
+        }
+        for space in highlighted_spaces.values():
+            space.un_light()
 
 
 class BoardSquare(Button):
@@ -78,7 +97,7 @@ class BoardSquare(Button):
         self.is_highlighted = False
 
     def set_image(self, piece):
-        return str(piece)
+        return str(piece) if piece else ''
 
     def valid_moves(self, current_board):
         current_piece = current_board[self.board_position]
@@ -86,7 +105,6 @@ class BoardSquare(Button):
         for dir_number in range(8):
             direction = shogi.Direction(dir_number)
             direction_spaces = current_piece.valid_spaces(direction)
-            # shogi.move_check_2(current_board, (self.board_position, direction_spaces[0]))
             direction_spaces = shogi.test_spaces(
                 current_board,
                 self.board_position,
