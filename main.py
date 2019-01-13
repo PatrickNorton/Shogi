@@ -30,13 +30,14 @@ class ChessBoard(GridLayout):
         :param kwargs: keyword arguments to pass
         """
         super().__init__(cols=9, rows=9, **kwargs)
+        self.board: shogi.Board = shogi.Board()
         for x in range(81):
-            square = BoardSquare(shogi.AbsoluteCoord((8-x % 9, x//9)))
+            coordinate = shogi.AbsoluteCoord((x % 9, x//9))
+            square = BoardSquare(coordinate, self.board[coordinate])
             self.add_widget(square)
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
             x.board_position: x for x in self.children
         }
-        self.board: shogi.Board = shogi.Board()
         self.make_move: bool = False
         self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
         self.in_check: List[List[shogi.AbsoluteCoord]] = [[], []]
@@ -148,7 +149,12 @@ class BoardSquare(Button):
     :ivar board_position: position within board
     :ivar is_highlighted: whether ot not piece is highlighted
     """
-    def __init__(self, position: shogi.AbsoluteCoord, **kwargs):
+    def __init__(
+            self,
+            position: shogi.AbsoluteCoord,
+            initial_occupant: shogi.Piece,
+            **kwargs
+    ):
         """Initialise instance of BoardSquare.
 
         :param position: location of square on board
@@ -157,16 +163,7 @@ class BoardSquare(Button):
         self.board_position: shogi.AbsoluteCoord = position
         self.is_highlighted: bool = False
         super().__init__(**kwargs)
-
-    def get_occupant(self) -> str:
-        """Get string of current occupant of space.
-
-        TODO! Deprecate and/or speed up
-
-        :return: string of occupant
-        """
-        pos = shogi.Board()[self.board_position]
-        return str(pos) if pos else ''
+        self.text = str(initial_occupant) if initial_occupant else ''
 
     def light(self):
         """Highlight self."""
