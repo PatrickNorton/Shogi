@@ -2,7 +2,7 @@ import collections
 
 from typing import Sequence, Union, Set
 
-from .locations import AbsoluteCoord, Direction
+from .locations import AbsoluteCoord, Direction, RelativeCoord
 
 __all__ = [
     "Row"
@@ -32,13 +32,13 @@ class Row(collections.abc.Iterable):
         for x in range(9):
             if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
-            x = AbsoluteCoord(x)
-            self.spaces.add(location + x * vector)
+            x = RelativeCoord(x)
+            self.spaces.add(AbsoluteCoord(location + x * vector))
         for x in range(0, -9, -1):
             if any(y*x+z not in range(8) for y, z in zip(vector, location)):
                 break
-            x = AbsoluteCoord(x)
-            self.spaces.add(location + x * vector)
+            x = RelativeCoord(x)
+            self.spaces.add(AbsoluteCoord(location + x * vector))
         self._not_original: Set[AbsoluteCoord] = set(x for x in self if x != self.first_space)
 
     def __iter__(self): yield from self.spaces

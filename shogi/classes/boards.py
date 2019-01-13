@@ -131,7 +131,7 @@ class Board(collections.abc.Sequence):
         self.captured[self.current_player].append(piece)
         del self.pieces[new]
         del self.by_color[piece.color.other][AbsoluteCoord(new)]
-        if piece in self.pieces:
+        if piece in self.pieces.values():
             gen = [loc for loc, x in self.pieces.items() if x == piece]
             self.inverse_pieces[piece] = gen[0]
         else:

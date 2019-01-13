@@ -5,6 +5,11 @@ from kivy.uix.widget import Widget
 from kivy.utils import get_color_from_hex
 import shogi
 
+# TODO! Remove moves putting king in check from validity
+# TODO! Fix valid moves for when in check
+
+# TODO: Promotion, reconstituting captured pieces
+
 
 class AppCore(Widget):
     @staticmethod
@@ -22,6 +27,7 @@ class ChessBoard(GridLayout):
         self.board = shogi.Board()
         self.make_move = False
         self.move_from = shogi.NullCoord()
+        self.in_check = [False, False]
 
     def space_pressed(self, coordinate):
         if not self.make_move or self.move_from == coordinate:
@@ -57,6 +63,12 @@ class ChessBoard(GridLayout):
         else:
             self.board.move(current, to)
             self.update_squares((current, to))
+            is_in_check = shogi.check_check(
+                self.board,
+                (current, to),
+                self.board.current_player.other
+            )
+            self.in_check[self.board.current_player.int] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False
             self.un_light_all()
