@@ -200,16 +200,18 @@ class Moves(collections.abc.Sequence):
         """
 
         vec = Direction(relative_location)
-        dist = max(abs(relative_location))
+        abs_location = abs(relative_location)
+        dist = max(abs_location)
+        minimum = min(abs_location)
         magic_var = self[vec]
         if magic_var == '-':
             return False
         elif magic_var == '1':
             return dist == 1
         elif magic_var == '+':
-            return True
+            return abs_location.x == abs_location.y or not minimum
         elif magic_var == 'T':
-            return abs(relative_location) == (1, 2)
+            return abs_location == (1, 2)
         return False
 
     def prom(self) -> 'Moves':

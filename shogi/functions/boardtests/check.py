@@ -33,12 +33,16 @@ def check_check(
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
     try:
         if before_move:
-            move_check_2(
-                current_board,
-                (new_location, king_location),
-                ignore_location=old_location,
-                act_full=new_location
-            )
+            kings_enemy = not current_board[old_location].is_color(king_color)
+            if kings_enemy:
+                move_check_2(
+                    current_board,
+                    (new_location, king_location),
+                    ignore_location=old_location,
+                    act_full=new_location
+                )
+            else:
+                raise classes.IllegalMove(4)
         else:
             move_check_2(current_board, (new_location, king_location))
     except classes.IllegalMove:
@@ -83,6 +87,7 @@ def check_check_2(
     :param king_location: location of king to test
     :param places_attacking: list of places currently checking king
     :param break_early: break after first check
+    :param before_move: if move has yet been made
     :return: pieces checking king
     """
 
