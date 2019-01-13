@@ -5,8 +5,6 @@ from kivy.uix.widget import Widget
 from kivy.utils import get_color_from_hex
 import shogi
 
-# TODO! Fix valid moves for when in check
-
 # TODO: Promotion, reconstituting captured pieces
 
 
@@ -26,7 +24,7 @@ class ChessBoard(GridLayout):
         self.board = shogi.Board()
         self.make_move = False
         self.move_from = shogi.NullCoord()
-        self.in_check = [False, False]
+        self.in_check = [[], []]
 
     def space_pressed(self, coordinate):
         if not self.make_move or self.move_from == coordinate:
@@ -41,7 +39,10 @@ class ChessBoard(GridLayout):
         player_piece = pressed_piece.color == self.board.current_player
         self.un_light_all()
         if do_highlight and player_piece:
-            valid_moves = pressed_square.valid_moves(self.board)
+            valid_moves = pressed_square.valid_moves(
+                self.board,
+                self.in_check[pressed_piece.color.int]
+            )
             valid_spaces = [
                 self.children_dict[x] for x in valid_moves
             ]
@@ -71,12 +72,13 @@ class ChessBoard(GridLayout):
         else:
             self.board.move(current, to)
             self.update_squares((current, to))
-            is_in_check = shogi.check_check(
+            king_location, is_in_check = shogi.check_check(
                 self.board,
                 (current, to),
                 self.board.current_player.other
             )
-            self.in_check[self.board.current_player.int] = is_in_check
+            print(is_in_check)
+            self.in_check[self.board.current_player.other.int] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False
             self.un_light_all()
@@ -122,7 +124,7 @@ class BoardSquare(Button):
     def set_string(piece):
         return str(piece) if piece else ''
 
-    def valid_moves(self, current_board):
+    def valid_moves(self, current_board, checking_spaces):
         current_piece = current_board[self.board_position]
         valid_spaces = []
         for dir_number in range(8):
@@ -131,7 +133,8 @@ class BoardSquare(Button):
             direction_spaces = shogi.test_spaces(
                 current_board,
                 self.board_position,
-                direction_spaces
+                direction_spaces,
+                checking_spaces=checking_spaces
             )
             valid_spaces += direction_spaces
         return valid_spaces
