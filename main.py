@@ -5,7 +5,6 @@ from kivy.uix.widget import Widget
 from kivy.utils import get_color_from_hex
 import shogi
 
-# TODO! Remove moves putting king in check from validity
 # TODO! Fix valid moves for when in check
 
 # TODO: Promotion, reconstituting captured pieces
@@ -58,6 +57,15 @@ class ChessBoard(GridLayout):
     def make_moves(self, current, to):
         try:
             shogi.move_check_2(self.board, (current, to))
+            king_location, checking_own = shogi.check_check(
+                self.board,
+                (current, to),
+                self.board.current_player,
+                break_early=True,
+                before_move=True
+            )
+            if checking_own:
+                raise shogi.IllegalMove(6)
         except shogi.IllegalMove:
             pass
         else:

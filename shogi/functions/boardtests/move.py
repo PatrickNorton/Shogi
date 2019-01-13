@@ -34,12 +34,16 @@ def move_check(
 
 def move_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        ignore_location: classes.AbsoluteCoord = None,
+        act_full: classes.AbsoluteCoord = None
 ):
     """Check if piece can be moved between locations.
 
     :param current_board: current board state
     :param coordinates: current and new locations of piece
+    :param ignore_location: location to ignore for obstruction check
+    :param act_full: location to pretend is full
     :raises classes.IllegalMove: attempted 0-move of piece
     :raises classes.IllegalMove: move to illegal location
     :raises classes.IllegalMove: capture of own piece
@@ -61,19 +65,29 @@ def move_check_2(
     elif piece.has_type('k'):
         king_check(current_board, (current, new))
     else:
-        obstruction_check(current_board, current, move)
+        obstruction_check(
+            current_board,
+            current,
+            move,
+            ignore_location,
+            act_full
+        )
 
 
 def obstruction_check(
         current_board: classes.Board,
         current_position: classes.AbsoluteCoord,
-        move_position: classes.AbsoluteCoord
+        move_position: classes.AbsoluteCoord,
+        ignore_location: classes.AbsoluteCoord = None,
+        act_full: classes.AbsoluteCoord = None,
 ):
     """Check if piece is obstructing move.
 
     :param current_board: current board state
     :param current_position: current piece location
     :param move_position: location to move piece to
+    :param ignore_location: location to ignore in check
+    :param act_full: location to pretend is full
     :raises classes.IllegalMove: obstruction found
     """
 
@@ -81,7 +95,9 @@ def obstruction_check(
     for x in range(1, max(abs(move_position))):
         relative_position = classes.RelativeCoord(x) * move_direction
         test_position = current_position + relative_position
-        if current_board[test_position]:
+        if current_board[test_position] and test_position != ignore_location:
+            raise classes.IllegalMove(2)
+        if test_position == act_full:
             raise classes.IllegalMove(2)
 
 

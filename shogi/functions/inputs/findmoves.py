@@ -29,6 +29,15 @@ def test_spaces(
                 current_board,
                 (piece_location, absolute_location)
             )
+            king_location, checking_own = boardtests.check_check(
+                current_board,
+                (piece_location, absolute_location),
+                current_board[piece_location].color,
+                break_early=True,
+                before_move=True
+            )
+            if checking_own:
+                raise classes.IllegalMove
         except (TypeError, ValueError, classes.IllegalMove):
             continue
         else:
