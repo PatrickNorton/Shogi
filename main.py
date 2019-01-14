@@ -14,10 +14,6 @@ class AppCore(Widget):
         super().__init__(**kwargs)
         self.captured_spaces = self.ids
 
-    @staticmethod
-    def get_background_color():
-        return get_color_from_hex("#1e2022")
-
     def update_captured(self, current_board):
         for x, val in enumerate(self.captured_spaces.values()):
             val.update(current_board, shogi.Color(x))
@@ -214,9 +210,9 @@ class BoardSquare(Button):
     ) -> List[shogi.AbsoluteCoord]:
         """Get valid moves for square, given current board.
 
-        :param current_board:
-        :param checking_spaces:
-        :return:
+        :param current_board: current board position
+        :param checking_spaces: spaces checking king
+        :return: list of valid spaces
         """
         current_piece = current_board[self.board_position]
         valid_spaces = []
@@ -234,13 +230,22 @@ class BoardSquare(Button):
 
 
 class CapturedGrid(GridLayout):
+    """Grid containing captured pieces."""
     def __init__(self, **kwargs):
+        """Initialise instance of CapturedGrid.
+
+        :param kwargs: keyword arguments to pass
+        """
         super().__init__(cols=4, rows=2, **kwargs)
         for x in range(8):
             self.add_widget(CapturedSquare(x))
-        print([x.position for x in self.children])
 
     def update(self, current_board, color):
+        """Update square.
+
+        :param current_board: current board
+        :param color: color of grid layout
+        """
         children = self.children[::-1]
         captured_pieces = current_board.captured[color]
         for space in children:
@@ -253,14 +258,15 @@ class CapturedSquare(Button):
     """The squares that hold the captured pieces.
 
     :ivar occupant: occupant of the square
+    :ivar position: position within grid
     """
-    def __init__(self, position, **kwargs):
+    def __init__(self, position: int, **kwargs):
         """Initialise instance of CapturedSquare.
 
-        :param kwargs: keyword arguments to be sent.
+        :param kwargs: keyword arguments to be sent
         """
         self.occupant: shogi.Piece = shogi.NoPiece()
-        self.position = position
+        self.position: int = position
         super().__init__(**kwargs)
 
     def give_piece(self, piece: shogi.Piece):
@@ -278,16 +284,17 @@ class CapturedSquare(Button):
         self.text = ''
         self.occupant = shogi.NoPiece()
 
-    @staticmethod
-    def get_background_color():
-        return get_color_from_hex("#1e2022")
-
     def on_press(self):
         if self.occupant:
             print('Occupied!')
 
 
 class ShogiBoard(App):
+    @staticmethod
+    def get_background_color():
+        """Get standard background color."""
+        return get_color_from_hex("#1e2022")
+
     def build(self):
         return AppCore()
 

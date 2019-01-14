@@ -1,7 +1,7 @@
 <AppCore>:
     canvas.before:
         Color:
-            rgba: self.get_background_color()
+            rgba: app.get_background_color()
         Rectangle:
             pos: self.pos
             size: self.size
@@ -40,7 +40,7 @@
     background_color: 0, 0, 0, 0
     canvas.before:
         Color:
-            rgba: self.get_background_color()
+            rgba: app.get_background_color()
         Line:
             width: 2
             rectangle: self.x, self.y, self.width, self.height
