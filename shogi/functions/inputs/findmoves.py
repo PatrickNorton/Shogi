@@ -40,8 +40,11 @@ def test_spaces(
                 break_early=True,
                 before_move=True
             )
+            checking_spaces = [x for x in checking_spaces if x != absolute_location]
             for space in checking_spaces:
                 try:
+                    if king_location == piece_location:
+                        raise classes.IllegalMove
                     boardtests.move_check_2(
                         current_board,
                         (space, king_location),

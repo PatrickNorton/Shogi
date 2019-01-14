@@ -136,6 +136,8 @@ def king_check(
         relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         try:
             absolute_position = new_location + relative_position
+            if current_board[absolute_position].same_color(current_board[old_location]):
+                raise classes.IllegalMove(4)
             move_check_2(current_board, (absolute_position, new_location))
         except (ValueError, IndexError):
             continue
