@@ -112,6 +112,12 @@ class ChessBoard(GridLayout):
                 (current, to),
                 self.board.current_player.other
             )
+            if is_in_check:
+                mate = shogi.mate_check(self.board, king_location, is_in_check)
+            else:
+                mate = False
+            if mate:
+                pass
             self.in_check[self.board.current_player.other.int] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False

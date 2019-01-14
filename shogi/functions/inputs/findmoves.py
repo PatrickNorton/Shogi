@@ -33,7 +33,7 @@ def test_spaces(
                 current_board,
                 (piece_location, absolute_location)
             )
-        except (TypeError, ValueError, classes.IllegalMove):
+        except (ValueError, classes.IllegalMove):
             continue
         else:
             king_location, checking_own = boardtests.check_check(
