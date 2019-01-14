@@ -8,6 +8,14 @@
     ChessBoard:
         size: root.width/2, root.width/2
         pos: 0, root.height-root.width/2
+    CapturedGrid:
+        id: 0
+        size: root.width*2/9, root.width*1/9
+        pos: 0, root.height-23*root.width/36
+    CapturedGrid:
+        id: 1
+        size: root.width*2/9, root.width*1/9
+        pos: root.width*5/18, root.height-23*root.width/36
 
 <BoardSquare>:
     on_press: self.parent.space_pressed(self.board_position)
@@ -25,3 +33,14 @@
 #        x: self.parent.x + self.parent.width / 4
 #        height: self.parent.height / 2
 #        width: self.parent.width / 2
+
+<CapturedSquare>:
+    background_normal: "./images/Light square.jpg"
+    background_down: "./images/Light square.jpg"
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: self.get_background_color()
+        Line:
+            width: 2
+            rectangle: self.x, self.y, self.width, self.height

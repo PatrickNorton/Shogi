@@ -10,9 +10,17 @@ import shogi
 
 
 class AppCore(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.captured_spaces = self.ids
+
     @staticmethod
     def get_background_color():
         return get_color_from_hex("#1e2022")
+
+    def update_captured(self, current_board):
+        for x, val in enumerate(self.captured_spaces.values()):
+            val.update(current_board, shogi.Color(x))
 
 
 class ChessBoard(GridLayout):
@@ -105,6 +113,7 @@ class ChessBoard(GridLayout):
         except shogi.IllegalMove:
             pass
         else:
+            is_a_capture = bool(self.board[to])
             self.board.move(current, to)
             self.update_squares((current, to))
             king_location, is_in_check = shogi.check_check(
@@ -122,6 +131,8 @@ class ChessBoard(GridLayout):
             self.board.current_player = self.board.current_player.other
             self.make_move = False
             self.un_light_all()
+            if is_a_capture:
+                self.parent.update_captured(self.board)
 
     def update_squares(self, to_update: Iterable[shogi.AbsoluteCoord]):
         """Update specific squares.
@@ -220,6 +231,60 @@ class BoardSquare(Button):
             )
             valid_spaces += direction_spaces
         return valid_spaces
+
+
+class CapturedGrid(GridLayout):
+    def __init__(self, **kwargs):
+        super().__init__(cols=4, rows=2, **kwargs)
+        for x in range(8):
+            self.add_widget(CapturedSquare(x))
+        print([x.position for x in self.children])
+
+    def update(self, current_board, color):
+        children = self.children[::-1]
+        captured_pieces = current_board.captured[color]
+        for space in children:
+            space.remove_piece()
+        for space, occupant in zip(children, captured_pieces):
+            space.give_piece(occupant)
+
+
+class CapturedSquare(Button):
+    """The squares that hold the captured pieces.
+
+    :ivar occupant: occupant of the square
+    """
+    def __init__(self, position, **kwargs):
+        """Initialise instance of CapturedSquare.
+
+        :param kwargs: keyword arguments to be sent.
+        """
+        self.occupant: shogi.Piece = shogi.NoPiece()
+        self.position = position
+        super().__init__(**kwargs)
+
+    def give_piece(self, piece: shogi.Piece):
+        """Add an occupying piece to the square.
+
+        :param piece: piece to be added
+        """
+        self.background_color = 1, 1, 1, 1
+        self.text = str(piece)
+        self.occupant = piece
+
+    def remove_piece(self):
+        """Remove occupying piece from square."""
+        self.background_color = 0, 0, 0, 0
+        self.text = ''
+        self.occupant = shogi.NoPiece()
+
+    @staticmethod
+    def get_background_color():
+        return get_color_from_hex("#1e2022")
+
+    def on_press(self):
+        if self.occupant:
+            print('Occupied!')
 
 
 class ShogiBoard(App):
