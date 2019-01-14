@@ -6,7 +6,6 @@ from kivy.utils import get_color_from_hex
 from typing import Iterable, Dict, List
 import shogi
 
-# TODO!! Fix capturing out of check
 # TODO: Promotion, reconstituting captured pieces
 
 
@@ -103,7 +102,7 @@ class ChessBoard(GridLayout):
             )
             if checking_own:
                 raise shogi.IllegalMove(6)
-        except shogi.IllegalMove as e:
+        except shogi.IllegalMove:
             pass
         else:
             self.board.move(current, to)
@@ -113,7 +112,6 @@ class ChessBoard(GridLayout):
                 (current, to),
                 self.board.current_player.other
             )
-            if is_in_check: print(is_in_check)
             self.in_check[self.board.current_player.other.int] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False
