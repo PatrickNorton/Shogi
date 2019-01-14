@@ -1,2 +1,3 @@
-from shogi import playgame
-playgame()
+from kivy_output import ShogiBoard
+
+ShogiBoard().run()
