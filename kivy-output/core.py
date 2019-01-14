@@ -2,6 +2,10 @@ from kivy.uix.widget import Widget
 
 import shogi
 
+__all__ = [
+    "AppCore"
+]
+
 
 class AppCore(Widget):
     def __init__(self, **kwargs):

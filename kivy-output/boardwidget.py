@@ -6,6 +6,10 @@ import shogi
 
 from .boardsquare import BoardSquare
 
+__all__ = [
+    "ChessBoard"
+]
+
 
 class ChessBoard(GridLayout):
     """The class that holds the chess board on screen.

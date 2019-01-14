@@ -3,6 +3,10 @@ from kivy.utils import get_color_from_hex
 
 from .core import AppCore
 
+__all__ = [
+    "ShogiBoard"
+]
+
 
 class ShogiBoard(App):
     @staticmethod

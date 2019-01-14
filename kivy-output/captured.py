@@ -2,6 +2,11 @@ from kivy.uix.gridlayout import GridLayout
 
 from .capturedsquare import CapturedSquare
 
+__all__ = [
+    "CapturedGrid"
+]
+
+
 class CapturedGrid(GridLayout):
     """Grid containing captured pieces."""
     def __init__(self, **kwargs):

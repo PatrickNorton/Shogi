@@ -4,6 +4,10 @@ from typing import List
 
 import shogi
 
+__all__ = [
+    "BoardSquare"
+]
+
 
 class BoardSquare(Button):
     """The class for a board square.

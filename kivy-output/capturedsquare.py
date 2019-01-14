@@ -2,6 +2,10 @@ from kivy.uix.button import Button
 
 import shogi
 
+__all__ = [
+    "CapturedSquare"
+]
+
 
 class CapturedSquare(Button):
     """The squares that hold the captured pieces.
