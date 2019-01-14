@@ -12,11 +12,25 @@ import shogi
 class AppCore(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.captured_spaces = self.ids
+        self.captured_spaces = {0: self.ids['0'], 1: self.ids['1']}
 
     def update_captured(self, current_board):
         for x, val in enumerate(self.captured_spaces.values()):
             val.update(current_board, shogi.Color(x))
+
+    def captured_press(self, piece, is_highlighted):
+        if not is_highlighted:
+            self.ids["board"].in_play_light(piece)
+        else:
+            self.ids["board"].un_light_all()
+            self.ids["board"].make_move = False
+
+    def un_light_captured(self):
+        self.ids['0'].un_light_all()
+        self.ids['1'].un_light_all()
+
+    def un_light_board(self):
+        self.ids['board'].un_light_all()
 
 
 class ChessBoard(GridLayout):
@@ -149,11 +163,31 @@ class ChessBoard(GridLayout):
 
     def un_light_all(self):
         """Un-highlight all squares."""
+        self.parent.un_light_captured()
         highlighted_spaces = {
             x: y for x, y in self.children_dict.items() if y.is_highlighted
         }
         for space in highlighted_spaces.values():
             space.un_light()
+        self.make_move = False
+
+    def in_play_light(self, piece):
+        self.un_light_all()
+        empty_children = {
+            x: y for x, y in self.children_dict.items() if not y.text
+        }
+        if piece.color == self.board.current_player:
+            for space, x in empty_children.items():
+                promotion_zones = ((0, 1, 2), (8, 7, 6))
+                player_int = int(piece.color)
+                try:
+                    index = promotion_zones[player_int].index(space.y)
+                except ValueError:
+                    x.light()
+                else:
+                    if index >= piece.auto_promote:
+                        x.light()
+        self.make_move = True
 
 
 class BoardSquare(Button):
@@ -239,6 +273,7 @@ class CapturedGrid(GridLayout):
         super().__init__(cols=4, rows=2, **kwargs)
         for x in range(8):
             self.add_widget(CapturedSquare(x))
+        self.ordered_children = self.children[::-1]
 
     def update(self, current_board, color):
         """Update square.
@@ -246,12 +281,22 @@ class CapturedGrid(GridLayout):
         :param current_board: current board
         :param color: color of grid layout
         """
-        children = self.children[::-1]
+        children = self.ordered_children
         captured_pieces = current_board.captured[color]
         for space in children:
             space.remove_piece()
         for space, occupant in zip(children, captured_pieces):
             space.give_piece(occupant)
+
+    def space_pressed(self, position, is_highlighted):
+        self.parent.captured_press(
+            self.ordered_children[position].occupant,
+            is_highlighted
+        )
+
+    def un_light_all(self):
+        for x in self.children:
+            x.un_light()
 
 
 class CapturedSquare(Button):
@@ -267,6 +312,7 @@ class CapturedSquare(Button):
         """
         self.occupant: shogi.Piece = shogi.NoPiece()
         self.position: int = position
+        self.is_highlighted = False
         super().__init__(**kwargs)
 
     def give_piece(self, piece: shogi.Piece):
@@ -286,7 +332,25 @@ class CapturedSquare(Button):
 
     def on_press(self):
         if self.occupant:
-            print('Occupied!')
+            self.parent.space_pressed(self.position, self.is_highlighted)
+            if self.is_highlighted:
+                self.un_light()
+            else:
+                self.light()
+
+    def light(self):
+        """Highlight self."""
+        self.background_normal = "./images/Highlighted space.jpg"
+        self.background_down = "./images/Highlighted space.jpg"
+        self.color = 0, 0, 0, 1
+        self.is_highlighted = True
+
+    def un_light(self):
+        """Un-highlight self."""
+        self.background_normal = "./images/Light square.jpg"
+        self.background_down = "./images/Light square.jpg"
+        self.color = 1, 1, 1, 1
+        self.is_highlighted = False
 
 
 class ShogiBoard(App):
