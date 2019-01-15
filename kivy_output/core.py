@@ -13,21 +13,29 @@ class AppCore(Widget):
     def __init__(self, **kwargs):
         self.board = shogi.Board()
         super().__init__(**kwargs)
-        self.captured_spaces = {0: self.ids['0'], 1: self.ids['1']}
+        self.captured_spaces = {
+            shogi.Color(0): self.ids['0'],
+            shogi.Color(1): self.ids['1']
+        }
         self.make_move = False
         self.move_from = shogi.NullCoord()
-        self.in_check = [[], []]
+        self.in_check = {
+            shogi.Color(0): [],
+            shogi.Color(1): []
+        }
+        self.to_add = shogi.NoPiece()
 
     def update_captured(self, current_board):
         for x, val in enumerate(self.captured_spaces.values()):
             val.update(current_board, shogi.Color(x))
 
-    def update_board(self, squares):
-        self.main_board.update_squares(squares)
+    def update_board(self, *squares):
+        self.main_board.update_squares(*squares)
 
     def captured_press(self, piece, is_highlighted):
         if not is_highlighted:
             self.main_board.in_play_light(piece)
+            self.to_add = piece
         else:
             self.un_light_all()
             self.make_move = False
@@ -38,6 +46,15 @@ class AppCore(Widget):
 
     def un_light_board(self):
         self.main_board.un_light_all()
+
+    def board_pressed(self, coordinate):
+        if self.make_move and coordinate != self.move_from:
+            if self.move_from:
+                self.make_moves(self.move_from, coordinate)
+            else:
+                self.put_in_play(coordinate)
+        else:
+            self.light_moves(coordinate)
 
     def make_moves(
             self,
@@ -67,7 +84,7 @@ class AppCore(Widget):
             # TODO: Separate out into functions
             is_a_capture = bool(self.board[to])
             self.board.move(current, to)
-            self.main_board.update_squares((current, to))
+            self.main_board.update_squares(current, to)
             king_location, is_in_check = shogi.check_check(
                 self.board,
                 (current, to),
@@ -79,9 +96,10 @@ class AppCore(Widget):
                 mate = False
             if mate:
                 pass
-            self.in_check[self.board.current_player.other.int] = is_in_check
+            self.in_check[self.board.current_player.other] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False
+            self.move_from = shogi.NullCoord()
             self.un_light_all()
             if is_a_capture:
                 self.update_captured(self.board)
@@ -101,7 +119,7 @@ class AppCore(Widget):
         if do_highlight and players_piece:
             valid_moves = pressed_square.valid_moves(
                 self.board,
-                self.in_check[pressed_piece.color.int]
+                self.in_check[pressed_piece.color]
             )
             valid_spaces = (
                 self.main_board.children_dict[x] for x in valid_moves
@@ -137,6 +155,22 @@ class AppCore(Widget):
                     if index >= piece.auto_promote:
                         x.light()
             self.parent.make_move = True
+
+    def put_in_play(self, space_to):
+        promotion_zones = ((0, 1, 2), (8, 7, 6))
+        player_int = int(self.to_add.color)
+        try:
+            index = promotion_zones[player_int].index(space_to.y)
+        except ValueError:
+            put_in_play = True
+        else:
+            put_in_play = (index >= self.to_add.auto_promote)
+        if put_in_play:
+            self.board.put_in_play(self.to_add, space_to)
+            self.update_board(space_to)
+            self.update_captured(self.board)
+            self.un_light_all()
+            self.board.current_player = self.board.current_player.other
 
     @property
     def main_board(self):

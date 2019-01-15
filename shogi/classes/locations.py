@@ -55,6 +55,8 @@ class BaseCoord(collections.abc.Sequence):
 
     def __abs__(self): return AbsoluteCoord((abs(self.x), abs(self.y)))
 
+    def __bool__(self): return not isinstance(self, NullCoord)
+
     def __len__(self): return len(self.tup)
 
     def __repr__(self): return f"BaseCoord({self})"

@@ -1,6 +1,6 @@
 from kivy.uix.gridlayout import GridLayout
 
-from typing import Dict, Iterable
+from typing import Dict
 
 import shogi
 
@@ -44,12 +44,15 @@ class ChessBoard(GridLayout):
 
         :param coordinate: location of pressed square
         """
+        self.parent.board_pressed(coordinate)
+        """
         if not self.parent.make_move or self.parent.move_from == coordinate:
             self.parent.light_moves(coordinate)
         else:
             self.parent.make_moves(self.parent.move_from, coordinate)
+        """
 
-    def update_squares(self, to_update: Iterable[shogi.AbsoluteCoord]):
+    def update_squares(self, *to_update: shogi.AbsoluteCoord):
         """Update specific squares.
 
         :param to_update: list of squares to update
