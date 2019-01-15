@@ -10,7 +10,21 @@ __all__ = [
 
 
 class AppCore(Widget):
+    """Core of app. Contains all necessary functions for the game.
+
+    :ivar board: master board
+    :ivar captured_spaces: index of CapturedGrids for each color
+    :ivar make_move: whether next click makes a move or highlights
+    :ivar move_from: where the piece is moving from
+    :ivar in_check: pieces attacking king for each color
+    :ivar to_add: piece to add to board
+    """
+    # TODO: Change to not use make_move, but move_from or to_add instead
     def __init__(self, **kwargs):
+        """Initialise instance of AppCore.
+
+        :param kwargs: keyword arguments to pass
+        """
         self.board = shogi.Board()
         super().__init__(**kwargs)
         self.captured_spaces = {
@@ -25,14 +39,28 @@ class AppCore(Widget):
         }
         self.to_add = shogi.NoPiece()
 
-    def update_captured(self, current_board):
+    def update_captured(self, current_board: shogi.Board):
+        """Update captured squares.
+
+        :param current_board: current board state
+        """
         for x, val in enumerate(self.captured_spaces.values()):
             val.update(current_board, shogi.Color(x))
 
-    def update_board(self, *squares):
+    def update_board(self, *squares: BoardSquare):
+        """Update specific squares on board.
+
+        :param squares: squares to update
+        """
         self.main_board.update_squares(*squares)
 
-    def captured_press(self, piece, is_highlighted):
+    def captured_press(self, piece: shogi.Piece, is_highlighted: bool):
+        """One of the captured grids was clicked.
+
+        :param piece: piece clicked
+        :param is_highlighted: if square clicked is highlighted
+        :return:
+        """
         if not is_highlighted:
             self.main_board.in_play_light(piece)
             self.to_add = piece
@@ -41,13 +69,19 @@ class AppCore(Widget):
             self.make_move = False
 
     def un_light_captured(self):
+        """Un-light all captured squares."""
         for x in self.captured_spaces.values():
             x.un_light_all()
 
     def un_light_board(self):
+        """Un-light entire board."""
         self.main_board.un_light_all()
 
-    def board_pressed(self, coordinate):
+    def board_pressed(self, coordinate: shogi.AbsoluteCoord):
+        """Board was clicked.
+
+        :param coordinate: where board was clicked
+        """
         if self.make_move and coordinate != self.move_from:
             if self.move_from:
                 self.make_moves(self.move_from, coordinate)
@@ -134,10 +168,15 @@ class AppCore(Widget):
             self.make_move = False
 
     def un_light_all(self):
+        """Un-light all squares."""
         for x in self.ids.values():
             x.un_light_all()
 
-    def in_play_light(self, piece):
+    def in_play_light(self, piece: shogi.Piece):
+        """Light all squares where a piece could be dropped.
+
+        :param piece: piece to be drop-tested
+        """
         self.un_light_all()
         board_spaces = self.board_spaces.items()
         empty_children = {
@@ -156,7 +195,11 @@ class AppCore(Widget):
                         x.light()
             self.parent.make_move = True
 
-    def put_in_play(self, space_to):
+    def put_in_play(self, space_to: shogi.AbsoluteCoord):
+        """Put a specific piece in play.
+
+        :param space_to: space to drop piece at
+        """
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         player_int = int(self.to_add.color)
         try:
