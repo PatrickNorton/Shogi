@@ -4,8 +4,6 @@ from typing import List
 
 import shogi
 
-import os
-
 __all__ = [
     "BoardSquare"
 ]
@@ -37,8 +35,6 @@ class BoardSquare(Button):
         """Highlight self."""
         self.background_normal = "./images/Highlighted space.jpg"
         self.background_down = "./images/Highlighted space.jpg"
-        print(os.path.isfile("../images/Highlighted space.jpg"))
-        print(os.path.abspath("./images/Highlighted space.jpg"))
         self.color = 0, 0, 0, 1
         self.is_highlighted = True
 
