@@ -61,7 +61,7 @@ class AppCore(Widget):
         :param is_highlighted: if square clicked is highlighted
         """
         if not is_highlighted:
-            self.main_board.in_play_light(piece)
+            self.in_play_light(piece)
             self.to_add = piece
         else:
             self.un_light_all()
@@ -188,19 +188,20 @@ class AppCore(Widget):
         self.un_light_all()
         board_spaces = self.board_spaces.items()
         empty_children = {
-            x: y for x, y in board_spaces if not y.occupant
+            x: y for x, y in board_spaces if not y.text
         }
         if piece.color == self.board.current_player:
             for space, x in empty_children.items():
-                promotion_zones = ((0, 1, 2), (8, 7, 6))
-                player_int = int(piece.color)
                 try:
-                    index = promotion_zones[player_int].index(space.y)
-                except ValueError:
-                    x.light()
+                    shogi.drop_check(
+                        self.board,
+                        piece,
+                        space
+                    )
+                except shogi.IllegalMove:
+                    pass
                 else:
-                    if index >= piece.auto_promote:
-                        x.light()
+                    x.light()
             self.parent.make_move = True
 
     def put_in_play(self, space_to: shogi.AbsoluteCoord):

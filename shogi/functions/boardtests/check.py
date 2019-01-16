@@ -15,7 +15,8 @@ def check_check(
         coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
         king_color: classes.Color,
         break_early: bool = False,
-        before_move: bool = False
+        before_move: bool = False,
+        dropped_piece: classes.Piece = None,
 ) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
@@ -31,6 +32,7 @@ def check_check(
     places_attacking: List[classes.AbsoluteCoord] = []
     king_tested: classes.Piece = classes.Piece('k', king_color)
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+
     try:
         if before_move:
             kings_enemy = not current_board[old_location].is_color(king_color)

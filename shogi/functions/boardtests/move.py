@@ -36,7 +36,8 @@ def move_check_2(
         current_board: classes.Board,
         coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
         ignore_location: classes.AbsoluteCoord = None,
-        act_full: classes.AbsoluteCoord = None
+        act_full: classes.AbsoluteCoord = None,
+        piece_pretend: classes.Piece = None
 ):
     """Check if piece can be moved between locations.
 
@@ -50,7 +51,10 @@ def move_check_2(
     """
 
     current, new = coordinates
-    piece = current_board[current]
+    if piece_pretend is None:
+        piece = current_board[current]
+    else:
+        piece = piece_pretend
     move = new - current
     move_direction = classes.Direction(move)
     move_variable = piece.moves[move_direction]
