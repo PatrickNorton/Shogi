@@ -37,7 +37,6 @@ class AppCore(Widget):
             shogi.Color(1): []
         }
         self.to_add = shogi.NoPiece()
-        self.promote = False
         Clock.schedule_once(self._set_captured, 0)
 
     def update_captured(self, current_board: shogi.Board):
@@ -133,10 +132,12 @@ class AppCore(Widget):
             can_promote = self.board.can_promote(to)
 
             if can_promote and not self.board[to].prom:
-                self.promote = None
-                pops = PromotionWindow(to_highlight=to, caller=self)
-                pops.open()
-            print('Control returned!')
+                if self.board.auto_promote(to):
+                    self.board.promote(to)
+                    self.update_board(to)
+                else:
+                    pops = PromotionWindow(to_highlight=to, caller=self)
+                    pops.open()
             self.in_check[self.board.current_player.other] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False
