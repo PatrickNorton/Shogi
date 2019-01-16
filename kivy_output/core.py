@@ -59,7 +59,6 @@ class AppCore(Widget):
 
         :param piece: piece clicked
         :param is_highlighted: if square clicked is highlighted
-        :return:
         """
         if not is_highlighted:
             self.main_board.in_play_light(piece)

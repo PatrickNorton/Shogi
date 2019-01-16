@@ -293,4 +293,6 @@ class NullCoord(Direction):
 
     def __abs__(self): raise NullCoordError
 
+    def __hash__(self): return hash(self.tup)
+
     def __repr__(self): return "NullCoord()"
