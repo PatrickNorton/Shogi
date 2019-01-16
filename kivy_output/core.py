@@ -1,6 +1,7 @@
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
+from .app import PromotionWindow
 from .boardsquare import BoardSquare
 
 import shogi
@@ -36,6 +37,7 @@ class AppCore(Widget):
             shogi.Color(1): []
         }
         self.to_add = shogi.NoPiece()
+        self.promote = False
         Clock.schedule_once(self._set_captured, 0)
 
     def update_captured(self, current_board: shogi.Board):
@@ -128,6 +130,13 @@ class AppCore(Widget):
                 mate = False
             if mate:
                 pass
+            can_promote = self.board.can_promote(to)
+
+            if can_promote and not self.board[to].prom:
+                self.promote = None
+                pops = PromotionWindow(to_highlight=to, caller=self)
+                pops.open()
+            print('Control returned!')
             self.in_check[self.board.current_player.other] = is_in_check
             self.board.current_player = self.board.current_player.other
             self.make_move = False

@@ -1,14 +1,14 @@
 from kivy.app import App
-from kivy.utils import get_color_from_hex
 from kivy.uix.screenmanager import Screen
+from kivy.uix.popup import Popup
+from kivy.utils import get_color_from_hex
 
 import shogi
-
-from .core import AppCore
 
 __all__ = [
     "ShogiBoard",
     "MainScreen",
+    "PromotionWindow",
 ]
 
 
@@ -25,5 +25,22 @@ class ShogiBoard(App):
     def build(self):
         return MainScreen()
 
+
 class MainScreen(Screen):
     pass
+
+
+class PromotionWindow(Popup):
+    def __init__(self, to_highlight, caller=None, **kwargs):
+        self.caller = caller
+        self.to_highlight = to_highlight
+        super().__init__(**kwargs)
+
+    def open(self, *largs, **kwargs):
+        super().open(*largs, **kwargs)
+
+    def child_pressed(self, promote):
+        if promote:
+            self.caller.board.promote(self.to_highlight)
+            self.caller.update_board(self.to_highlight)
+        self.dismiss()
