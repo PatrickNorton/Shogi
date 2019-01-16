@@ -42,6 +42,7 @@ class CapturedSquare(Button):
         if self.occupant:
             if self.is_highlighted:
                 self.un_light()
+                self.parent.parent.un_light_all()
             elif not self.parent.parent.make_move:
                 self.parent.space_pressed(self.position, self.is_highlighted)
                 if self.parent.parent.make_move:
