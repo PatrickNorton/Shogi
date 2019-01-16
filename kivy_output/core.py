@@ -1,4 +1,5 @@
 from kivy.uix.widget import Widget
+from kivy.clock import Clock
 
 from .boardsquare import BoardSquare
 
@@ -27,10 +28,7 @@ class AppCore(Widget):
         """
         self.board = shogi.Board()
         super().__init__(**kwargs)
-        self.captured_spaces = {
-            shogi.Color(0): self.ids['0'],
-            shogi.Color(1): self.ids['1']
-        }
+        self.captured_spaces = {}
         self.make_move = False
         self.move_from = shogi.NullCoord()
         self.in_check = {
@@ -38,6 +36,7 @@ class AppCore(Widget):
             shogi.Color(1): []
         }
         self.to_add = shogi.NoPiece()
+        Clock.schedule_once(self._set_captured, 0)
 
     def update_captured(self, current_board: shogi.Board):
         """Update captured squares.
@@ -213,6 +212,12 @@ class AppCore(Widget):
             self.update_captured(self.board)
             self.un_light_all()
             self.board.current_player = self.board.current_player.other
+
+    def _set_captured(self, _):
+        self.captured_spaces = {
+            shogi.Color(0): self.ids['0'],
+            shogi.Color(1): self.ids['1']
+        }
 
     @property
     def main_board(self):

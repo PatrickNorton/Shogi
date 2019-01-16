@@ -1,12 +1,14 @@
 from kivy.app import App
 from kivy.utils import get_color_from_hex
+from kivy.uix.screenmanager import Screen
 
 import shogi
 
 from .core import AppCore
 
 __all__ = [
-    "ShogiBoard"
+    "ShogiBoard",
+    "MainScreen",
 ]
 
 
@@ -21,4 +23,7 @@ class ShogiBoard(App):
         return get_color_from_hex("#1e2022")
 
     def build(self):
-        return AppCore()
+        return MainScreen()
+
+class MainScreen(Screen):
+    pass
