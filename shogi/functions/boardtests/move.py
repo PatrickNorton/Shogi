@@ -64,7 +64,8 @@ def move_check_2(
     elif not piece.can_move(move):
         raise classes.IllegalMove(1)
     elif current_board[new].same_color(current_board[current]):
-        raise classes.IllegalMove(4)
+        if new != ignore_location:
+            raise classes.IllegalMove(4)
     elif move_variable == 'T':
         pass
     elif piece.has_type('k'):
