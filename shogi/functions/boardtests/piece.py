@@ -1,30 +1,29 @@
 from shogi import classes
-from .goodinput import inputpiece
+
+from .goodinput import input_piece
 
 __all__ = [
-    "piececheck"
+    "piece_check"
 ]
 
 
-def piececheck(theboard, pieceloc):
+def piece_check(
+    current_board: classes.Board,
+    piece_string: str
+) -> classes.AbsoluteCoord:
     """Check if inputted piece is valid.
 
-    Arguments:
-        theboard {board} -- current board state
-        pieceloc {str} -- inputted string of location
-
-    Raises:
-        classes.IllegalMove -- invalid entry of piece
-        classes.IllegalMove -- entry of location without their piece
-
-    Returns:
-        coord -- location inputted
+    :param current_board: current board state
+    :param piece_string: inputted string of location
+    :raises classes.IllegalMove: invalid entry of piece
+    :raises classes.IllegalMove: entry of location without right piece
+    :return: location inputted
     """
 
-    validpiece = inputpiece(theboard, pieceloc)
-    if not validpiece:
+    is_valid: bool = input_piece(piece_string)
+    if not is_valid:
         raise classes.IllegalMove(11)
-    pieceloc = classes.coord(pieceloc)
-    if theboard[pieceloc].COLOR != theboard.currplyr:
+    piece_location = classes.AbsoluteCoord(piece_string)
+    if current_board[piece_location].color != current_board.current_player:
         raise classes.IllegalMove(5)
-    return pieceloc
+    return piece_location

@@ -1,12 +1,10 @@
-from curtsies import FullscreenWindow, Input, fsarray
+from curtsies import FullscreenWindow, Input
 from curtsies.fmtfuncs import bold
-from curtsies.events import PasteEvent
 from . import functions
 from . import classes
-import json
 
 
-def main(input_gen, window):
+def main(input_gen: Input, window: FullscreenWindow):
     """Play a complete game of Shogi.
 
     This uses a window to completely cover the screen, leaving no
@@ -23,87 +21,85 @@ def main(input_gen, window):
         **Should always be handled within the function
     """
 
-    theboard = classes.board()
+    theboard = classes.Board()
     game = True
     debug = False
     errstr = ''
     if debug:
-        theboard = functions.setpos(input_gen, window)
-    errorlist = classes.info.ERRORS
+        theboard = functions.setup_board(input_gen, window)
     while game:
         todisp = []
         if errstr:
             todisp.append(bold(errstr))
             errstr = ''
         todisp += str(theboard).split('\n')
-        todisp.append(f"{repr(theboard.currplyr)}'s turn")
+        todisp.append(f"{theboard.current_player !r}'s turn")
         maindisp = todisp[:]
         todisp.append('Enter piece location')
         todisp.append(': ')
         try:
-            pieceloc = functions.getinput(input_gen, window, todisp)
-            pieceloc = functions.piececheck(theboard, pieceloc)
+            pieceloc = functions.get_input(input_gen, window, todisp)
+            pieceloc = functions.piece_check(theboard, pieceloc)
             todisp = maindisp[:]
-            astr = f"The piece is a {repr(theboard[pieceloc])} at {pieceloc}."
+            astr = f"The piece is a {theboard[pieceloc] !r} at {pieceloc}."
             todisp.append(astr)
             todisp.append('Enter location to move piece to')
             todisp.append(': ')
-            moveloc = functions.getinput(input_gen, window, todisp)
-            coords = functions.movecheck(theboard, pieceloc, moveloc)
-            functions.movecheck2(theboard, coords)
-            theboard.nextmove = coords
-            tocc = (theboard, theboard.nextmove, theboard.currplyr, True)
-            ccvars = functions.checkcheck(*tocc)
-            check = ccvars[0]
-            if check:
+            moveloc = functions.get_input(input_gen, window, todisp)
+            coords = functions.move_check(pieceloc, moveloc)
+            functions.move_check_2(theboard, coords)
+            theboard.next_move = coords
+            tocc = (theboard, theboard.next_move, theboard.current_player, True)
+            ccvars = functions.check_check(*tocc)
+            checklist = ccvars[1]
+            if checklist:
                 raise classes.IllegalMove(6)
         except classes.IllegalMove as e:
-            var = int(str(e))
+            var = int(e)
             if var:
-                errstr = f"Error: {errorlist[var]}"
+                errstr = f"Error: {e}"
             continue
         except classes.OtherInput as e:
             pieceloc = e.args[0]
             try:
-                functions.otherconditions(
+                functions.other_conditions(
                     input_gen, window, todisp, theboard, pieceloc
                 )
-            except classes.IllegalMove as e:
-                var = int(str(e))
+            except classes.IllegalMove as f:
+                var = int(f)
                 if var:
-                    errstr = f"Error: {errorlist[var]}"
+                    errstr = f"Error: {f}"
                 continue
             except classes.OtherMove:
-                theboard.currplyr = theboard.currplyr.other()
+                theboard.current_player = theboard.current_player.other
                 continue
-        theboard.move(*theboard.nextmove)
-        moveloc = theboard.nextmove[1]
-        promote = theboard.canpromote(moveloc)
-        canpromote = theboard[moveloc].PROMOTABLE
+        theboard.move(*theboard.next_move)
+        moveloc = theboard.next_move[1]
+        promote = theboard.can_promote(moveloc)
+        canpromote = theboard[moveloc].is_promotable
         ispromoted = theboard[moveloc].prom
         if promote and canpromote and not ispromoted:
-            if theboard.autopromote(moveloc):
+            if theboard.auto_promote(moveloc):
                 theboard.promote(moveloc)
             else:
                 todisp.append('Promote this piece? ')
-                topromote = functions.yninput(input_gen, window, todisp)
+                topromote = functions.binary_input(input_gen, window, todisp)
                 if topromote:
                     theboard.promote(moveloc)
-        theboard.lastmove = theboard.nextmove
-        clr = theboard.currplyr.other()
-        ccvars = functions.checkcheck(theboard, theboard.lastmove, clr)
-        check, kingpos, checklist = ccvars
-        if check and game:
-            mate = functions.matecheck(theboard, kingpos, checklist)
+        theboard.last_move = theboard.next_move
+        clr = theboard.current_player.other
+        ccvars = functions.check_check(theboard, theboard.last_move, clr)
+        kingpos, checklist = ccvars
+        if checklist and game:
+            mate = functions.mate_check(theboard, kingpos, checklist)
             game = not mate
             if mate:
                 print(theboard)
-                print(f"Checkmate. {repr(theboard.currplyr)} wins")
-                game = False
+                print(f"Checkmate. {theboard.current_player !r} wins")
                 break
             else:
                 print('Check')
-        theboard.currplyr = theboard.currplyr.other()
+        theboard.current_player = theboard.current_player.other
 
 
 def playgame():

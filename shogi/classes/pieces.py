@@ -1,68 +1,73 @@
-from .pieceattrs import moves, color, ptype
-from .locations import coord
-from .exceptions import NotPromotableException, PromotedException, DemotedException
+from typing import Tuple, Optional, List, Union
+
+from .exceptions import (
+    NotPromotableException, PromotedException, DemotedException
+)
 from .information import info
+from .locations import RelativeCoord, Direction
+from .pieceattrs import Moves, Color, PieceType
 
 __all__ = [
-    "piece",
-    "nopiece"
+    "Piece",
+    "NoPiece"
 ]
 
 
-class piece:
+class Piece:
     """The class representing a piece.
 
-    Attributes:
-        PTYPE {ptype} -- type of piece
-        MOVES {moves} -- legal moves for piece
-        COLOR {color} -- color of piece
-        TUP {tuple} -- (PTYPE, COLOR)
-        prom {bool or None} -- if piece is promoted
-        PROMOTABLE {bool} -- if piece is promotable
-        AUTOPROMOTE {int} -- where must the piece promote
+    :ivar type: type of piece
+    :ivar moves: legal moves for piece
+    :ivar color: color of piece
+    :ivar tup: (type, color)
+    :ivar prom: if piece is promoted
+    :ivar is_promotable: if piece is promotable
+    :ivar auto_promote: where the piece must promote
     """
 
-    def __init__(self, typ, clr):
-        """Initialise instance of piece.
+    def __init__(
+            self,
+            typ: Union[str, PieceType],
+            clr: Union[int, str, Color]
+    ):
+        """Initialise instance of Piece.
 
-        Arguments:
-            typ {str} -- 1-letter type of piece
-            clr {str} -- 1-letter color of piece
+        :param typ: 1-letter type of piece
+        :param clr: 1-letter color of piece
         """
 
-        self.PTYPE = ptype(typ)
-        self.MOVES = moves(self.PTYPE, color(clr))
-        self.COLOR = color(clr)
-        self.TUP = (self.PTYPE, self.COLOR)
-        if self.MOVES.PMOVES is None:
+        self.type: PieceType = PieceType(typ)
+        self.moves: Moves = Moves(self.type, Color(clr))
+        self.color: Color = Color(clr)
+        self.tup: Tuple[PieceType, Color] = (self.type, self.color)
+        self.prom: Optional[bool]
+        self.is_promotable: bool
+        if self.moves.promoted is None:
             self.prom = None
-            self.PROMOTABLE = False
+            self.is_promotable = False
         else:
             self.prom = False
-            self.PROMOTABLE = True
-        otherattrs = info.PCINFO[str(typ)]
-        self.AUTOPROMOTE = otherattrs['autopromote']
+            self.is_promotable = True
+        other_attributes: dict = info.piece_info[str(typ)]
+        self.auto_promote: int = other_attributes['autopromote']
 
     def __str__(self):
-        return str(self.PTYPE)+str(self.COLOR)
+        return str(self.type) + str(self.color)
 
-    def __eq__(self, other): return self.TUP == other.TUP
+    def __eq__(self, other: 'Piece') -> bool: return self.tup == other.tup
 
-    def __bool__(self): return not isinstance(self, nopiece)
+    def __bool__(self): return not isinstance(self, NoPiece)
 
-    def __hash__(self): return hash(self.TUP)
+    def __hash__(self): return hash(self.tup)
 
-    def __repr__(self): return f"{repr(self.COLOR)} {repr(self.PTYPE)}"
+    def __repr__(self): return f"{self.color !r} {self.type !r}"
 
-    def promote(self):
+    def promote(self) -> 'Piece':
         """Promote piece.
 
-        Raises:
-            NotPromotableException -- piece is not promotable
-            PromotedException -- piece is already promoted
-
-        Returns:
-            piece -- promoted piece
+        :raises NotPromotableException: piece is not promotable
+        :raises PromotedException: piece is already promoted
+        :return: promoted piece
         """
 
         if self.prom is None:
@@ -70,92 +75,139 @@ class piece:
         elif self.prom:
             raise PromotedException
         else:
-            self.PTYPE = self.PTYPE.prom()
-            self.MOVES = self.MOVES.prom()
+            self.type = self.type.prom()
+            self.moves = self.moves.prom()
             self.prom = True
             return self
 
-    def demote(self):
+    def demote(self) -> 'Piece':
         """Demote piece.
 
-        Raises:
-            DemotedException -- piece is not promoted
-
-        Returns:
-            piece -- demoted piece
+        :raises DemotedException: piece is not promoted
+        :return: demoted piece
         """
 
         if not self.prom:
             raise DemotedException
         else:
-            self.PTYPE = self.PTYPE.dem()
-            self.MOVES = self.MOVES.dem()
-            self.dem = False
+            self.type = self.type.dem()
+            self.moves = self.moves.dem()
+            self.prom = False
             return self
 
-    def flipsides(self):
+    def flip_sides(self) -> 'Piece':
         """Change sides piece is on.
 
-        Returns:
-            piece -- flipped-color piece
+        :return: flipped-color piece
         """
 
-        return piece(str(self.PTYPE), self.COLOR.OTHER)
+        return Piece(str(self.type), self.color.other_color)
 
-    def canmove(self, relloc):
+    def can_move(self, relative_location: RelativeCoord) -> bool:
         """Check if piece can move to location.
 
-        Arguments:
-            relloc {coord} -- relative location of move
-
-        Returns:
-            bool -- whether or not piece can move
+        :param relative_location: relative location of move
+        :return: whether or not piece can move
         """
 
-        return self.MOVES.canmove(relloc)
+        return self.moves.can_move(relative_location)
 
-    def validspaces(self, direct):
+    def valid_spaces(self, direct: Direction) -> List[RelativeCoord]:
         """Get spaces piece could move in a direction
 
-        Arguments:
-            direct {direction} -- direction to be checked
-
-        Returns:
-            list -- list of valid (relative) spaces
+        :param direct: direction to be checked
+        :return: list of valid relative spaces
         """
 
-        magicvar = self.MOVES[direct]
+        magic_var = self.moves[direct]
         valid = []
-        if magicvar == '-':
+        if magic_var == '-':
             return []
-        elif magicvar == '1':
-            valid.append(coord(direct))
-        elif magicvar == 'T':
+        elif magic_var == '1':
+            valid.append(RelativeCoord(direct))
+        elif magic_var == 'T':
             xy = (direct.x, 2*direct.y)
-            valid.append(coord(xy))
-        elif magicvar == '+':
+            valid.append(RelativeCoord(xy))
+        elif magic_var == '+':
             for x in range(9):
-                x = coord(x)
-                relloc = x*direct
-                if self.canmove(relloc):
-                    valid.append(relloc)
+                x = RelativeCoord(x)
+                relative_location = RelativeCoord(x*direct)
+                if self.can_move(relative_location):
+                    valid.append(relative_location)
         return valid
 
+    def same_color(self, other: 'Piece') -> bool:
+        """Check if piece has the same color as another piece.
 
-class nopiece(piece):
-    """The "null" instance of a piece.
+        :param other: the piece to be compared
+        :return: if they have the same color
+        """
 
-    Attributes:
-        PTYPE {ptype} -- type of piece
-        MOVES {moves} -- legal moves for piece
-        COLOR {color} -- color of piece
-        TUP {tuple} -- (PTYPE, COLOR)
-        prom {bool or None} -- if piece is promoted
-        PROMOTABLE {bool} -- if piece is promotable
-        AUTOPROMOTE {int} -- where must the piece promote
-    """
+        return self.color == other.color
+
+    def same_type(self, other: 'Piece') -> bool:
+        """Check if piece is the same type as another piece.
+
+        :param other: the piece to be compared
+        :return: if they are the same type
+        """
+
+        return self.type == other.type
+
+    def is_color(self, clr: Union[Color, int, str]) -> bool:
+        """Check if piece is of a certain color.
+
+        This can take either a color, an int, or a str object. It
+        should be used as a replacement for "instance.color ==
+        Color('x'), as that is more verbose than necessary
+
+        :param clr:
+        :return:
+        """
+
+        if isinstance(clr, Color):
+            return self.color == clr
+        elif isinstance(clr, str):
+            return str(self.color) == clr
+        elif isinstance(clr, int):
+            return int(self.color) == clr
+        return False
+
+    def has_type(self, typ: Union[PieceType, str]) -> bool:
+        """Check if piece is of a certain type.
+
+        This can take either a PieceType or a str object. It should
+        be used as a replacement for "instance.type ==
+        PieceType('x')", as that is more verbose than necessary.
+
+        :param typ: type to be tested
+        :return: if the piece is of that type
+        """
+
+        if isinstance(typ, PieceType):
+            return self.type == typ
+        elif isinstance(typ, str):
+            return str(self.type) == typ
+        return False
+
+    def is_piece(self,
+                 typ: Union[PieceType, str],
+                 clr: Union[Color, int, str]
+                 ) -> bool:
+        """Check if the piece is of a certain color and type/
+
+        :param typ: type to check
+        :param clr: color to check
+        :return: if the piece is of the same type and color
+        """
+
+        return self.has_type(typ) and self.is_color(clr)
+
+
+class NoPiece(Piece):
+    """The "null" instance of a piece."""
 
     def __init__(self):
         super().__init__('-', '-')
 
-    def __repr__(self): return 'nopiece()'
+    def __repr__(self): return 'NoPiece()'

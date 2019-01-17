@@ -27,6 +27,8 @@ help commands
     Brings up commands list
 help prompt
     Brings up prompt info and help
+help menu
+    Brings up interactive help menu
 
 These commands should work for any input within the game
 

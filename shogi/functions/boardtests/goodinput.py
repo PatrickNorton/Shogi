@@ -1,26 +1,20 @@
 from shogi import classes
 
 __all__ = [
-    "inputpiece"
+    "input_piece"
 ]
 
 
-def inputpiece(theboard, pieceloc):
-    """Test if input is a valid location/
+def input_piece(entered_text: str) -> classes.AbsoluteCoord:
+    """Test if input is a valid location.
 
-    Arguments:
-        theboard {board} -- current board state
-        pieceloc {str} -- inputted string
-
-    Raises:
-        classes.OtherInput -- if input is not a valid location
-
-    Returns:
-        bool -- is input valid
+    :param entered_text: inputted string
+    :raises classes.OtherInput: if non-coordinate input entered
+    :return: coordinate entered
     """
 
     try:
-        pieceloc = classes.coord(pieceloc)
-        return True
+        piece_location: classes.AbsoluteCoord = classes.AbsoluteCoord(entered_text)
+        return piece_location
     except (ValueError, IndexError):
-        raise classes.OtherInput(pieceloc)
+        raise classes.OtherInput(entered_text)

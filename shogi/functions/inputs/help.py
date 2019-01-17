@@ -1,164 +1,169 @@
 import json
-from .printers import filedisp
+import curtsies
+
+from typing import List, Dict, Union
+
 from shogi import classes
-from .inputfns import getinput
+
+from .findmoves import test_spaces
+from .inputfns import get_input
+from .printers import display_file
+from .privates import _open_help, _open_data
 from .quitting import toquit
-from .privates import _openhelp, _opendata
-from .findmoves import testspcs
 
 __all__ = [
-    "helpdesk",
-    "ltrtoname",
-    "helpmenu",
-    "movelistfn"
+    "help_desk",
+    "letter_to_name",
+    "help_menu",
+    "list_moves"
 ]
 
 
-def helpdesk(input_gen, window, theboard, filenm=None):
+def help_desk(
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        current_board: classes.Board,
+        file_name: str = ''
+):
     """Run help functions.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window to display text
-        theboard {board} -- current state of board
-
-    Keyword Arguments:
-        filenm {str} -- name of file, if provided (default: {None})
-
-    Raises:
-        classes.IllegalMove -- return to game and continue with next turn
+    :param input_gen: input generator
+    :param window: window to display text
+    :param current_board: current state of board
+    :param file_name: name of file, if provided
+    :raises classes.IllegalMove: continue with turn
     """
 
-    todisp = []
-    with open('shogihelp.txt') as helpf:
-        filetxt = helpf.read()
-    if filenm is not None:
-        if filenm == 'moves':
-            movelistfn(input_gen, window, theboard)
+    with _open_help('main.txt') as f:
+        main_text = f.read()
+    if file_name:
+        if file_name == 'moves':
+            list_moves(input_gen, window, current_board)
             return
-        if filenm == 'menu':
-            filenm = helpmenu(input_gen, window, theboard)
-            filenm = filenm[:-4]
-        filenm = ltrtoname(filenm)
+        if file_name == 'menu':
+            file_name = help_menu(input_gen, window)
+            file_name = file_name[:-4]
+        file_name = letter_to_name(file_name)
         try:
-            with _openhelp(f"{filenm}.txt") as f:
-                thefile = f.read()
+            with _open_help(f"{file_name}.txt") as f:
+                file_text = f.read()
             prompt = 'Press Esc to return to game'
-            filedisp(input_gen, window, prompt, thefile)
+            display_file(input_gen, window, prompt, file_text)
             raise classes.IllegalMove(0)
-        except FileNotFoundError as f:
-            toout = 'Invalid help command. Type "help" for command list.'
-            print(toout)
+        except FileNotFoundError:
+            invalid_prompt = (
+                'Invalid help command. Type "help" for command list.'
+            )
+            print(invalid_prompt)
         return
     prompt = 'Press Esc to activate help menu'
-    todisp = filedisp(input_gen, window, prompt, filetxt)
+    to_display = display_file(input_gen, window, prompt, main_text)
     while True:
-        todisp = todisp[:-1]
-        todisp.append('help: ')
-        filenm = getinput(input_gen, window, todisp)
-        filenm = filenm.strip()
-        filelwr = filenm.lower()
-        if filelwr == 'exit':
+        to_display = to_display[:-1]
+        to_display.append('help: ')
+        file_name = get_input(input_gen, window, to_display)
+        file_name = file_name.strip()
+        file_lower = file_name.lower()
+        if file_lower == 'exit':
             break
-        elif filelwr == 'quit':
-            toquit(input_gen, window, todisp)
-        elif filelwr == 'moves':
-            movelistfn(input_gen, window, theboard)
+        elif file_lower == 'quit':
+            toquit(input_gen, window, to_display)
+        elif file_lower == 'moves':
+            list_moves(input_gen, window, current_board)
         else:
-            if filelwr == 'menu':
-                filenm = helpmenu(input_gen, window, theboard)
-                filenm = filenm[:-4]
-            filenm = ltrtoname(filenm)
-            filenm = filenm.lower()
+            if file_lower == 'menu':
+                file_name = help_menu(input_gen, window)
+                file_name = file_name[:-4]
+            file_name = letter_to_name(file_name)
+            file_name = file_name.lower()
             try:
-                with _opendata(filenm) as f:
-                    filetxt = f.read()
+                with _open_data(file_name) as f:
+                    main_text = f.read()
                 prompt = 'Press Esc to activate help menu'
-                todisp = filedisp(input_gen, window, prompt, filetxt)
+                to_display = display_file(input_gen, window, prompt, main_text)
             except FileNotFoundError:
                 print('Invalid help command\n')
-                with _openhelp("helpcommands.txt") as f:
+                with _open_help("helpcommands.txt") as f:
                     commands = f.read()
                 print(commands)
     raise classes.IllegalMove(0)
 
 
-def ltrtoname(filenm):
+def letter_to_name(file_name: str) -> str:
     """Turn single-letter inputs into a piece name.
 
-    Arguments:
-        filenm {str} -- name inputted
-
-    Returns:
-        str -- full name of piece
+    :param file_name: name inputted
+    :return: full name of piece
     """
 
-    with _opendata('names.json') as f:
-        namedict = json.load(f)
-    if filenm.lower() in namedict:
-        if filenm.islower():
-            filenm = namedict[filenm]
-        elif filenm.isupper():
-            filenm = '+'+namedict[filenm.lower()]
-    return filenm
+    with _open_data('name_info.json') as f:
+        name_dict: Dict[str, str] = json.load(f)
+    if file_name.lower() in name_dict:
+        if file_name.islower():
+            file_name = name_dict[file_name]
+        elif file_name.isupper():
+            file_name = '+' + name_dict[file_name.lower()]
+    return file_name
 
 
-def helpmenu(input_gen, window, theboard):
+def help_menu(
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow
+) -> str:
     """Function for interactive help menu.
 
-    Arguments:
-        input_gen {curtsies.Input} -- Input generator
-        window {curtsies.FullScreenWindow} -- window on which to print
-        theboard {board} -- current state of the board
-
-    Returns:
-        str -- path of file to open
+    :param input_gen: input generator
+    :param window: window on which to print
+    :return: path of file to open
     """
 
-    index = classes.info.HELPINDEX
+    help_index: Dict[str, Union[str, dict]] = classes.info.help_index
     while True:
-        todisp = list(index)
-        todisp.extend(['', '', ''])
-        todisp.append('menu: ')
-        window.render_to_terminal(todisp)
-        filenm = getinput(input_gen, window, todisp)
+        to_display: List[str] = list(help_index)
+        to_display.extend(['', '', ''])
+        to_display.append('menu: ')
+        window.render_to_terminal(curtsies.fsarray(to_display))
+        file_name = get_input(input_gen, window, to_display)
         try:
-            filenm = int(filenm)
-            filenm = todisp.index(filenm)
+            file_int: int = int(file_name)
+            file_name: str = to_display[file_int]
         except ValueError:
             pass
-        filepath = index[filenm]
-        if isinstance(filepath, str):
+        file_path: Union[str, dict] = help_index[file_name]
+        if isinstance(file_path, str):
             break
-        elif isinstance(filepath, dict):
-            index = filepath
-    return filepath
+        elif isinstance(file_path, dict):
+            help_index: List[str, Union[str, dict]] = file_path
+    return file_path
 
 
-def movelistfn(input_gen, window, theboard):
+def list_moves(
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        current_board: classes.Board
+):
     """List all possible moves for a player.
 
-    Arguments:
-        input_gen {curtsies.Input} -- input generator
-        window {curtsies.FullScreenWindow} -- window to display text
-        theboard {board} -- current gameplay board
+    :param input_gen: input generator
+    :param window: window on which to display text
+    :param current_board: current board
     """
 
-    movedict = {}
-    currpieces = theboard.currpcs()
-    for loc, apiece in currpieces.items():
-        movelst = []
-        dirlist = (classes.direction(x) for x in range(8))
-        for x in dirlist:
-            tolst = apiece.validspaces(x)
-            tolst = testspcs(theboard, loc, tolst)
-            movelst += tolst
-        movedict[loc] = movelst
-    filestr = ''
-    for loc, piece in currpieces.items():
-        filestr += f"{repr(piece)} at {loc}:\n"
-        toprint = (str(x) for x in movedict[loc])
-        filestr += f"    {', '.join(toprint)}\n"
-    filestr = filestr.strip()
+    moves = {}
+    current_pieces = current_board.current_pieces
+    for location, piece in current_pieces.items():
+        move_list = []
+        direction_list = (classes.Direction(x) for x in range(8))
+        for x in direction_list:
+            to_list = piece.valid_spaces(x)
+            to_list = test_spaces(current_board, location, to_list)
+            move_list += to_list
+        moves[location] = move_list
+    file_string = ''
+    for location, piece in current_pieces.items():
+        file_string += f"{piece !r} at {location}:\n"
+        to_print = (str(x) for x in moves[location])
+        file_string += f"    {', '.join(to_print)}\n"
+    file_string = file_string.strip()
     prompt = "Press Esc to return to game"
-    filedisp(input_gen, window, prompt, filestr)
+    display_file(input_gen, window, prompt, file_string)

@@ -1,43 +1,73 @@
 __all__ = [
+    "PromotionError",
     "NotPromotableException",
     "PromotedException",
     "DemotedException",
     "IllegalMove",
     "PlayerExit",
     "OtherMove",
-    "OtherInput"
+    "OtherInput",
+    "NullCoordError"
 ]
 
-class NotPromotableException(Exception):
+
+class PromotionError(Exception):
+    """Error in promotion"""
+    def __init__(self, error_num=0):
+        super().__init__(error_num)
+        messages = [
+            "Promotion error",
+            "Piece is not promotable",
+            "Piece is already promoted",
+            "Piece is already not promoted"
+        ]
+        self.message = messages[error_num]
+
+    def __str__(self): return self.message
+
+
+class NotPromotableException(PromotionError):
     """Piece is not promotable."""
-    pass
+    def __init__(self):
+        super().__init__(1)
 
 
-class PromotedException(Exception):
+class PromotedException(PromotionError):
     """Piece is already promoted."""
-    pass
+    def __init__(self):
+        super().__init__(2)
 
 
-class DemotedException(Exception):
+class DemotedException(PromotionError):
     """Piece is already demoted."""
-    pass
+    def __init__(self):
+        super().__init__(3)
 
 
 class IllegalMove(Exception):
     """The move cannot be made."""
-    pass
+    def __init__(self, error_num=0):
+        from .information import info
+        super().__init__(error_num)
+        self.int = error_num
+        self.message = info.error_info[error_num]
+
+    def __str__(self): return self.message
+
+    def __int__(self): return self.int
 
 
 class PlayerExit(Exception):
     """The player wishes to exit."""
-    pass
 
 
 class OtherMove(Exception):
     """An other move was made."""
-    pass
 
 
 class OtherInput(Exception):
     """A non-location input was entered."""
-    pass
+
+
+class NullCoordError(Exception):
+    """A null coordinate was referenced."""

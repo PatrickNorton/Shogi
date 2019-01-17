@@ -1,192 +1,284 @@
-from .locations import direction
+import collections
+
+from typing import Union, Dict, Optional, Generator, Callable
+
+from .exceptions import (
+    PromotedException, NotPromotableException, DemotedException
+)
 from .information import info
+from .locations import Direction, RelativeCoord
 
 __all__ = [
-    "color",
-    "ptype",
-    "moves"
+    "Color",
+    "PieceType",
+    "Moves",
+    "Move",
 ]
 
 
-class color:
+class Color:
     """The class for piece/player colors.
 
-    This class covers both the color for a piece and the player colors.
-    Use accordingly.
+    This class is used both for the color of a player (e.g. the Board
+    object's current_player attribute being an instance of Color),
+    and the color of a piece (e.g. the Piece.color attribute being a
+    Color). This class is what should be used for comparisons between
+    two piece's colors.
 
-    Attributes:
-        INT {int} -- the integer (white=0, black=1) of the turn
-        NAME {str} -- the character (w, b) of the color
-        OTHER {str} -- the character of the other color
-        FULLNM {str} -- the full name (White, Black) of the color
+    :ivar int: the integer (white=0, black=1) of the turn
+    :ivar name: the character (w, b) of the color
+    :ivar other_color: the character of the other color
+    :ivar full_name: the full name of the color
+
     """
 
-    def __init__(self, turnnum):
-        if isinstance(turnnum, int):
-            self.INT = turnnum
-            self.NAME = 'wb'[self.INT]
-        elif isinstance(turnnum, str):
-            if turnnum == '-':
-                self.NAME = turnnum
-                self.INT = -1
+    def __init__(self, turn_num: Union[int, str, 'Color']):
+        """Initialise instance of Color.
+
+        :param turn_num: piece's color (w/b or 0/1)
+        :raises TypeError: invalid type
+        """
+
+        self.int: int
+        self.name: str
+        if isinstance(turn_num, int):
+            self.int = turn_num
+            self.name = 'wb'[self.int]
+        elif isinstance(turn_num, str):
+            if turn_num == '-':
+                self.name = turn_num
+                self.int = -1
             else:
-                self.NAME = turnnum
-                self.INT = 'wb'.index(turnnum)
-        elif isinstance(turnnum, color):
-            self.INT = turnnum.INT
-            self.NAME = 'wb'[self.INT]
+                self.name = turn_num
+                self.int = 'wb'.index(turn_num)
+        elif isinstance(turn_num, Color):
+            self.int = turn_num.int
+            self.name = 'wb'[self.int]
         else:
             raise TypeError
-        self.OTHER = 'bw'[self.INT]
-        self.FULLNM = ['White', 'Black'][self.INT]
+        self.other_color = 'bw'[self.int]
+        self.full_name = ['White', 'Black'][self.int]
 
-    def __str__(self): return self.NAME
+    def __str__(self): return self.name
 
-    def __repr__(self): return self.FULLNM
+    def __repr__(self): return self.full_name
 
-    def __int__(self): return self.INT
+    def __int__(self): return self.int
 
-    def __eq__(self, other): return self.INT == other.INT
+    def __eq__(self, other: 'Color'): return self.int == other.int
 
-    def __hash__(self): return hash((self.INT, self.NAME))
+    def __hash__(self): return hash((self.int, self.name))
 
-    def flip(self):
-        """DEPRECATED: Get the opposite color.
+    @property
+    def other(self) -> 'Color':
+        """Color: Opposite color from first"""
 
-        Returns:
-            color -- the other color
-        """
-
-        return color(int(not self.INT))
-
-    def other(self):
-        """Get the opposite color.
-
-        Returns:
-            color -- the other color
-        """
-
-        return color(self.OTHER)
+        return Color(self.other_color)
 
 
-class ptype:
+class PieceType:
     """The class for the type of the piece.
 
-    This class contains the different attributes of the piece's type.
+    This class is what determines which type the piece is (e.g. king,
+    rook, knight, etc.). It should be used for comparisons between
+    two piece's types.
 
-    Attributes:
-        TYP {str} -- the short name of the piece -- see "help names"
-        NAME {str} -- the full name of the piece
+    :ivar type: the short name of the piece -- see "help names"
+    :ivar name: the full name of the piece
     """
 
-    def __init__(self, typ):
+    def __init__(self, typ: Union[str, 'PieceType'], promoted: bool = False):
+        """Initialise instance of PieceType.
+
+        :param typ: type of piece ('n', 'b', etc.)
+        :param promoted: if piece is promoted
+        """
+
         typ = str(typ)
-        self.TYP = typ.lower()
-        self.NAME = info.NAMEDICT[self.TYP]
+        self.type: str
+        self.name: str
+        if promoted:
+            self.type = typ.lower()
+            self.name = f"+{info.name_info[self.type]}"
+        else:
+            self.type = typ.lower()
+            self.name = info.name_info[self.type]
 
-    def __str__(self): return self.TYP
+    def __str__(self): return self.type
 
-    def __repr__(self): return self.NAME
+    def __repr__(self): return self.name
 
     def __eq__(self, other): return repr(self) == repr(other)
 
-    def __hash__(self): return hash((self.TYP, self.NAME))
+    def __hash__(self): return hash((self.type, self.name))
 
-    def prom(self):
+    def prom(self) -> 'PieceType':
         """Promote the piece."""
-        self.TYP = self.TYP.upper()
-        self.NAME = '+'+self.NAME
+        self.type = self.type.upper()
+        self.name = '+' + self.name
         return self
 
-    def dem(self):
+    def dem(self) -> 'PieceType':
         """Demote the piece."""
-        self.TYP = self.TYP.lower()
-        self.NAME = self.NAME.replace('+', '')
+        self.type = self.type.lower()
+        self.name = self.name.replace('+', '')
         return self
 
 
-class moves:
+class Moves(collections.abc.Sequence):
     """The class containing the set of moves the piece can do.
 
-    Attributes:
-        DMOVES {dict} -- dict from direction -> move when unpromoted
-        PMOVES {dict} -- dmoves, but for when promoted
-        MOVES {list[dict]} -- list [DMOVES, PMOVES]
-        ispromoted {bool} -- if the piece is promoted
-        CMOVES {dict} -- current set of moves
+    This class contains a dictionary relating directions to the moves
+    the piece can make. It also has the ability to test whether or not
+    a certain move can be made.
+
+    :ivar name: 1-letter name of piece
+    :ivar color: color of piece
+    :ivar demoted: direction -> move when not promoted
+    :ivar promoted: direction -> move when promoted
+    :ivar moves: (demoted, promoted)
+    :ivar is_promoted: if the piece is promoted
+    :ivar current: current set of moves
     """
 
-    def __init__(self, piecenm, clr):
+    def __init__(
+            self, piece_name: Union[str, PieceType],
+            clr: Color,
+            promoted: bool = False
+    ):
         """Initialise instance of moves.
 
-        Arguments:
-            piecenm {str} -- 1-letter name of piece
-            clr {color} -- color of piece
+        :param piece_name: 1-letter name of piece
+        :param clr: color of piece
+        :param promoted: if piece is promoted
+        :raises NotPromotableException: if un-promotable is promoted
         """
 
-        piecenm = str(piecenm)
-        pcmvlist = list(info.MOVEDICT[piecenm])
-        if clr == color(1):
-            for y, var in enumerate(pcmvlist):
+        piece_name = str(piece_name)
+        move_list = list(info.move_info[piece_name])
+        if clr == Color(1):
+            for y, var in enumerate(move_list):
                 if var is not None:
-                    pcmvlist[y] = var[4:]+var[:4]
-        mvlist = pcmvlist[0]
-        self.DMOVES = {direction(x): mvlist[x] for x in range(8)}
-        self.DMOVES[direction(8)] = '-'
-        mvlist = pcmvlist[1]
-        if mvlist is None:
-            self.PMOVES = None
+                    move_list[y] = var[4:]+var[:4]
+        move_demoted = move_list[0]
+        self.demoted: Dict[Direction, str]
+        self.name: str = piece_name
+        self.color: Color = clr
+        self.demoted: Dict[Direction, str]
+        self.demoted = {Direction(x): move_demoted[x] for x in range(8)}
+        self.demoted[Direction(8)] = '-'
+        move_promoted = move_list[1]
+        self.promoted: Optional[Dict[Direction, str]]
+        if move_promoted is None:
+            self.promoted = None
         else:
-            self.PMOVES = {direction(x): mvlist[x] for x in range(8)}
-            self.PMOVES[direction(8)] = '-'
-        self.MOVES = [self.DMOVES, self.PMOVES]
-        self.ispromoted = False
-        self.CMOVES = self.MOVES[self.ispromoted]
+            self.promoted = {Direction(x): move_promoted[x] for x in range(8)}
+            self.promoted[Direction(8)] = '-'
+        self.moves: tuple = (self.demoted, self.promoted)
+        self.is_promoted: bool = promoted
+        self.current: Dict[Direction, str] = self.moves[self.is_promoted]
+        if self.current is None:
+            raise NotPromotableException
 
-    def __getitem__(self, attr): return self.CMOVES[attr]
+    def __getitem__(self, attr: Union[Direction, int]) -> str:
+        if isinstance(attr, Direction):
+            return self.current[attr]
+        elif isinstance(attr, int):
+            return self.current[Direction(attr)]
+        else:
+            raise TypeError
 
-    def __iter__(self): yield from self.CMOVES
+    def __iter__(self) -> Generator: yield from self.current.values()
 
-    def canmove(self, relloc):  # Takes coord object
-        """Check if piece can move there.
+    def __len__(self) -> int: return len(self.current)
 
-        Arguments:
-            relloc {coord} -- relative location of move
+    def can_move(self, relative_location: RelativeCoord) -> bool:
+        """Check if piece can move to location.
 
-        Returns:
-            bool -- if move is legal
+        :param relative_location: relative location of move
+        :return: if move is legal
         """
 
-        vec = direction(relloc)
-        dist = max(abs(relloc))
-        magicvar = self[vec]
-        if magicvar == '-':
+        vec = Direction(relative_location)
+        abs_location = abs(relative_location)
+        dist = max(abs_location)
+        minimum = min(abs_location)
+        magic_var = self[vec]
+        if magic_var == '-':
             return False
-        elif magicvar == '1':
+        elif magic_var == '1':
             return dist == 1
-        elif magicvar == '+':
-            return True
-        elif magicvar == 'T':
-            return abs(relloc.x) == 1 and abs(relloc.y) == 2
+        elif magic_var == '+':
+            return abs_location.x == abs_location.y or not minimum
+        elif magic_var == 'T':
+            return abs_location == (1, 2)
+        return False
 
-    def prom(self):
+    def prom(self) -> 'Moves':
         """Promote self.
 
-        Returns:
-            moves -- promoted version of self
+        :raises PromotedException: already promoted
+        :return: promoted version of self
         """
 
-        self.ispromoted = True
-        self.CMOVES = self.MOVES[self.ispromoted]
-        return self
+        if self.is_promoted:
+            raise PromotedException
+        return Moves(self.name, self.color, True)
 
-    def dem(self):
+    def dem(self) -> 'Moves':
         """Demote self.
 
-        Returns:
-            moves -- demoted version of self
+        :raises DemotedException: already demoted
+        :return: demoted exception of self
         """
 
-        self.ispromoted = False
-        self.CMOVES = self.MOVES[self.ispromoted]
-        return self
+        if not self.is_promoted:
+            raise DemotedException
+        return Moves(self.name, self.color, False)
+
+
+class Move:
+    """The class representing a single move.
+
+    This class is used for the representation of a single move for
+    the piece.
+
+    :ivar move_function: function for move
+    """
+    def __init__(self, move_var: str):
+        """Initialise instance of Move.
+
+        :param move_var: string detailing the move
+        """
+        self.move_function = self._move_functions[move_var]
+
+    def try_move(self, move: RelativeCoord) -> bool:
+        return self.move_function(move)
+
+    @staticmethod
+    def hyphen(move: RelativeCoord) -> bool:
+        return move and not move
+
+    @staticmethod
+    def one(move: RelativeCoord) -> bool:
+        return all(x in range(2) for x in abs(move))
+
+    @staticmethod
+    def plus(move: RelativeCoord) -> bool:
+        if move.x == move.y:
+            return True
+        elif any(move) and not all(move):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def t_move(move: RelativeCoord) -> bool:
+        return abs(move.x) == 1 and abs(move.y) == 2
+
+    _move_functions: Dict[str, Callable] = {
+        '-': hyphen,
+        '1': one,
+        '+': plus,
+        'T': t_move,
+    }

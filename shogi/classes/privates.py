@@ -1,45 +1,46 @@
 import json
 
+from typing import Dict, List, Union, TextIO
+
 __all__ = [
-    "_infocls",
-    "_opendata"
+    "_InfoClass",
+    "_open_data"
 ]
 
 
-class _infocls:
-    """The class that gets all the info from json.
+class _InfoClass:
+    """The class that gets all the info from json files.
 
-    Properties:
-        MOVEDICT {dict} -- moves.json
-        NAMEDICT {dict} -- names.json
-        LS {dict} -- board.json
-        PCINFO {dict} -- other.json
-        ERRORS {list} -- errors.json
-        HELPINDEX {dict} -- helpindex.json
+    :ivar move_info: moves.json
+    :ivar name_info: names.json
+    :ivar board_info: board.json
+    :ivar piece_info: other.json
+    :ivar error_info: errors.json
+    :ivar help_index: helpindex.json
     """
 
     def __init__(self):
-        """Initialise instance of _infocls."""
+        """Initialise instance of Piece."""
 
-        with _opendata('moves.json') as f:
-            self.MOVEDICT = json.load(f)
-        with _opendata('names.json') as f:
-            self.NAMEDICT = json.load(f)
-        with _opendata('board.json') as f:
-            self.LS = json.load(f)
-        with _opendata('other.json') as f:
-            self.PCINFO = json.load(f)
-        with _opendata('errors.json') as f:
-            self.ERRORS = json.load(f)
-        with _opendata('helpindex.json') as f:
-            self.HELPINDEX = json.load(f)
+        with _open_data('moves.json') as f:
+            self.move_info: Dict[str, List[str]] = json.load(f)
+        with _open_data('names.json') as f:
+            self.name_info: Dict[str, str] = json.load(f)
+        with _open_data('board.json') as f:
+            self.board_info: Dict[str, List[str]] = json.load(f)
+        with _open_data('other.json') as f:
+            self.piece_info: Dict[str, dict] = json.load(f)
+        with _open_data('errors.json') as f:
+            self.error_info: List[str] = json.load(f)
+        with _open_data('helpindex.json') as f:
+            self.help_index: Dict[str, Union[str, dict]] = json.load(f)
 
 
-def _opendata(filenm):
+def _open_data(file_name: str) -> TextIO:
     """Open data file.
 
     Arguments:
-        filenm {str} -- name of file to be opened
+        file_name {str} -- name of file to be opened
 
     Returns:
         file -- opened file
@@ -47,5 +48,5 @@ def _opendata(filenm):
 
     import os
     cwd = os.path.dirname(__file__)
-    filepath = os.path.join(cwd, f'../datafiles/{filenm}')
-    return open(filepath)
+    file_path = os.path.join(cwd, f'../datafiles/{file_name}')
+    return open(file_path)

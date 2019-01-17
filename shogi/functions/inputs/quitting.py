@@ -1,4 +1,4 @@
-from shogi import functions
+from shogi import classes
 
 __all__ = [
     "toquit"
@@ -8,7 +8,7 @@ __all__ = [
 def toquit(input_gen, window, todisp):
     """Check if player wants to quit.
 
-    Depreciated: use .oddinputs.toquit() instead
+    Depreciated: use .oddinputs.may_quit() instead
 
     Arguments:
         input_gen {curtsies.Input} -- input generator
@@ -16,7 +16,7 @@ def toquit(input_gen, window, todisp):
         todisp {list} -- list of current screen content
 
     Raises:
-        functions.PlayerExit -- player wishes to exit
+        classes.PlayerExit -- player wishes to exit
     """
 
     while True:
@@ -31,6 +31,6 @@ def toquit(input_gen, window, todisp):
                 toquit = False
                 break
         if toquit:
-            raise functions.PlayerExit
+            raise classes.PlayerExit
         else:
             break

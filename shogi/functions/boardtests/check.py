@@ -1,85 +1,124 @@
+from typing import List, Tuple
+
 from shogi import classes
-from .move import movecheck2
+
+from .move import move_check_2
 
 __all__ = [
-    "checkcheck",
-    "checkcheck2"
+    "check_check",
+    "check_check_2"
 ]
 
 
-def checkcheck(theboard, coords, color, earlybreak=False):
+def check_check(
+        current_board: classes.Board,
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        king_color: classes.Color,
+        break_early: bool = False,
+        before_move: bool = False,
+) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
-    Arguments:
-        theboard {board} -- current game board
-        coords {tuple[coord]} -- last move (from, to)
-        color {color} -- color of king to test
-
-    Keyword Arguments:
-        earlybreak {bool} -- break after first or second check
-            (default: {False})
-
-    Returns:
-        bool -- if king is in check
-        coord -- location of king
-        list[coord] -- list of coords attacking king
+    :param current_board: current game board
+    :param coordinates: last move (from, to)
+    :param king_color: color of king to test
+    :param break_early: break after first finding of check
+    :param before_move: whether or not the move has been made
+    :return: location of king, list of coordinates attacking king
     """
 
-    oldloc, newloc = coords
-    check, checklist = False, []
-    toget = classes.piece('k', color)
-    kingpos = theboard.getpiece(toget)
+    old_location, new_location = coordinates
+    places_attacking: List[classes.AbsoluteCoord] = []
+    king_tested: classes.Piece = classes.Piece('k', king_color)
+    king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+
     try:
-        movecheck2(theboard, (newloc, kingpos))
-    except classes.IllegalMove:
-        tocc2 = ((oldloc, kingpos), [], earlybreak)
-        check, checklist = checkcheck2(theboard, *tocc2)
-    else:
-        if earlybreak:
-            checklist.append(newloc)
-            return True, kingpos, checklist
+        if before_move:
+            kings_enemy = not current_board[old_location].is_color(king_color)
+            if kings_enemy:
+                move_check_2(
+                    current_board,
+                    (new_location, king_location),
+                    ignore_location=old_location,
+                    act_full=new_location
+                )
+            else:
+                raise classes.IllegalMove(4)
         else:
-            checklist.append(newloc)
-            tocc2 = ((oldloc, kingpos), checklist, earlybreak)
-            check, checklist = checkcheck2(theboard, *tocc2)
-            return True, kingpos, checklist
-    return check, kingpos, checklist
+            move_check_2(current_board, (new_location, king_location))
+    except classes.IllegalMove:
+        places_attacking = check_check_2(
+            current_board,
+            (old_location, new_location),
+            king_location,
+            places_attacking,
+            break_early,
+            before_move
+        )
+    else:
+        if break_early:
+            places_attacking.append(new_location)
+            return king_location, places_attacking
+        else:
+            places_attacking.append(new_location)
+            places_attacking = check_check_2(
+                current_board,
+                (old_location, new_location),
+                king_location,
+                places_attacking,
+                break_early,
+                before_move
+            )
+            return king_location, places_attacking
+    return king_location, places_attacking
 
 
-def checkcheck2(theboard, coords, checklist, earlybreak=False):
+def check_check_2(
+        current_board: classes.Board,
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        king_location: classes.AbsoluteCoord,
+        places_attacking: List[classes.AbsoluteCoord],
+        break_early: bool = False,
+        before_move: bool = False
+) -> List[classes.AbsoluteCoord]:
     """Test if non-moved pieces can check king.
 
-    Arguments:
-        theboard {board} -- current board
-        coords {tuple[coord]} -- last move(from, to)
-        checklist {list[coord]} -- list of pieces currently checking king
-
-    Keyword Arguments:
-        earlybreak {bool} -- break after first check (default: {False})
-
-    Returns:
-        bool -- king in check
-        list[coord] -- pieces checking king
+    :param current_board: current board
+    :param coordinates: last move (from, to)
+    :param king_location: location of king to test
+    :param places_attacking: list of places currently checking king
+    :param break_early: break after first check
+    :param before_move: if move has yet been made
+    :return: pieces checking king
     """
 
-    oldloc, kingpos = coords
-    relcoord = kingpos-oldloc
-    mvmt = abs(relcoord)
-    if mvmt.x != mvmt.y and min(mvmt):
-        return False, checklist
-    toking = classes.direction(relcoord)
-    doa = classes.row(oldloc, toking)
-    currpieces = theboard.playerpcs(theboard[kingpos].COLOR.other())
-    pieces = (x for x in doa if x in currpieces)
+    old_location, new_location = coordinates
+    relative_move = classes.RelativeCoord(king_location - old_location)
+    absolute_move: classes.RelativeCoord = abs(relative_move)
+    if absolute_move.x != absolute_move.y and min(absolute_move):
+        return places_attacking
+    king_direction = classes.Direction(relative_move)
+    direction_of_attack = classes.Row(old_location, king_direction)
+    attacking_color: classes.Color = current_board[king_location].color.other
+    current_pieces = current_board.player_pieces(attacking_color)
+    pieces = (x for x in direction_of_attack if x in current_pieces)
     for x in pieces:
         try:
-            movecheck2(theboard, (x, kingpos))
+            if before_move:
+                move_check_2(
+                    current_board,
+                    (x, king_location),
+                    ignore_location=old_location,
+                    act_full=new_location
+                )
+            else:
+                move_check_2(current_board, (x, king_location))
         except classes.IllegalMove:
             continue
         else:
-            checklist.append(x)
-            if earlybreak or len(checklist) > 1:
-                return True, checklist
+            places_attacking.append(x)
+            if break_early or len(places_attacking) > 1:
+                return places_attacking
             else:
                 continue
-    return False, checklist
+    return places_attacking
