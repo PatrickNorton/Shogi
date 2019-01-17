@@ -202,7 +202,7 @@ class AppCore(Widget):
                     pass
                 else:
                     x.light()
-            self.parent.make_move = True
+            self.make_move = True
 
     def put_in_play(self, space_to: shogi.AbsoluteCoord):
         """Put a specific piece in play.

@@ -16,7 +16,6 @@ def check_check(
         king_color: classes.Color,
         break_early: bool = False,
         before_move: bool = False,
-        dropped_piece: classes.Piece = None,
 ) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
