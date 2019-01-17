@@ -127,11 +127,11 @@ class Board(collections.abc.Sequence):
             piece.demote()
         except DemotedException:
             pass
-        piece = piece.flip_sides()
-        self.captured[self.current_player].append(piece)
+        new_piece = piece.flip_sides()
+        self.captured[self.current_player].append(new_piece)
         del self.pieces[new]
-        del self.by_color[piece.color.other][AbsoluteCoord(new)]
-        if piece in self.pieces:
+        del self.by_color[piece.color][AbsoluteCoord(new)]
+        if piece in self.pieces.values():
             gen = [loc for loc, x in self.pieces.items() if x == piece]
             self.inverse_pieces[piece] = gen[0]
         else:

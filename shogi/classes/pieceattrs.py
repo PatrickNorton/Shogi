@@ -160,19 +160,19 @@ class Moves(collections.abc.Sequence):
             for y, var in enumerate(move_list):
                 if var is not None:
                     move_list[y] = var[4:]+var[:4]
-        move_list = move_list[0]
+        move_demoted = move_list[0]
         self.demoted: Dict[Direction, str]
         self.name: str = piece_name
         self.color: Color = clr
         self.demoted: Dict[Direction, str]
-        self.demoted = {Direction(x): move_list[x] for x in range(8)}
+        self.demoted = {Direction(x): move_demoted[x] for x in range(8)}
         self.demoted[Direction(8)] = '-'
-        move_list = move_list[1]
+        move_promoted = move_list[1]
         self.promoted: Optional[Dict[Direction, str]]
-        if move_list is None:
+        if move_promoted is None:
             self.promoted = None
         else:
-            self.promoted = {Direction(x): move_list[x] for x in range(8)}
+            self.promoted = {Direction(x): move_promoted[x] for x in range(8)}
             self.promoted[Direction(8)] = '-'
         self.moves: tuple = (self.demoted, self.promoted)
         self.is_promoted: bool = promoted
@@ -200,16 +200,18 @@ class Moves(collections.abc.Sequence):
         """
 
         vec = Direction(relative_location)
-        dist = max(abs(relative_location))
+        abs_location = abs(relative_location)
+        dist = max(abs_location)
+        minimum = min(abs_location)
         magic_var = self[vec]
         if magic_var == '-':
             return False
         elif magic_var == '1':
             return dist == 1
         elif magic_var == '+':
-            return True
+            return abs_location.x == abs_location.y or not minimum
         elif magic_var == 'T':
-            return abs(relative_location) == (1, 2)
+            return abs_location == (1, 2)
         return False
 
     def prom(self) -> 'Moves':

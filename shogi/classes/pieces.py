@@ -49,7 +49,7 @@ class Piece:
             self.prom = False
             self.is_promotable = True
         other_attributes: dict = info.piece_info[str(typ)]
-        self.auto_promote: int = other_attributes['auto_promote']
+        self.auto_promote: int = other_attributes['autopromote']
 
     def __str__(self):
         return str(self.type) + str(self.color)

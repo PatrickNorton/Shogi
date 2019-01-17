@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Tuple
+from typing import Tuple, List
 
 from shogi import classes
 
@@ -34,19 +34,28 @@ def move_check(
 
 def move_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]
+        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        ignore_location: classes.AbsoluteCoord = None,
+        act_full: classes.AbsoluteCoord = None,
+        piece_pretend: classes.Piece = None
 ):
     """Check if piece can be moved between locations.
 
     :param current_board: current board state
     :param coordinates: current and new locations of piece
+    :param ignore_location: location to ignore for obstruction check
+    :param act_full: location to pretend is full
+    :param piece_pretend: piece to pretend is moving
     :raises classes.IllegalMove: attempted 0-move of piece
     :raises classes.IllegalMove: move to illegal location
     :raises classes.IllegalMove: capture of own piece
     """
 
     current, new = coordinates
-    piece = current_board[current]
+    if piece_pretend is None:
+        piece = current_board[current]
+    else:
+        piece = piece_pretend
     move = new - current
     move_direction = classes.Direction(move)
     move_variable = piece.moves[move_direction]
@@ -61,19 +70,29 @@ def move_check_2(
     elif piece.has_type('k'):
         king_check(current_board, (current, new))
     else:
-        obstruction_check(current_board, current, move)
+        obstruction_check(
+            current_board,
+            current,
+            move,
+            ignore_location,
+            act_full
+        )
 
 
 def obstruction_check(
         current_board: classes.Board,
         current_position: classes.AbsoluteCoord,
-        move_position: classes.AbsoluteCoord
+        move_position: classes.AbsoluteCoord,
+        ignore_location: classes.AbsoluteCoord = None,
+        act_full: classes.AbsoluteCoord = None,
 ):
     """Check if piece is obstructing move.
 
     :param current_board: current board state
     :param current_position: current piece location
     :param move_position: location to move piece to
+    :param ignore_location: location to ignore in check
+    :param act_full: location to pretend is full
     :raises classes.IllegalMove: obstruction found
     """
 
@@ -81,7 +100,9 @@ def obstruction_check(
     for x in range(1, max(abs(move_position))):
         relative_position = classes.RelativeCoord(x) * move_direction
         test_position = current_position + relative_position
-        if current_board[test_position]:
+        if current_board[test_position] and test_position != ignore_location:
+            raise classes.IllegalMove(2)
+        if test_position == act_full:
             raise classes.IllegalMove(2)
 
 
@@ -120,6 +141,8 @@ def king_check(
         relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         try:
             absolute_position = new_location + relative_position
+            if current_board[absolute_position].same_color(current_board[old_location]):
+                raise classes.IllegalMove(4)
             move_check_2(current_board, (absolute_position, new_location))
         except (ValueError, IndexError):
             continue
@@ -127,3 +150,50 @@ def king_check(
             continue
         else:
             raise classes.IllegalMove(6)
+
+
+def into_check_check(
+        current_board: classes.Board,
+        coordinates: classes.AbsoluteCoord,
+        king_color: classes.Color
+) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
+    old_location, new_location = coordinates
+    places_attacking: List[classes.AbsoluteCoord] = []
+    king_tested: classes.Piece = classes.Piece('k', king_color)
+    king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+    kings_enemy = not current_board[old_location].is_color(king_color)
+    if kings_enemy:
+        try:
+            move_check_2(
+                current_board,
+                (new_location, king_location),
+                ignore_location=old_location,
+                act_full=new_location
+            )
+        except classes.IllegalMove:
+            pass
+        else:
+            places_attacking.append(new_location)
+            return king_location, places_attacking
+    relative_move = classes.RelativeCoord(king_location - old_location)
+    absolute_move: classes.RelativeCoord = abs(relative_move)
+    if absolute_move.x != absolute_move.y and min(absolute_move):
+        return king_location, places_attacking
+    king_direction = classes.Direction(relative_move)
+    direction_of_attack = classes.Row(old_location, king_direction)
+    attacking_color: classes.Color = current_board[king_location].color.other
+    current_pieces = current_board.player_pieces(attacking_color)
+    pieces = (x for x in direction_of_attack if x in current_pieces)
+    for x in pieces:
+        try:
+            move_check_2(
+                current_board,
+                (x, king_location),
+                ignore_location=old_location,
+                act_full=new_location
+            )
+        except classes.IllegalMove:
+            continue
+        else:
+            places_attacking.append(x)
+            return king_location, places_attacking

@@ -55,6 +55,8 @@ class BaseCoord(collections.abc.Sequence):
 
     def __abs__(self): return AbsoluteCoord((abs(self.x), abs(self.y)))
 
+    def __bool__(self): return not isinstance(self, NullCoord)
+
     def __len__(self): return len(self.tup)
 
     def __repr__(self): return f"BaseCoord({self})"
@@ -93,19 +95,22 @@ class RelativeCoord(BaseCoord):
             raise ValueError(xy)
 
     def __add__(self, other):
-        return RelativeCoord(self + other)
+        coordinates = super().__add__(other)
+        return RelativeCoord(coordinates)
 
     def __sub__(self, other):
-        return RelativeCoord(self + other)
+        coordinates = super().__sub__(other)
+        return RelativeCoord(coordinates)
 
     def __mul__(self, other):
-        return RelativeCoord(self + other)
+        coordinates = super().__mul__(other)
+        return RelativeCoord(coordinates)
 
     def __hash__(self):
         return hash(self.tup)
 
     def __abs__(self):
-        return RelativeCoord(hash(self))
+        return RelativeCoord(super().__abs__())
 
     def __repr__(self):
         return f"RelativeCoord({self})"
@@ -142,7 +147,8 @@ class AbsoluteCoord(BaseCoord):
         elif isinstance(xy, int) and xy in range(9):
             super().__init__((xy, xy))
         elif all(x in range(9) for x in xy):
-            super().__init__(tuple(xy))
+            xy = (int(xy[0]), int(xy[1]))
+            super().__init__(xy)
         else:
             raise ValueError(xy)
         self.x_str = '987654321'[self.x]
@@ -152,28 +158,31 @@ class AbsoluteCoord(BaseCoord):
         return self.y_str + self.x_str
 
     def __add__(self, other):
+        coordinates = super().__add__(other)
         try:
-            return AbsoluteCoord(self + other)
+            return AbsoluteCoord(coordinates)
         except ValueError:
-            return RelativeCoord(self + other)
+            return RelativeCoord(coordinates)
 
     def __sub__(self, other):
+        coordinates = super().__sub__(other)
         try:
-            return AbsoluteCoord(self - other)
+            return AbsoluteCoord(coordinates)
         except ValueError:
-            return RelativeCoord(self - other)
+            return RelativeCoord(coordinates)
 
     def __mul__(self, other):
+        coordinates = super().__mul__(other)
         try:
-            return AbsoluteCoord(self - other)
+            return AbsoluteCoord(coordinates)
         except ValueError:
-            return RelativeCoord(self - other)
+            return RelativeCoord(coordinates)
 
     def __hash__(self):
         return hash(self.tup)
 
     def __abs__(self):
-        return AbsoluteCoord(abs(self))
+        return AbsoluteCoord(super().__abs__())
 
     def __repr__(self):
         return f"AbsoluteCoord('{self}')"
@@ -212,7 +221,7 @@ class Direction(RelativeCoord):
             self.direction = 8
         elif isinstance(direction, AbsoluteCoord):
             self.direction = self._make(direction.x, direction.y)
-        elif isinstance(direction, tuple):
+        elif isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
         elif isinstance(direction, int):
             self.direction = direction
@@ -242,7 +251,7 @@ class Direction(RelativeCoord):
         """
 
         if not x_var == y_var == 0:
-            return self.direction_set[(sign(x_var), sign(y_var))]
+            return self.direction_set[(int(sign(x_var)), int(sign(y_var)))]
         return 8
 
 
@@ -283,5 +292,7 @@ class NullCoord(Direction):
     def __mul__(self, other): raise NullCoordError
 
     def __abs__(self): raise NullCoordError
+
+    def __hash__(self): return hash(self.tup)
 
     def __repr__(self): return "NullCoord()"
