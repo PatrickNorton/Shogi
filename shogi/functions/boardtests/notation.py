@@ -8,11 +8,14 @@ from .move import move_check_2
 def to_notation(
         current_board: classes.Board,
         move: Tuple[Optional[classes.AbsoluteCoord], classes.AbsoluteCoord],
-        is_drop: bool = False
+        is_drop: bool = False,
+        is_capture: bool = False,
+        is_promote: Optional[bool] = None
 ) -> str:
     old_location, new_location = move
     piece = current_board[new_location]
     piece_notation = str(piece)[0] if not str(piece)[0].isupper() else f"+{piece}"[:1]
+    dash = 'x' if is_capture else '-'
     if is_drop:
         if isinstance(piece, classes.NoPiece):
             raise ValueError
@@ -20,15 +23,18 @@ def to_notation(
         return notation
     else:
         other_pieces = piece_can_move(current_board, piece, new_location)
+        notation = piece_notation
         if other_pieces:
             if all(x.x == old_location.x for x in other_pieces):
-                notation = f"{piece_notation}{old_location.y_str}-{new_location}"
+                notation += f"{old_location.y_str}{dash}{new_location}"
             elif all(x.y == old_location.y for x in other_pieces):
-                notation = f"{piece_notation}{old_location.x_str}-{new_location}"
+                notation += f"{old_location.x_str}{dash}{new_location}"
             else:
-                notation = f"{piece_notation}{old_location}-{new_location}"
+                notation += f"{old_location}{dash}{new_location}"
         else:
-            notation = f"{piece_notation}-{new_location}"
+            notation += f"{dash}{new_location}"
+        if is_promote is not None:
+            notation += '+' if is_promote else '='
         return notation
 
 
@@ -42,9 +48,9 @@ def piece_can_move(
     except KeyError:
         return []
     else:
-        pieces = [
+        pieces = (
             x for x, y in current_board.pieces.items() if y == piece
-        ]
+        )
         valid_spaces = []
         for location in pieces:
             try:
