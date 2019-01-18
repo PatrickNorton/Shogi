@@ -157,7 +157,7 @@ class AppCore(Widget):
 
         :param coordinate: coordinate to move from
         """
-        pressed_square: BoardSquare = self.main_board.children_dict[coordinate]
+        pressed_square: BoardSquare = self.board_spaces[coordinate]
         pressed_piece: shogi.Piece = self.board[coordinate]
         do_highlight: bool = not pressed_square.is_highlighted
         players_piece: bool = (
@@ -170,7 +170,7 @@ class AppCore(Widget):
                 self.in_check[pressed_piece.color]
             )
             valid_spaces = (
-                self.main_board.children_dict[x] for x in valid_moves
+                self.board_spaces[x] for x in valid_moves
             )
             for space in valid_spaces:
                 space.light()
@@ -260,6 +260,12 @@ class AppCore(Widget):
             self.light_moves(coordinate)
 
     def _set_captured(self, _):
+        """Set captured_spaces method.
+
+        This needs to exist, as self.ids is not accessible during
+        __init__, but this should still be created then. DO NOT USE
+        OUTSIDE OF __init__!!
+        """
         self.captured_spaces = {
             shogi.Color(0): self.ids['0'],
             shogi.Color(1): self.ids['1']
