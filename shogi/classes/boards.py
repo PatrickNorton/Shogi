@@ -6,7 +6,7 @@ from .information import info
 from .locations import AbsoluteCoord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color
-from .exceptions import DemotedException, IllegalMove
+from .exceptions import DemotedException
 from .rows import Row
 
 __all__ = [
@@ -183,12 +183,12 @@ class Board(collections.abc.Sequence):
 
         player = self.current_player
         if not isinstance(self[moved_to], NoPiece):
-            raise IllegalMove(8)
+            return 8
         if piece.has_type('p'):
             row_to_test = Row(moved_to, 0)
             for loc in row_to_test.not_original:
                 if self[loc].is_piece('p', player):
-                    raise IllegalMove(9)
+                    return 9
         self.captured[player].remove(piece)
         self.by_color[piece.color][moved_to] = piece
         self.pieces[moved_to] = piece

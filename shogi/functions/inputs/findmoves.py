@@ -31,6 +31,8 @@ def test_spaces(
             absolute_location = piece_location + relative_location
         except ValueError:
             continue
+        if isinstance(absolute_location, classes.RelativeCoord):
+            continue
         cannot_move = boardtests.move_check_2(
             current_board,
             (piece_location, absolute_location)

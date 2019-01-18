@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
@@ -37,6 +39,7 @@ class AppCore(Widget):
             shogi.Color(1): []
         }
         self.to_add = shogi.NoPiece()
+        self.to_promote = False
         Clock.schedule_once(self._set_captured, 0)
 
     def update_captured(self, current_board: shogi.Board):
@@ -99,67 +102,85 @@ class AppCore(Widget):
         :param current: location of piece
         :param to: location to move piece to
         """
-        try:
-            shogi.move_check_2(self.board, (current, to))
-            # TODO: Move checking_own into move_check_2
-            king_location, checking_own = shogi.check_check(
+        cannot_move = shogi.move_check_2(self.board, (current, to))
+        if cannot_move:
+            return
+        king_location, checking_own = shogi.check_check(
+            self.board,
+            (current, to),
+            self.board.current_player,
+            break_early=True,
+            before_move=True
+        )
+        if checking_own:
+            return
+        checking_spaces = [
+            x for x in self.in_check[self.board.current_player] if x != to
+        ]
+        for space in checking_spaces:
+            cannot_move = shogi.move_check_2(
                 self.board,
-                (current, to),
-                self.board.current_player,
-                break_early=True,
-                before_move=True
+                (space, king_location),
+                ignore_location=current,
+                act_full=to
             )
-            if checking_own:
-                raise shogi.IllegalMove(6)
-            checking_spaces = [
-                x for x in self.in_check[self.board.current_player] if x != to
-            ]
-            for space in checking_spaces:
-                try:
-                    shogi.move_check_2(
-                        self.board,
-                        (space, king_location),
-                        ignore_location=current,
-                        act_full=to
-                    )
-                except shogi.IllegalMove:
-                    continue
-                else:
-                    raise shogi.IllegalMove(6)
-        except shogi.IllegalMove:
-            pass
-        else:
-            # TODO: Separate out into functions
-            is_a_capture = bool(self.board[to])
-            self.board.move(current, to)
-            self.main_board.update_squares(current, to)
-            king_location, is_in_check = shogi.check_check(
-                self.board,
-                (current, to),
-                self.board.current_player.other
-            )
-            if is_in_check:
-                mate = shogi.mate_check(self.board, king_location, is_in_check)
+            if not cannot_move:
+                return
+        is_a_capture = bool(self.board[to])
+        self.board.move(current, to)
+        self.main_board.update_squares(current, to)
+        can_promote = self.board.can_promote(to)
+        if can_promote and not self.board[to].prom:
+            if self.board.auto_promote(to):
+                self.to_promote = True
+                self.cleanup((current, to), is_a_capture)
             else:
-                mate = False
+                pops = PromotionWindow(to_highlight=to, caller=self)
+                pops.bind(
+                    on_dismiss=lambda x: self.cleanup(
+                        (current, to),
+                        is_a_capture
+                    )
+                )
+                pops.open()
+        else:
+            self.cleanup((current, to), is_a_capture)
+
+    def cleanup(
+            self,
+            move: Tuple[shogi.AbsoluteCoord, shogi.AbsoluteCoord],
+            is_a_capture: bool
+    ):
+        """Cleanup operations for a piece move.
+
+        :param move: from, to of move
+        :param is_a_capture: if the move involved a capture
+        """
+        current, to = move
+        if self.to_promote:
+            self.board.promote(to)
+            self.update_board(to)
+            self.to_promote = False
+        king_location, is_in_check = shogi.check_check(
+            self.board,
+            (current, to),
+            self.board.current_player.other
+        )
+        if is_in_check:
+            mate = shogi.mate_check(
+                self.board,
+                king_location,
+                is_in_check
+            )
             if mate:
                 pass
-            can_promote = self.board.can_promote(to)
-
-            if can_promote and not self.board[to].prom:
-                if self.board.auto_promote(to):
-                    self.board.promote(to)
-                    self.update_board(to)
-                else:
-                    pops = PromotionWindow(to_highlight=to, caller=self)
-                    pops.open()
-            self.in_check[self.board.current_player.other] = is_in_check
-            self.board.current_player = self.board.current_player.other
-            self.make_move = False
-            self.move_from = shogi.NullCoord()
-            self.un_light_all()
-            if is_a_capture:
-                self.update_captured(self.board)
+        self.in_check[self.board.current_player.other] = is_in_check
+        self.board.current_player = self.board.current_player.other
+        self.make_move = False
+        self.move_from = shogi.NullCoord()
+        self.un_light_all()
+        if is_a_capture:
+            self.update_captured(self.board)
 
     def light_moves(self, coordinate: shogi.AbsoluteCoord):
         """Light up legal moves from a coordinate.
@@ -207,15 +228,12 @@ class AppCore(Widget):
         }
         if piece.color == self.board.current_player:
             for space, x in empty_children.items():
-                try:
-                    shogi.drop_check(
-                        self.board,
-                        piece,
-                        space
-                    )
-                except shogi.IllegalMove:
-                    pass
-                else:
+                cannot_drop = shogi.drop_check(
+                    self.board,
+                    piece,
+                    space
+                )
+                if not cannot_drop:
                     x.light()
             self.make_move = True
 

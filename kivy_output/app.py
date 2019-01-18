@@ -40,7 +40,5 @@ class PromotionWindow(Popup):
         super().open(*largs, **kwargs)
 
     def child_pressed(self, promote):
-        if promote:
-            self.caller.board.promote(self.to_highlight)
-            self.caller.update_board(self.to_highlight)
+        self.caller.to_promote = promote
         self.dismiss()
