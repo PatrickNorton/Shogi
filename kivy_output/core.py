@@ -111,6 +111,21 @@ class AppCore(Widget):
             )
             if checking_own:
                 raise shogi.IllegalMove(6)
+            checking_spaces = [
+                x for x in self.in_check[self.board.current_player] if x != to
+            ]
+            for space in checking_spaces:
+                try:
+                    shogi.move_check_2(
+                        self.board,
+                        (space, king_location),
+                        ignore_location=current,
+                        act_full=to
+                    )
+                except shogi.IllegalMove:
+                    continue
+                else:
+                    raise shogi.IllegalMove(6)
         except shogi.IllegalMove:
             pass
         else:
