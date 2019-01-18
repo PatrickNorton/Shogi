@@ -27,9 +27,8 @@ def mate_check(
     for king_move_tested in king_moves:
         new_location = king_move_tested + king_location
         if tuple(new_location) in current_board.iterate():
-            try:
-                move_check_2(current_board, (king_location, new_location))
-            except classes.IllegalMove:
+            cannot_move = move_check_2(current_board, (king_location, new_location))
+            if cannot_move:
                 continue
             else:
                 return False
@@ -43,18 +42,18 @@ def mate_check(
     if has_pieces and not_a_knight and has_space:
         return False
     for loc in current_board.enemy_pieces:
-        try:
-            move_check_2(current_board, (loc, check_location))
-        except classes.IllegalMove:
+        cannot_move = move_check_2(current_board, (loc, check_location))
+        if cannot_move:
             continue
-        return False
+        else:
+            return False
     move = king_location - check_location
     move_direction = classes.Direction(move)
     for pos, z in product(current_board.enemy_pieces, range(abs(max(move)))):
         new_location = check_location * classes.AbsoluteCoord(move_direction) * z
-        try:
-            move_check_2(current_board, (pos, new_location))
-        except classes.IllegalMove:
+        cannot_move = move_check_2(current_board, (pos, new_location))
+        if cannot_move:
             continue
-        return False
+        else:
+            return False
     return True

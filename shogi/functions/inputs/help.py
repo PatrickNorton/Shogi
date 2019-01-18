@@ -49,7 +49,7 @@ def help_desk(
                 file_text = f.read()
             prompt = 'Press Esc to return to game'
             display_file(input_gen, window, prompt, file_text)
-            raise classes.IllegalMove(0)
+            return
         except FileNotFoundError:
             invalid_prompt = (
                 'Invalid help command. Type "help" for command list.'
@@ -86,7 +86,6 @@ def help_desk(
                 with _open_help("helpcommands.txt") as f:
                     commands = f.read()
                 print(commands)
-    raise classes.IllegalMove(0)
 
 
 def letter_to_name(file_name: str) -> str:

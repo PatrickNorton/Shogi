@@ -29,13 +29,13 @@ def test_spaces(
     for relative_location in space_list:
         try:
             absolute_location = piece_location + relative_location
-            boardtests.move_check_2(
-                current_board,
-                (piece_location, absolute_location)
-            )
-        except (ValueError, classes.IllegalMove):
+        except ValueError:
             continue
-        else:
+        cannot_move = boardtests.move_check_2(
+            current_board,
+            (piece_location, absolute_location)
+        )
+        if not cannot_move:
             king_location, checking_own = boardtests.check_check(
                 current_board,
                 (piece_location, absolute_location),
@@ -49,16 +49,13 @@ def test_spaces(
             if checking_own or king_location == piece_location:
                 checking_spaces = []
             for space in checking_spaces:
-                try:
-                    boardtests.move_check_2(
+                cannot_move = boardtests.move_check_2(
                         current_board,
                         (space, king_location),
                         ignore_location=piece_location,
                         act_full=absolute_location
                     )
-                except classes.IllegalMove:
-                    continue
-                else:
+                if cannot_move:
                     break
             else:
                 to_return.append(absolute_location)

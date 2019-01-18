@@ -53,10 +53,7 @@ def piece_can_move(
         )
         valid_spaces = []
         for location in pieces:
-            try:
-                move_check_2(current_board, (location, to), ignore_location=to)
-            except classes.IllegalMove:
-                pass
-            else:
+            cannot_move = move_check_2(current_board, (location, to), ignore_location=to)
+            if not cannot_move:
                 valid_spaces.append(location)
         return valid_spaces
