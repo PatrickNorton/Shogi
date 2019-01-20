@@ -3,7 +3,7 @@ from typing import Tuple
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-from .app import PromotionWindow
+from .app import PromotionWindow, MateWindow
 from .boardsquare import BoardSquare
 
 import shogi
@@ -122,7 +122,10 @@ class AppCore(Widget):
                 is_in_check
             )
             if mate:
-                pass
+                pops = MateWindow()
+                pops.open()
+
+                # pass  # TODO: run EOG when checkmate happens
         self.in_check[self.board.current_player.other] = is_in_check
         self.board.current_player = self.board.current_player.other
         self.make_move = False

@@ -9,6 +9,7 @@ __all__ = [
     "ShogiBoard",
     "MainScreen",
     "PromotionWindow",
+    "MateWindow",
 ]
 
 
@@ -42,3 +43,7 @@ class PromotionWindow(Popup):
     def child_pressed(self, promote):
         self.caller.to_promote = promote
         self.dismiss()
+
+
+class MateWindow(Popup):
+    pass

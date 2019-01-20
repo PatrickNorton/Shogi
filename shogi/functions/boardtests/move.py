@@ -122,16 +122,20 @@ def king_check(
 
     old_location, new_location = coordinates
     direction_set = (classes.Direction(x) for x in range(8))
+    old_occupant = current_board[old_location]
     for direction, distance in product(direction_set, range(9)):
         distance = classes.AbsoluteCoord(distance)
         try:
             current_test = new_location + direction * distance
-            if current_board[current_test].same_color(current_board[old_location]):
-                return 4
-            cannot_move = move_check_2(current_board, (current_test, new_location))
         except (ValueError, IndexError):
             continue
         else:
+            if current_board[current_test].same_color(old_occupant):
+                return 4
+            cannot_move = move_check_2(
+                current_board,
+                (current_test, new_location)
+            )
             if cannot_move == 2:
                 break
             elif cannot_move:
@@ -142,12 +146,15 @@ def king_check(
         relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         try:
             absolute_position = new_location + relative_position
-            if current_board[absolute_position].same_color(current_board[old_location]):
-                return 4
-            cannot_move = move_check_2(current_board, (absolute_position, new_location))
         except (ValueError, IndexError):
             continue
         else:
+            if current_board[absolute_position].same_color(old_occupant):
+                return 4
+            cannot_move = move_check_2(
+                current_board,
+                (absolute_position, new_location)
+            )
             if cannot_move:
                 continue
             else:

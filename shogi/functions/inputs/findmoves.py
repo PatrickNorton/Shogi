@@ -57,7 +57,7 @@ def test_spaces(
                         ignore_location=piece_location,
                         act_full=absolute_location
                     )
-                if cannot_move:
+                if not cannot_move:
                     break
             else:
                 to_return.append(absolute_location)
