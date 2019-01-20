@@ -186,7 +186,7 @@ class AppCore(Widget):
 
     def un_light_all(self):
         """Un-light all squares."""
-        for x in self.ids.values():
+        for x in self.parent.ids.values():
             x.un_light_all()
 
     def un_light_captured(self):
@@ -265,18 +265,18 @@ class AppCore(Widget):
     def _set_captured(self, _):
         """Set captured_spaces method.
 
-        This needs to exist, as self.ids is not accessible during
+        This needs to exist, as self.parent.ids is not accessible during
         __init__, but this should still be created then. DO NOT USE
         OUTSIDE OF __init__!!
         """
         self.captured_spaces = {
-            shogi.Color(0): self.ids['0'],
-            shogi.Color(1): self.ids['1']
+            shogi.Color(0): self.parent.ids['0'],
+            shogi.Color(1): self.parent.ids['1']
         }
 
     @property
     def main_board(self):
-        return self.ids['board']
+        return self.parent.ids['board']
 
     @property
     def board_spaces(self):

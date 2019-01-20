@@ -1,6 +1,9 @@
 from kivy.app import App
-from kivy.uix.screenmanager import Screen
+from kivy.clock import Clock
+from kivy.properties import DictProperty
 from kivy.uix.popup import Popup
+from kivy.uix.rst import RstDocument
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.utils import get_color_from_hex
 
 import shogi
@@ -24,11 +27,26 @@ class ShogiBoard(App):
         return get_color_from_hex("#1e2022")
 
     def build(self):
-        return MainScreen()
+        sm = ScreenManager()
+        sm.add_widget(MainScreen(name="main"))
+        sm.add_widget(HelpScreen(name='help'))
+        return sm
 
 
 class MainScreen(Screen):
     pass
+
+
+class HelpScreen(Screen):
+    with open("./shogi/helpfiles/main.txt") as f:
+        text = f.read()
+
+
+class HelpRst(RstDocument):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.colors['paragraph'] = "eeeeee"
+        self.colors['background'] = '1e2022'
 
 
 class PromotionWindow(Popup):
