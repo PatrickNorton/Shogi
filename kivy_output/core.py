@@ -186,7 +186,10 @@ class AppCore(Widget):
 
     def un_light_all(self):
         """Un-light all squares."""
-        for x in self.parent.ids.values():
+        values = (
+            y for x, y in self.parent.ids.items() if x != 'core'
+        )
+        for x in values:
             x.un_light_all()
 
     def un_light_captured(self):

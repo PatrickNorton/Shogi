@@ -1,9 +1,12 @@
+from typing import List
+
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
 from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.textinput import TextInput
 from kivy.utils import get_color_from_hex
 
 import shogi
@@ -16,6 +19,8 @@ __all__ = [
 ]
 
 
+# Configure kivy to not quit when Esc is pressed, so it can be used
+# for the interactive help prompt
 Config.set('kivy', 'exit_on_escape', '0')
 Config.write()
 
@@ -37,7 +42,14 @@ class ShogiBoard(App):
         sm.add_widget(HelpScreen(name='help'))
         return sm
 
-    def _on_keyboard(self, instance, key, scan_code, code_point, modifiers):
+    def _on_keyboard(
+            self,
+            _instance,
+            key: int,
+            _scan_code: int,
+            code_point: str,
+            modifiers: List[str]
+    ):
         if modifiers:
             if modifiers == ['meta'] and code_point == 'w':
                 self.stop()
@@ -59,15 +71,23 @@ class MainScreen(Screen):
 
 
 class HelpScreen(Screen):
-    with open("./shogi/helpfiles/main.txt") as f:
-        text = f.read()
+    def __init__(self, help_file="main", **kwargs):
+        with open(f"./shogi/helpfiles/{help_file}.rst") as f:
+            self.text = f.read()
+        super().__init__(**kwargs)
+
+    def text_entered(self, text: str):
+        if text not in self.manager.screen_names:
+            self.manager.add_widget(HelpScreen(help_file=text, name=text))
+        self.manager.current = text
 
 
 class HelpRst(RstDocument):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.colors['paragraph'] = "eeeeee"
-        self.colors['background'] = '1e2022'
+        self.colors['paragraph'] = "eeeeeeff"
+        self.colors['background'] = '1e2022ff'
+        self.colors['bullet'] = "ffffffff"
 
 
 class PromotionWindow(Popup):
@@ -85,4 +105,8 @@ class PromotionWindow(Popup):
 
 
 class MateWindow(Popup):
+    pass
+
+
+class HelpText(TextInput):
     pass
