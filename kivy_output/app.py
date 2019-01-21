@@ -1,6 +1,6 @@
 from kivy.app import App
-from kivy.clock import Clock
-from kivy.properties import DictProperty
+from kivy.config import Config
+from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -16,10 +16,15 @@ __all__ = [
 ]
 
 
+Config.set('kivy', 'exit_on_escape', '0')
+Config.write()
+
+
 class ShogiBoard(App):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.board = shogi.Board()
+        Window.bind(on_keyboard=self._on_keyboard)
 
     @staticmethod
     def get_background_color():
@@ -31,6 +36,22 @@ class ShogiBoard(App):
         sm.add_widget(MainScreen(name="main"))
         sm.add_widget(HelpScreen(name='help'))
         return sm
+
+    def _on_keyboard(self, instance, key, scan_code, code_point, modifiers):
+        if modifiers:
+            if modifiers == ['meta'] and code_point == 'w':
+                self.stop()
+            if modifiers == ['meta'] and code_point == '/':
+                if self.root.current == 'main':
+                    self.root.transition.direction = 'left'
+                    self.root.current = 'help'
+                elif self.root.current == 'help':
+                    self.root.transition.direction = 'right'
+                    self.root.current = 'main'
+        else:
+            if key == 27:
+                if self.root.current == 'help':
+                    pass  # Future location of interactive help prompt
 
 
 class MainScreen(Screen):
