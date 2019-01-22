@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Dict, List, Optional, Tuple
 
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
@@ -30,15 +30,16 @@ class AppCore(Widget):
         """
         self.board = shogi.Board()
         super().__init__(**kwargs)
-        self.captured_spaces = {}
-        self.make_move = False
-        self.move_from = shogi.NullCoord()
-        self.in_check = {
+        self.captured_spaces: Dict[shogi.Color, Widget] = {}
+        self.make_move: bool = False
+        self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
+        self.in_check: Dict[shogi.Color, List[shogi.AbsoluteCoord]] = {
             shogi.Color(0): [],
             shogi.Color(1): []
         }
-        self.to_add = shogi.NoPiece()
-        self.to_promote = False
+        self.to_add: shogi.Piece = shogi.NoPiece()
+        self.to_promote: bool = None
+        self.game_log: List[List[str]] = []
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
@@ -106,10 +107,11 @@ class AppCore(Widget):
         :param is_a_capture: if the move involved a capture
         """
         current, to = move
+        is_a_promote = self.to_promote
         if self.to_promote:
             self.board.promote(to)
             self.update_board(to)
-            self.to_promote = False
+            self.to_promote = None
         king_location, is_in_check = shogi.check_check(
             self.board,
             (current, to),
@@ -124,9 +126,13 @@ class AppCore(Widget):
             if mate:
                 pops = MateWindow()
                 pops.open()
-
-                # pass  # TODO: run EOG when checkmate happens
+                # TODO: run EOG when checkmate happens
         self.in_check[self.board.current_player.other] = is_in_check
+        self.update_game_log(
+            move,
+            is_a_capture=is_a_capture,
+            is_a_promote=is_a_promote
+        )
         self.board.current_player = self.board.current_player.other
         self.make_move = False
         self.move_from = shogi.NullCoord()
@@ -152,6 +158,10 @@ class AppCore(Widget):
             self.update_board(space_to)
             self.update_captured(self.board)
             self.un_light_all()
+            self.update_game_log(
+                (None, space_to),
+                is_a_drop=True
+            )
             self.board.current_player = self.board.current_player.other
 
     # Lighting methods
@@ -237,6 +247,25 @@ class AppCore(Widget):
         :param squares: squares to update
         """
         self.main_board.update_squares(*squares)
+
+    def update_game_log(
+            self,
+            move: Tuple[Optional[shogi.AbsoluteCoord], shogi.AbsoluteCoord],
+            is_a_capture: bool = False,
+            is_a_promote: Optional[bool] = None,
+            is_a_drop: bool = False
+    ):
+        if not self.game_log or len(self.game_log[-1]) == 2:
+            self.game_log.append([])
+        to_log = shogi.to_notation(
+            self.board,
+            move,
+            is_drop=is_a_drop,
+            is_capture=is_a_capture,
+            is_promote=is_a_promote
+        )
+        self.game_log[-1].append(to_log)
+        print(self.game_log)
 
     # Child pressed methods
     def captured_press(self, piece: shogi.Piece, is_highlighted: bool):

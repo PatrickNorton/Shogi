@@ -85,7 +85,10 @@ class HelpScreen(Screen):
 
     def text_entered(self, text: str):
         if text not in self.manager.screen_names:
-            self.manager.add_widget(HelpScreen(help_file=text, name=text))
+            try:
+                self.manager.add_widget(HelpScreen(help_file=text, name=text))
+            except FileNotFoundError:
+                pass  # TODO: Interactive visual menu support
         self.manager.current = text
 
     def focus_input(self):

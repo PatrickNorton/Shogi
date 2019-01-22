@@ -14,13 +14,17 @@ def to_notation(
 ) -> str:
     old_location, new_location = move
     piece = current_board[new_location]
-    piece_notation = str(piece)[0] if not str(piece)[0].isupper() else f"+{piece}"[:1]
+    if is_promote:
+        piece_notation = str(piece)[0].lower()
+    elif not str(piece)[0].isupper():
+        piece_notation = str(piece)[0]
+    else:
+        piece_notation = f"+{str(piece)}"
     dash = 'x' if is_capture else '-'
     if is_drop:
         if isinstance(piece, classes.NoPiece):
             raise ValueError
         notation = f"{piece_notation}*{new_location}"
-        return notation
     else:
         other_pieces = piece_can_move(current_board, piece, new_location)
         notation = piece_notation
@@ -35,7 +39,7 @@ def to_notation(
             notation += f"{dash}{new_location}"
         if is_promote is not None:
             notation += '+' if is_promote else '='
-        return notation
+    return notation
 
 
 def piece_can_move(
@@ -53,7 +57,11 @@ def piece_can_move(
         )
         valid_spaces = []
         for location in pieces:
-            cannot_move = move_check_2(current_board, (location, to), ignore_location=to)
+            cannot_move = move_check_2(
+                current_board,
+                (location, to),
+                ignore_location=to
+            )
             if not cannot_move:
                 valid_spaces.append(location)
         return valid_spaces
