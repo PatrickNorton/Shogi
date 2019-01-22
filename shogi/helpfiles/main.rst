@@ -5,13 +5,15 @@ Help
 
 This is shogi.
 
-To enter the help menu prompt, hit Esc.  **Not working yet, check back later**
+To enter the help menu prompt, hit Esc.
 
-If you wish to learn the rules of shogi, type "rules", or click here. .. TODO: Link
+If you wish to learn the rules of shogi, type "rules".
 
-For the full list of commands, type "commands", or click here.
+For the full list of commands, type "commands".
 
-For a list of different prompts, type "prompt", or click here.
+For a list of different prompts, type "prompt".
+
+.. TODO: Links to other files
 
 .. _reference:
 

@@ -1,3 +1,5 @@
+import os
+
 from typing import List
 
 from kivy.app import App
@@ -62,8 +64,8 @@ class ShogiBoard(App):
                     self.root.current = 'main'
         else:
             if key == 27:
-                if self.root.current == 'help':
-                    pass  # Future location of interactive help prompt
+                if isinstance(self.root.current_screen, HelpScreen):
+                    self.root.current_screen.focus_input()
 
 
 class MainScreen(Screen):
@@ -72,7 +74,12 @@ class MainScreen(Screen):
 
 class HelpScreen(Screen):
     def __init__(self, help_file="main", **kwargs):
-        with open(f"./shogi/helpfiles/{help_file}.rst") as f:
+        script_dir = os.path.dirname(__file__)
+        file_path = os.path.join(
+            script_dir,
+            f'../shogi/helpfiles/{help_file}.rst'
+        )
+        with open(file_path) as f:
             self.text = f.read()
         super().__init__(**kwargs)
 
@@ -81,13 +88,16 @@ class HelpScreen(Screen):
             self.manager.add_widget(HelpScreen(help_file=text, name=text))
         self.manager.current = text
 
+    def focus_input(self):
+        self.ids['input'].focus = True
+
 
 class HelpRst(RstDocument):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.colors['paragraph'] = "eeeeeeff"
-        self.colors['background'] = '1e2022ff'
-        self.colors['bullet'] = "ffffffff"
+        self.colors['paragraph'] = "#eeeeeeff"
+        self.colors['background'] = '#1e2022ff'
+        self.colors['bullet'] = "#ffffffff"
 
 
 class PromotionWindow(Popup):
