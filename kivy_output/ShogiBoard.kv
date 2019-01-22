@@ -89,27 +89,28 @@
 
 <HelpScreen>:
 
-    BoxLayout:
-        orientation: 'vertical'
+    Widget:
+        BoxLayout:
+            orientation: 'vertical'
+            size: root.width, root.height
 
-        HelpRst:
-            color: app.get_background_color()
-            text: root.text
+            HelpRst:
+                color: app.get_background_color()
+                text: root.text
 
-        HelpText:
-            size_hint: None, None
-            size: root.width, self.minimum_height
-            on_text_validate:
-                root.text_entered(self.text)
+            HelpText:
+                size_hint: None, None
+                size: root.width, self.minimum_height
+                on_text_validate:
+                    root.text_entered(self.text)
 
-    Button:
-        size: root.width/25, root.width/25
-        pos: root.width-root.width/25, root.height-root.width/25
-        text: '<-'
-        color: 1, 1, 1, 1
-        on_press:
-            root.manager.transition.direction = 'right'
-            root.manager.current = 'main'
+        Button:
+            size: root.width/25, root.width/25
+            pos: root.width-root.width/25, root.height-root.width/25
+            text: '<-'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'main'
 
 
 <HelpText>:
@@ -118,4 +119,3 @@
     background_normal: "./images/Light square.jpg"
     background_active: "./images/Light square.jpg"
     foreground_color: 1, 1, 1, 1
-
