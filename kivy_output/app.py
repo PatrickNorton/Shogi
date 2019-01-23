@@ -1,23 +1,17 @@
-import os
-
 from typing import List
 
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
-from kivy.uix.popup import Popup
-from kivy.uix.rst import RstDocument
-from kivy.uix.screenmanager import Screen, ScreenManager
-from kivy.uix.textinput import TextInput
+from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
 
 import shogi
 
+from .screens import HelpScreen, MainScreen
+
 __all__ = [
     "ShogiBoard",
-    "MainScreen",
-    "PromotionWindow",
-    "MateWindow",
 ]
 
 
@@ -52,74 +46,23 @@ class ShogiBoard(App):
             code_point: str,
             modifiers: List[str]
     ):
+        is_meta_modifier = (modifiers == ['meta'])
+        is_help_screen = isinstance(self.root.current_screen, HelpScreen)
         if modifiers:
-            if modifiers == ['meta'] and code_point == 'w':
+            if is_meta_modifier and code_point == 'w':
                 self.stop()
-            if modifiers == ['meta'] and code_point == '/':
+            if is_meta_modifier and code_point == '/':
                 if self.root.current == 'main':
                     self.root.transition.direction = 'left'
                     self.root.current = 'help'
-                elif self.root.current == 'help':
+                elif is_help_screen:
+                    self.root.transition.direction = 'right'
+                    self.root.current = 'main'
+            if is_meta_modifier and key == 276:
+                if is_help_screen:
                     self.root.transition.direction = 'right'
                     self.root.current = 'main'
         else:
             if key == 27:
-                if isinstance(self.root.current_screen, HelpScreen):
+                if is_help_screen:
                     self.root.current_screen.focus_input()
-
-
-class MainScreen(Screen):
-    pass
-
-
-class HelpScreen(Screen):
-    def __init__(self, help_file="main", **kwargs):
-        script_dir = os.path.dirname(__file__)
-        file_path = os.path.join(
-            script_dir,
-            f'../shogi/helpfiles/{help_file}.rst'
-        )
-        with open(file_path) as f:
-            self.text = f.read()
-        super().__init__(**kwargs)
-
-    def text_entered(self, text: str):
-        if text not in self.manager.screen_names:
-            try:
-                self.manager.add_widget(HelpScreen(help_file=text, name=text))
-            except FileNotFoundError:
-                pass  # TODO: Interactive visual menu support
-        self.manager.current = text
-
-    def focus_input(self):
-        self.ids['input'].focus = True
-
-
-class HelpRst(RstDocument):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.colors['paragraph'] = "#eeeeeeff"
-        self.colors['background'] = '#1e2022ff'
-        self.colors['bullet'] = "#ffffffff"
-
-
-class PromotionWindow(Popup):
-    def __init__(self, to_highlight, caller=None, **kwargs):
-        self.caller = caller
-        self.to_highlight = to_highlight
-        super().__init__(**kwargs)
-
-    def open(self, *largs, **kwargs):
-        super().open(*largs, **kwargs)
-
-    def child_pressed(self, promote):
-        self.caller.to_promote = promote
-        self.dismiss()
-
-
-class MateWindow(Popup):
-    pass
-
-
-class HelpText(TextInput):
-    pass

@@ -4,6 +4,11 @@ from shogi import classes
 
 from .move import move_check_2
 
+__all__ = [
+    "to_notation",
+    "piece_can_move",
+]
+
 
 def to_notation(
         current_board: classes.Board,

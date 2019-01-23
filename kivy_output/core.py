@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-from .app import PromotionWindow, MateWindow
+from .inputs import PromotionWindow, MateWindow
 from .boardsquare import BoardSquare
 
 import shogi
