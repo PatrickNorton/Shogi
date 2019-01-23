@@ -161,11 +161,11 @@ class Moves(collections.abc.Sequence):
                 if var is not None:
                     move_list[y] = var[4:] + var[:4]
         move_demoted = move_list[0]
-        self.demoted: Dict[Direction, str]
         self.name: str = piece_name
         self.color: Color = clr
-        self.demoted: Dict[Direction, str]
-        self.demoted = {Direction(x): move_demoted[x] for x in range(8)}
+        self.demoted: Dict[Direction, str] = {
+            Direction(x): move_demoted[x] for x in range(8)
+        }
         self.demoted[Direction(8)] = '-'
         move_promoted = move_list[1]
         self.promoted: Optional[Dict[Direction, str]]
@@ -251,35 +251,36 @@ class Move:
 
         :param move_var: string detailing the move
         """
-        self.move_function = self._move_functions[move_var]
+        self.move_function = _move_functions[move_var]
 
     def try_move(self, move: RelativeCoord) -> bool:
         return self.move_function(move)
 
-    @staticmethod
-    def hyphen(move: RelativeCoord) -> bool:
-        return move and not move
 
-    @staticmethod
-    def one(move: RelativeCoord) -> bool:
-        return all(x in range(2) for x in abs(move))
+def _hyphen(_move: RelativeCoord) -> bool:
+    return False
 
-    @staticmethod
-    def plus(move: RelativeCoord) -> bool:
-        if move.x == move.y:
-            return True
-        elif any(move) and not all(move):
-            return True
-        else:
-            return False
 
-    @staticmethod
-    def t_move(move: RelativeCoord) -> bool:
-        return abs(move.x) == 1 and abs(move.y) == 2
+def _one(move: RelativeCoord) -> bool:
+    return all(x in range(2) for x in abs(move))
 
-    _move_functions: Dict[str, Callable] = {
-        '-': hyphen,
-        '1': one,
-        '+': plus,
-        'T': t_move,
-    }
+
+def _plus(move: RelativeCoord) -> bool:
+    if move.x == move.y:
+        return True
+    elif any(move) and not all(move):
+        return True
+    else:
+        return False
+
+
+def _t_move(move: RelativeCoord) -> bool:
+    return abs(move.x) == 1 and abs(move.y) == 2
+
+
+_move_functions: Dict[str, Callable] = {
+    '-': _hyphen,
+    '1': _one,
+    '+': _plus,
+    'T': _t_move,
+}
