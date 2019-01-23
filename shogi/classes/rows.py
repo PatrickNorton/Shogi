@@ -30,16 +30,18 @@ class Row(collections.abc.Iterable):
         self.vector: Direction = vector
         self.spaces = set()
         for x in range(9):
-            if any(y*x+z not in range(9) for y, z in zip(vector, location)):
+            if any(y * x + z not in range(9) for y, z in zip(vector, location)):
                 break
             x = RelativeCoord(x)
             self.spaces.add(AbsoluteCoord(location + x * vector))
         for x in range(0, -9, -1):
-            if any(y*x+z not in range(9) for y, z in zip(vector, location)):
+            if any(y * x + z not in range(9) for y, z in zip(vector, location)):
                 break
             x = RelativeCoord(x)
             self.spaces.add(AbsoluteCoord(location + x * vector))
-        self._not_original: Set[AbsoluteCoord] = set(x for x in self if x != self.first_space)
+        self._not_original: Set[AbsoluteCoord] = set(
+            x for x in self if x != self.first_space
+        )
 
     def __iter__(self): yield from self.spaces
 

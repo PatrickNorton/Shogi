@@ -23,6 +23,7 @@ class AppCore(Widget):
     :ivar in_check: pieces attacking king for each color
     :ivar to_add: piece to add to board
     """
+
     def __init__(self, **kwargs):
         """Initialise instance of AppCore.
 

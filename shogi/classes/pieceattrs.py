@@ -159,7 +159,7 @@ class Moves(collections.abc.Sequence):
         if clr == Color(1):
             for y, var in enumerate(move_list):
                 if var is not None:
-                    move_list[y] = var[4:]+var[:4]
+                    move_list[y] = var[4:] + var[:4]
         move_demoted = move_list[0]
         self.demoted: Dict[Direction, str]
         self.name: str = piece_name
@@ -245,6 +245,7 @@ class Move:
 
     :ivar move_function: function for move
     """
+
     def __init__(self, move_var: str):
         """Initialise instance of Move.
 

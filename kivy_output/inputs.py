@@ -9,12 +9,14 @@ __all__ = [
     "HelpText",
 ]
 
+
 class HelpRst(RstDocument):
     """The help rst document.
 
     This is used for the help file display, and contains a custom
     color scheme to match the theme of the board.
     """
+
     def __init__(self, **kwargs):
         """Initialise instance of HelpRst.
 
@@ -33,6 +35,7 @@ class PromotionWindow(Popup):
 
     :ivar caller: object that called the popup window
     """
+
     def __init__(self, caller=None, **kwargs):
         """Initialise instance of PromotionWindow.
 

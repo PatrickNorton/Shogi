@@ -1,7 +1,6 @@
 from typing import Tuple, Optional, List
 
 from shogi import classes
-
 from .move import move_check_2
 
 __all__ = [

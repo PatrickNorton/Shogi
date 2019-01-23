@@ -8,8 +8,8 @@ __all__ = [
 
 
 def piece_check(
-    current_board: classes.Board,
-    piece_string: str
+        current_board: classes.Board,
+        piece_string: str
 ) -> classes.AbsoluteCoord:
     """Check if inputted piece is valid.
 

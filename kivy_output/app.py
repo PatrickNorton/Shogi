@@ -14,7 +14,6 @@ __all__ = [
     "ShogiBoard",
 ]
 
-
 # Configure kivy to not quit when Esc is pressed, so it can be used
 # for the interactive help prompt
 Config.set('kivy', 'exit_on_escape', '0')
@@ -28,6 +27,7 @@ class ShogiBoard(App):
 
     :ivar self.board: current game board
     """
+
     def __init__(self, **kwargs):
         """Initialise instance of ShogiBoard.
 

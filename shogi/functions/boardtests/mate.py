@@ -2,7 +2,6 @@ from itertools import product
 from typing import List
 
 from shogi import classes
-
 from .move import move_check_2
 
 __all__ = [

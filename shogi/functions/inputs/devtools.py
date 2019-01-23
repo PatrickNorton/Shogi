@@ -1,10 +1,9 @@
-import curtsies
-
 from typing import Dict, List
+
+import curtsies
 
 from shogi import classes
 from shogi.functions import boardtests
-
 from .inputfns import get_input
 
 __all__ = [

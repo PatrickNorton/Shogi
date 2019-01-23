@@ -17,6 +17,7 @@ class HelpScreen(Screen):
 
     :ivar text: text of help file
     """
+
     def __init__(self, help_file="main", **kwargs):
         """Initialise instance of HelpScreen.
 

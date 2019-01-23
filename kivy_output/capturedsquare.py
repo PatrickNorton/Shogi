@@ -13,6 +13,7 @@ class CapturedSquare(Button):
     :ivar occupant: occupant of the square
     :ivar position: position within grid
     """
+
     def __init__(self, position: int, **kwargs):
         """Initialise instance of CapturedSquare.
 

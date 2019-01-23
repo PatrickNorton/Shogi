@@ -20,6 +20,7 @@ class ChessBoard(GridLayout):
     :ivar move_from: space to move from
     :ivar in_check: list of pieces checking each king
     """
+
     def __init__(self, **kwargs):
         """Initialise instance of ChessBoard.
 
@@ -29,7 +30,7 @@ class ChessBoard(GridLayout):
         super().__init__(cols=9, rows=9, **kwargs)
         # self.board: shogi.Board = shogi.Board()
         for x in range(81):
-            coordinate = shogi.AbsoluteCoord((x % 9, x//9))
+            coordinate = shogi.AbsoluteCoord((x % 9, x // 9))
             square = BoardSquare(coordinate, board[coordinate])
             self.add_widget(square)
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {

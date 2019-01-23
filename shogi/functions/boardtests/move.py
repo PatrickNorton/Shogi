@@ -2,7 +2,6 @@ from itertools import product
 from typing import Tuple, List
 
 from shogi import classes
-
 from .goodinput import input_piece
 
 __all__ = [

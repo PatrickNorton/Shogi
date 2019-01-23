@@ -1,10 +1,9 @@
 import json
-import curtsies
-
 from typing import List, Dict, Union
 
-from shogi import classes
+import curtsies
 
+from shogi import classes
 from .findmoves import test_spaces
 from .inputfns import get_input
 from .printers import display_file

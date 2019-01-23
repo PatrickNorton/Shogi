@@ -15,6 +15,7 @@ class BoardSquare(Button):
     :ivar board_position: position within board
     :ivar is_highlighted: whether ot not piece is highlighted
     """
+
     def __init__(
             self,
             position: shogi.AbsoluteCoord,

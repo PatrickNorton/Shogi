@@ -1,9 +1,9 @@
+from typing import List
+
 import curtsies
 
 from shogi import classes
 from shogi.functions import boardtests
-from typing import List
-
 from .help import help_desk
 from .inputfns import get_input, binary_input
 
@@ -15,11 +15,11 @@ __all__ = [
 
 
 def other_conditions(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow,
-    to_display: List[str],
-    current_board: classes.Board,
-    entered_text: str
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        to_display: List[str],
+        current_board: classes.Board,
+        entered_text: str
 ) -> bool:
     """Check if string is an action, then do the action.
 
@@ -50,10 +50,10 @@ def other_conditions(
 
 
 def drop_piece(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow,
-    to_display: List[str],
-    current_board: classes.Board
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        to_display: List[str],
+        current_board: classes.Board
 ):
     """Prompt to add a piece to the board.
 
@@ -90,9 +90,9 @@ def drop_piece(
 
 
 def may_quit(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow,
-    to_display: List[str]
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        to_display: List[str]
 ):
     """Check if player really wants to quit.
 

@@ -9,10 +9,10 @@ __all__ = [
 
 
 def test_spaces(
-    current_board: classes.Board,
-    piece_location: classes.AbsoluteCoord,
-    space_list: List[classes.RelativeCoord],
-    checking_spaces: List[classes.AbsoluteCoord] = None
+        current_board: classes.Board,
+        piece_location: classes.AbsoluteCoord,
+        space_list: List[classes.RelativeCoord],
+        checking_spaces: List[classes.AbsoluteCoord] = None
 ) -> List[classes.AbsoluteCoord]:
     """Test which spaces in a list are valid moves.
 
@@ -52,11 +52,11 @@ def test_spaces(
                 checking_spaces = []
             for space in checking_spaces:
                 cannot_move = boardtests.move_check_2(
-                        current_board,
-                        (space, king_location),
-                        ignore_location=piece_location,
-                        act_full=absolute_location
-                    )
+                    current_board,
+                    (space, king_location),
+                    ignore_location=piece_location,
+                    act_full=absolute_location
+                )
                 if not cannot_move:
                     break
             else:
