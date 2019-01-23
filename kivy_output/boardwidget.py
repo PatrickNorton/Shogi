@@ -35,9 +35,6 @@ class ChessBoard(GridLayout):
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
             x.board_position: x for x in self.children
         }
-        # self.make_move: bool = False
-        # self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
-        # self.in_check: List[List[shogi.AbsoluteCoord]] = [[], []]
 
     def space_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Light or make move when a specific space is pressed.

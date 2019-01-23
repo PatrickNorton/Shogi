@@ -22,7 +22,17 @@ Config.write()
 
 
 class ShogiBoard(App):
+    """Main class for the entire app.
+
+    This app implicitly loads the ShogiBoard.kv file.
+
+    :ivar self.board: current game board
+    """
     def __init__(self, **kwargs):
+        """Initialise instance of ShogiBoard.
+
+        :param kwargs: Kivy keyword arguments
+        """
         super().__init__(**kwargs)
         self.board = shogi.Board()
         Window.bind(on_keyboard=self._on_keyboard)
@@ -33,6 +43,10 @@ class ShogiBoard(App):
         return get_color_from_hex("#1e2022")
 
     def build(self):
+        """Build and run the application.
+
+        :return: ScreenManager for the entire app
+        """
         sm = ScreenManager()
         sm.add_widget(MainScreen(name="main"))
         sm.add_widget(HelpScreen(name='help'))
@@ -46,6 +60,17 @@ class ShogiBoard(App):
             code_point: str,
             modifiers: List[str]
     ):
+        """Keyboard binding code.
+
+        This runs the keyboard shortcuts necessary to make the app
+        run properly.
+
+        :param _instance: instance of window, unused and unknown
+        :param key: integer of key pressed
+        :param _scan_code: scanned code, unused
+        :param code_point: text of pressed key
+        :param modifiers: list of modifiers pressed in conjunction
+        """
         is_meta_modifier = (modifiers == ['meta'])
         is_help_screen = isinstance(self.root.current_screen, HelpScreen)
         if modifiers:

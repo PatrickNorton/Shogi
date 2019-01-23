@@ -85,7 +85,7 @@ class AppCore(Widget):
                 self.to_promote = True
                 self.cleanup((current, to), is_a_capture)
             else:
-                pops = PromotionWindow(to_highlight=to, caller=self)
+                pops = PromotionWindow(caller=self)
                 pops.bind(
                     on_dismiss=lambda x: self.cleanup(
                         (current, to),
@@ -255,6 +255,13 @@ class AppCore(Widget):
             is_a_promote: Optional[bool] = None,
             is_a_drop: bool = False
     ):
+        """Update the game log to add new move.
+
+        :param move: move made
+        :param is_a_capture: if the move involved a capture
+        :param is_a_promote: if the move involved a promotion
+        :param is_a_drop: if the move was a drop
+        """
         if not self.game_log or len(self.game_log[-1]) == 2:
             self.game_log.append([])
         to_log = shogi.to_notation(
@@ -265,7 +272,6 @@ class AppCore(Widget):
             is_promote=is_a_promote
         )
         self.game_log[-1].append(to_log)
-        print(self.game_log)
 
     # Child pressed methods
     def captured_press(self, piece: shogi.Piece, is_highlighted: bool):

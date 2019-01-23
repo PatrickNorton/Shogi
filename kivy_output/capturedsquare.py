@@ -39,6 +39,7 @@ class CapturedSquare(Button):
         self.occupant = shogi.NoPiece()
 
     def on_press(self):
+        """Captured square was pressed."""
         if self.occupant:
             if self.is_highlighted:
                 self.un_light()
