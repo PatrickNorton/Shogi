@@ -47,3 +47,7 @@ class HelpScreen(Screen):
 
     def focus_input(self):
         self.ids['input'].focus = True
+
+
+class HelpMenuScreen(Screen):
+    pass

@@ -318,5 +318,5 @@ class AppCore(Widget):
         return self.parent.ids['board']
 
     @property
-    def board_spaces(self):
+    def board_spaces(self) -> dict:
         return self.main_board.children_dict
