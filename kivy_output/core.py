@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
@@ -34,7 +34,7 @@ class AppCore(Widget):
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
         self.make_move: bool = False
         self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
-        self.in_check: Dict[shogi.Color, List[shogi.AbsoluteCoord]] = {
+        self.in_check: Dict[shogi.Color, Set[shogi.AbsoluteCoord]] = {
             shogi.Color(0): [],
             shogi.Color(1): []
         }
