@@ -69,6 +69,10 @@ class Color:
 
     def __hash__(self): return hash((self.int, self.name))
 
+    @staticmethod
+    def valid() -> Generator['Color', None, None]:
+        yield from _valid_colors
+
     @property
     def other(self) -> 'Color':
         """Color: Opposite color from first"""
@@ -164,7 +168,7 @@ class Moves(collections.abc.Sequence):
         self.name: str = piece_name
         self.color: Color = clr
         self.demoted: Dict[Direction, str] = {
-            Direction(x): move_demoted[x] for x in range(8)
+            d: move_demoted[x] for x, d in enumerate(Direction.valid())
         }
         self.demoted[Direction(8)] = '-'
         move_promoted = move_list[1]
@@ -172,7 +176,9 @@ class Moves(collections.abc.Sequence):
         if move_promoted is None:
             self.promoted = None
         else:
-            self.promoted = {Direction(x): move_promoted[x] for x in range(8)}
+            self.promoted = {
+                d: move_promoted[x] for x, d in enumerate(Direction.valid())
+            }
             self.promoted[Direction(8)] = '-'
         self.moves: tuple = (self.demoted, self.promoted)
         self.is_promoted: bool = promoted
@@ -284,3 +290,5 @@ _move_functions: Dict[str, Callable] = {
     '+': _plus,
     'T': _t_move,
 }
+
+_valid_colors = tuple(Color(x) for x in range(2))

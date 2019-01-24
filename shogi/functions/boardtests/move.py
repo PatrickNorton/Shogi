@@ -126,9 +126,8 @@ def king_check(
     """
 
     old_location, new_location = coordinates
-    direction_set = (classes.Direction(x) for x in range(8))
     old_occupant = current_board[old_location]
-    for direction, distance in product(direction_set, range(9)):
+    for direction, distance in product(classes.Direction.valid(), range(9)):
         distance = classes.AbsoluteCoord(distance)
         try:
             current_test = new_location + direction * distance

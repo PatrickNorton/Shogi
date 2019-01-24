@@ -151,8 +151,7 @@ def list_moves(
     current_pieces = current_board.current_pieces
     for location, piece in current_pieces.items():
         move_list = []
-        direction_list = (classes.Direction(x) for x in range(8))
-        for x in direction_list:
+        for x in classes.Direction.valid():
             to_list = piece.valid_spaces(x)
             to_list = test_spaces(current_board, location, to_list)
             move_list += to_list

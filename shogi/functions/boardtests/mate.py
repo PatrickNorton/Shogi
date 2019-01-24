@@ -22,8 +22,7 @@ def mate_check(
     :return: if king is in checkmate
     """
 
-    king_moves = (classes.Direction(x) for x in range(8))
-    for king_move_tested in king_moves:
+    for king_move_tested in classes.Direction.valid():
         new_location = king_move_tested + king_location
         if tuple(new_location) in current_board.iterate():
             cannot_move = move_check_2(current_board, (king_location, new_location))

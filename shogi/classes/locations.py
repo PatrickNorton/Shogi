@@ -115,6 +115,18 @@ class RelativeCoord(BaseCoord):
     def __repr__(self):
         return f"RelativeCoord({self})"
 
+    @staticmethod
+    def same_xy():
+        yield from _same_xy_rel
+
+    @staticmethod
+    def positive_xy():
+        yield from _pos_xy_rel
+
+    @staticmethod
+    def negative_xy():
+        return _neg_xy_rel
+
 
 class AbsoluteCoord(BaseCoord):
     """A set of (x, y) coordinates.
@@ -187,6 +199,10 @@ class AbsoluteCoord(BaseCoord):
     def __repr__(self):
         return f"AbsoluteCoord('{self}')"
 
+    @staticmethod
+    def same_xy():
+        yield from _same_xy_abs
+
 
 class Direction(RelativeCoord):
     """A direction in which a piece moves.
@@ -242,6 +258,10 @@ class Direction(RelativeCoord):
     def __hash__(self):
         return hash(self.tup)
 
+    @staticmethod
+    def valid():
+        yield from _valid_dir
+
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.
 
@@ -296,3 +316,12 @@ class NullCoord(Direction):
     def __hash__(self): return hash(self.tup)
 
     def __repr__(self): return "NullCoord()"
+
+
+_same_xy_rel = tuple(RelativeCoord(x) for x in range(-8, 9))
+_pos_xy_rel = tuple(RelativeCoord(x) for x in range(9))
+_neg_xy_rel = tuple(RelativeCoord(x) for x in range(0, -9, -1))
+
+_same_xy_abs = tuple(AbsoluteCoord(x) for x in range(9))
+
+_valid_dir = tuple(Direction(x) for x in range(8))

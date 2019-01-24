@@ -29,8 +29,8 @@ class ChessBoard(GridLayout):
         board = shogi.Board()
         super().__init__(cols=9, rows=9, **kwargs)
         # self.board: shogi.Board = shogi.Board()
-        for x in range(81):
-            coordinate = shogi.AbsoluteCoord((x % 9, x // 9))
+        for x, y in board.iterate():
+            coordinate = shogi.AbsoluteCoord((x, y))
             square = BoardSquare(coordinate, board[coordinate])
             self.add_widget(square)
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {

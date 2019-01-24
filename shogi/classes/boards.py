@@ -44,14 +44,18 @@ class Board(collections.abc.Sequence):
 
         self.pieces: Dict[AbsoluteCoord, Piece]
         if pieces is None:
-            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()}
+            self.pieces = {
+                AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
+            }
         else:
-            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()}
+            self.pieces = {
+                AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
+            }
         self.inverse_pieces = {v: x for x, v in self.pieces.items()}
         self.captured: Dict[Color, List[Piece]]
-        self.captured = {Color(x): [] for x in range(2)}
+        self.captured = {x: [] for x in Color.valid()}
         self.by_color: Dict[Color, Dict[AbsoluteCoord, Piece]]
-        self.by_color = {Color(0): {}, Color(1): {}}
+        self.by_color = {x: {} for x in Color.valid()}
         self.current_player = Color(0)
         for x in range(2):
             x_color = Color(x)
@@ -86,7 +90,7 @@ class Board(collections.abc.Sequence):
     def iterate() -> Generator:
         """Yield from all possible board positions."""
 
-        yield from ((x, y) for x in range(9) for y in range(9))
+        yield from ((x, y) for y in range(9) for x in range(9))
 
     def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
