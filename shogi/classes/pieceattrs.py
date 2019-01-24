@@ -268,7 +268,7 @@ def _hyphen(_move: RelativeCoord) -> bool:
 
 
 def _one(move: RelativeCoord) -> bool:
-    return all(x in range(2) for x in abs(move))
+    return max(abs(move)) == 1
 
 
 def _plus(move: RelativeCoord) -> bool:

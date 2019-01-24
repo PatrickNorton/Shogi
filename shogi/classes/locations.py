@@ -87,7 +87,7 @@ class RelativeCoord(BaseCoord):
                 'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
-        elif isinstance(xy, int) and xy in range(-9, 9):
+        elif isinstance(xy, int) and xy in range(-8, 9):
             super().__init__((xy, xy))
         elif all(x in range(-9, 9) for x in xy):
             super().__init__(tuple(xy))
@@ -289,7 +289,7 @@ class NullCoord(Direction):
     :ivar y: the y-coordinate (None)
     :ivar tup: the (x, y) tuple (None, None)
     :ivar x_str: the x part of board notation ('-')
-    :ivar y_str: the y part ot board notation ('-')
+    :ivar y_str: the y part of board notation ('-')
     """
 
     def __init__(self):

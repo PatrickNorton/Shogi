@@ -3,8 +3,8 @@ from typing import Dict, List, Optional, Set, Tuple
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-from .inputs import PromotionWindow, MateWindow
 from .boardsquare import BoardSquare
+from .inputs import PromotionWindow, MateWindow
 
 import shogi
 

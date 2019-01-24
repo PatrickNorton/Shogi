@@ -1,8 +1,10 @@
 from typing import List
+from pathlib import Path
 
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
+from kivy.resources import resource_add_path
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
 
@@ -18,6 +20,7 @@ __all__ = [
 # for the interactive help prompt
 Config.set('kivy', 'exit_on_escape', '0')
 Config.write()
+resource_add_path(Path(__file__).parent.parent / "images")
 
 
 class ShogiBoard(App):

@@ -35,8 +35,8 @@
 
 <BoardSquare>:
     on_press: self.parent.space_pressed(self.board_position)
-    background_normal: "./images/Light square.jpg"
-    background_down: "./images/Light square.jpg"
+    background_normal: "Light square.jpg"
+    #background_down: app.get_background_image("Light square.jpg")
     canvas.before:
         Color:
             rgba: .5, .5, .5, 1
@@ -44,7 +44,7 @@
             width: 2
             rectangle: self.x, self.y, self.width, self.height
 #    Image:
-#        source: "./images/Dark square.jpg"
+#        source: "./Dark square.jpg"
 #        y: self.parent.y + self.parent.height / 4
 #        x: self.parent.x + self.parent.width / 4
 #        height: self.parent.height / 2
@@ -52,8 +52,8 @@
 
 
 <CapturedSquare>:
-    background_normal: "./images/Light square.jpg"
-    background_down: "./images/Light square.jpg"
+    background_normal: "Light square.jpg"
+    background_down: "Light square.jpg"
     background_color: 0, 0, 0, 0
     canvas.before:
         Color:
@@ -119,8 +119,8 @@
 <HelpText>:
     size_hint: None, None
     multiline: False
-    background_normal: "./images/Light square.jpg"
-    background_active: "./images/Light square.jpg"
+    background_normal: "Light square.jpg"
+    background_active: "Light square.jpg"
     foreground_color: 1, 1, 1, 1
 
 
