@@ -107,14 +107,14 @@ class Board(collections.abc.Sequence):
         del self.by_color[self[new].color][AbsoluteCoord(current)]
         self.inverse_pieces[self[new]] = new
 
-    def get_piece(self, location: Piece) -> AbsoluteCoord:
+    def get_piece(self, piece_name: Piece) -> AbsoluteCoord:
         """Return a location based on piece type.
 
-        :param location: piece type to check
+        :param piece_name: piece type to check
         :return: location of piece
         """
 
-        return self.inverse_pieces[location]
+        return self.inverse_pieces[piece_name]
 
     def capture(self, new: AbsoluteCoord):
         """Capture a piece at a location.

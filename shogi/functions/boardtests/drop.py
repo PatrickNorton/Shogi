@@ -6,7 +6,8 @@ from .mate import mate_check
 from .move import move_check_2
 
 __all__ = [
-    "drop_check"
+    "drop_check",
+    "drop_check_check",
 ]
 
 

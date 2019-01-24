@@ -141,7 +141,7 @@ class AppCore(Widget):
         if is_a_capture:
             self.update_captured(self.board)
 
-    def put_in_play(self, space_to: shogi.AbsoluteCoord):
+    def drop_piece(self, space_to: shogi.AbsoluteCoord):
         """Put a specific piece in play.
 
         :param space_to: space to drop piece at
@@ -158,6 +158,14 @@ class AppCore(Widget):
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
+            enemy_king = shogi.Piece('k', self.board.current_player.other)
+            king_location = self.board.get_piece(enemy_king)
+            cannot_move = shogi.move_check_2(
+                self.board,
+                (space_to, king_location)
+            )
+            if not cannot_move:
+                self.in_check[self.board.current_player.other] = {space_to}
             self.un_light_all()
             self.update_game_log(
                 (None, space_to),
@@ -297,7 +305,7 @@ class AppCore(Widget):
             if self.move_from:
                 self.make_moves(self.move_from, coordinate)
             else:
-                self.put_in_play(coordinate)
+                self.drop_piece(coordinate)
         else:
             self.light_moves(coordinate)
 
