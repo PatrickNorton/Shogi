@@ -36,7 +36,8 @@ def move_check_2(
         coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
         ignore_location: classes.AbsoluteCoord = None,
         act_full: classes.AbsoluteCoord = None,
-        piece_pretend: classes.Piece = None
+        piece_pretend: classes.Piece = None,
+        act_full_pretend: classes.Piece = None
 ) -> int:
     """Check if piece can be moved between locations.
 
@@ -45,6 +46,7 @@ def move_check_2(
     :param ignore_location: location to ignore for obstruction check
     :param act_full: location to pretend is full
     :param piece_pretend: piece to pretend is moving
+    :param act_full_pretend: piece to pretend is in the act_full loc
     :return: error code
     """
 
@@ -53,6 +55,10 @@ def move_check_2(
         piece = current_board[current]
     else:
         piece = piece_pretend
+    if act_full_pretend is not None and act_full == new:
+        new_loc_piece = act_full_pretend
+    else:
+        new_loc_piece = current_board[new]
     move = new - current
     move_direction = classes.Direction(move)
     move_variable = piece.moves[move_direction]
@@ -60,13 +66,13 @@ def move_check_2(
         return 3
     elif not piece.can_move(move):
         return 1
-    elif current_board[new].same_color(current_board[current]):
+    elif new_loc_piece.same_color(piece):
         if new != ignore_location:
             return 4
     elif move_variable == 'T':
         pass
     elif piece.has_type('k'):
-        king_check(current_board, (current, new))
+        return king_check(current_board, (current, new))
     else:
         return obstruction_check(
             current_board,
@@ -129,11 +135,15 @@ def king_check(
         except (ValueError, IndexError):
             continue
         else:
+            if isinstance(current_test, classes.RelativeCoord):
+                continue
             if current_board[current_test].same_color(old_occupant):
-                return 4
+                continue
             cannot_move = move_check_2(
                 current_board,
-                (current_test, new_location)
+                (current_test, new_location),
+                ignore_location=old_location,
+                act_full=new_location,
             )
             if cannot_move == 2:
                 break
@@ -148,16 +158,21 @@ def king_check(
         except (ValueError, IndexError):
             continue
         else:
+            if isinstance(absolute_position, classes.RelativeCoord):
+                continue
             if current_board[absolute_position].same_color(old_occupant):
-                return 4
+                continue
             cannot_move = move_check_2(
                 current_board,
-                (absolute_position, new_location)
+                (absolute_position, new_location),
+                ignore_location=old_location,
+                act_full=new_location,
             )
             if cannot_move:
                 continue
             else:
                 return 6
+    return 0
 
 
 def into_check_check(
@@ -194,7 +209,7 @@ def into_check_check(
             current_board,
             (x, king_location),
             ignore_location=old_location,
-            act_full=new_location
+            act_full=new_location,
         )
         if not cannot_move:
             places_attacking.append(x)

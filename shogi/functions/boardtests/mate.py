@@ -35,7 +35,7 @@ def mate_check(
         return True
     check_location = places_attacking.pop()
     relative_position = classes.RelativeCoord(king_location - check_location)
-    has_pieces = current_board.captured[int(current_board.current_player)]
+    has_pieces = current_board.captured[current_board.current_player]
     not_a_knight = str(current_board[check_location].type) != 'n'
     has_space = not all(x in (-1, 0, 1) for x in relative_position)
     if has_pieces and not_a_knight and has_space:

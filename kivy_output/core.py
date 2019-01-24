@@ -9,7 +9,7 @@ from .boardsquare import BoardSquare
 import shogi
 
 __all__ = [
-    "AppCore"
+    "AppCore",
 ]
 
 

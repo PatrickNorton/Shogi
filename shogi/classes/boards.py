@@ -10,7 +10,7 @@ from .exceptions import DemotedException
 from .rows import Row
 
 __all__ = [
-    "Board"
+    "Board",
 ]
 
 
