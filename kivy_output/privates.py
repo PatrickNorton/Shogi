@@ -15,7 +15,7 @@ def _open_help(file_name: str) -> IO[str]:
     """
 
     current_dir = pathlib.Path(__file__).parent.parent
-    piece_path = current_dir / 'shogi' / ' helpfiles' / 'pieces' / file_name
+    piece_path = current_dir / 'shogi' / 'helpfiles' / 'pieces' / file_name
     if piece_path.exists():
         return open(piece_path)
     else:

@@ -53,30 +53,16 @@ class AppCore(Widget):
         :param current: location of piece
         :param to: location to move piece to
         """
-        cannot_move = shogi.move_check_2(self.board, (current, to))
-        if cannot_move:
-            return
-        king_location, checking_own = shogi.check_check(
-            self.board,
-            (current, to),
-            self.board.current_player,
-            break_early=True,
-            before_move=True
-        )
-        if checking_own:
-            return
         checking_spaces = [
             x for x in self.in_check[self.board.current_player] if x != to
         ]
-        for space in checking_spaces:
-            cannot_move = shogi.move_check_2(
-                self.board,
-                (space, king_location),
-                ignore_location=current,
-                act_full=to
-            )
-            if not cannot_move:
-                return
+        cannot_move = shogi.check_move(
+            self.board,
+            (current, to),
+            checking_spaces=checking_spaces
+        )
+        if cannot_move:
+            return
         is_a_capture = bool(self.board[to])
         self.board.move(current, to)
         self.update_board(current, to)
