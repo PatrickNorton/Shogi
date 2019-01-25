@@ -14,10 +14,12 @@ def to_notation(
         move: Tuple[Optional[classes.AbsoluteCoord], classes.AbsoluteCoord],
         is_drop: bool = False,
         is_capture: bool = False,
-        is_promote: Optional[bool] = None
+        is_promote: Optional[bool] = None,
+        dropped_piece: Optional[classes.Piece] = classes.NoPiece(),
+        before_move: bool = False
 ) -> str:
     old_location, new_location = move
-    piece = current_board[new_location]
+    piece = current_board[new_location if not before_move else old_location]
     if is_promote:
         piece_notation = str(piece)[0].lower()
     elif not str(piece)[0].isupper():
@@ -26,9 +28,13 @@ def to_notation(
         piece_notation = f"+{str(piece)}"
     dash = 'x' if is_capture else '-'
     if is_drop:
-        if isinstance(piece, classes.NoPiece):
-            raise ValueError
-        notation = f"{piece_notation}*{new_location}"
+        if dropped_piece:
+            dropped_notation = str(dropped_piece)[0]
+            notation = f"{dropped_notation}*{new_location}"
+        else:
+            if isinstance(piece, classes.NoPiece):
+                raise ValueError
+            notation = f"{piece_notation}*{new_location}"
     else:
         other_pieces = piece_can_move(current_board, piece, new_location)
         notation = piece_notation
