@@ -1,7 +1,7 @@
-import curtsies
-
-from curtsies import events
 from typing import List
+
+import curtsies
+from curtsies import events
 
 __all__ = [
     "get_input",
@@ -10,9 +10,9 @@ __all__ = [
 
 
 def get_input(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow,
-    to_print: List[str]
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        to_print: List[str]
 ) -> str:
     """Get player input and return a string.
 
@@ -52,9 +52,9 @@ def get_input(
 
 
 def binary_input(
-    input_gen: curtsies.Input,
-    window: curtsies.FullscreenWindow,
-    to_print: List[str]
+        input_gen: curtsies.Input,
+        window: curtsies.FullscreenWindow,
+        to_print: List[str]
 ) -> bool:
     """Get binary (y/n) input from user.
 

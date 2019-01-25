@@ -1,29 +1,29 @@
 {
-    "-": {
-        "autopromote": 0
-    },
-    "p":{
-        "autopromote": 1
-    },
-    "l":{
-        "autopromote": 1
-    },
-    "n":{
-        "autopromote": 2
-    },
-    "s":{
-        "autopromote": 0
-    },
-    "g":{
-        "autopromote": 0
-    },
-    "b":{
-        "autopromote": 0
-    },
-    "r":{
-        "autopromote": 0
-    },
-    "k":{
-        "autopromote": 0
-    }
+  "-": {
+    "autopromote": 0
+  },
+  "p":{
+    "autopromote": 1
+  },
+  "l":{
+    "autopromote": 1
+  },
+  "n":{
+    "autopromote": 2
+  },
+  "s":{
+    "autopromote": 0
+  },
+  "g":{
+    "autopromote": 0
+  },
+  "b":{
+    "autopromote": 0
+  },
+  "r":{
+    "autopromote": 0
+  },
+  "k":{
+    "autopromote": 0
+  }
 }

@@ -1,10 +1,9 @@
 import json
-import curtsies
-
 from typing import List, Dict, Union
 
-from shogi import classes
+import curtsies
 
+from shogi import classes
 from .findmoves import test_spaces
 from .inputfns import get_input
 from .printers import display_file
@@ -49,7 +48,7 @@ def help_desk(
                 file_text = f.read()
             prompt = 'Press Esc to return to game'
             display_file(input_gen, window, prompt, file_text)
-            raise classes.IllegalMove(0)
+            return
         except FileNotFoundError:
             invalid_prompt = (
                 'Invalid help command. Type "help" for command list.'
@@ -86,7 +85,6 @@ def help_desk(
                 with _open_help("helpcommands.txt") as f:
                     commands = f.read()
                 print(commands)
-    raise classes.IllegalMove(0)
 
 
 def letter_to_name(file_name: str) -> str:
@@ -153,8 +151,7 @@ def list_moves(
     current_pieces = current_board.current_pieces
     for location, piece in current_pieces.items():
         move_list = []
-        direction_list = (classes.Direction(x) for x in range(8))
-        for x in direction_list:
+        for x in classes.Direction.valid():
             to_list = piece.valid_spaces(x)
             to_list = test_spaces(current_board, location, to_list)
             move_list += to_list

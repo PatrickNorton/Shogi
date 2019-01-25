@@ -1,7 +1,6 @@
-from typing import List, Tuple
+from typing import Tuple, Set
 
 from shogi import classes
-
 from .move import move_check_2
 
 __all__ = [
@@ -16,7 +15,7 @@ def check_check(
         king_color: classes.Color,
         break_early: bool = False,
         before_move: bool = False,
-) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
+) -> Tuple[classes.AbsoluteCoord, Set[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
     :param current_board: current game board
@@ -28,48 +27,38 @@ def check_check(
     """
 
     old_location, new_location = coordinates
-    places_attacking: List[classes.AbsoluteCoord] = []
+    places_attacking: Set[classes.AbsoluteCoord] = set()
     king_tested: classes.Piece = classes.Piece('k', king_color)
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
 
-    try:
-        if before_move:
-            kings_enemy = not current_board[old_location].is_color(king_color)
-            if kings_enemy:
-                move_check_2(
-                    current_board,
-                    (new_location, king_location),
-                    ignore_location=old_location,
-                    act_full=new_location
-                )
-            else:
-                raise classes.IllegalMove(4)
-        else:
-            move_check_2(current_board, (new_location, king_location))
-    except classes.IllegalMove:
-        places_attacking = check_check_2(
-            current_board,
-            (old_location, new_location),
-            king_location,
-            places_attacking,
-            break_early,
-            before_move
-        )
-    else:
-        if break_early:
-            places_attacking.append(new_location)
-            return king_location, places_attacking
-        else:
-            places_attacking.append(new_location)
-            places_attacking = check_check_2(
+    if before_move:
+        kings_enemy = not current_board[old_location].is_color(king_color)
+        if kings_enemy:
+            cannot_move = move_check_2(
                 current_board,
-                (old_location, new_location),
-                king_location,
-                places_attacking,
-                break_early,
-                before_move
+                (new_location, king_location),
+                ignore_location=old_location,
+                act_full=new_location
             )
+        else:
+            cannot_move = 4
+    else:
+        cannot_move = move_check_2(
+            current_board,
+            (new_location, king_location)
+        )
+    if not cannot_move:
+        places_attacking.add(new_location)
+        if break_early:
             return king_location, places_attacking
+    places_attacking = check_check_2(
+        current_board,
+        (old_location, new_location),
+        king_location,
+        places_attacking,
+        break_early=break_early,
+        before_move=before_move
+    )
     return king_location, places_attacking
 
 
@@ -77,10 +66,10 @@ def check_check_2(
         current_board: classes.Board,
         coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
         king_location: classes.AbsoluteCoord,
-        places_attacking: List[classes.AbsoluteCoord],
+        places_attacking: Set[classes.AbsoluteCoord],
         break_early: bool = False,
         before_move: bool = False
-) -> List[classes.AbsoluteCoord]:
+) -> Set[classes.AbsoluteCoord]:
     """Test if non-moved pieces can check king.
 
     :param current_board: current board
@@ -103,21 +92,20 @@ def check_check_2(
     current_pieces = current_board.player_pieces(attacking_color)
     pieces = (x for x in direction_of_attack if x in current_pieces)
     for x in pieces:
-        try:
-            if before_move:
-                move_check_2(
-                    current_board,
-                    (x, king_location),
-                    ignore_location=old_location,
-                    act_full=new_location
-                )
-            else:
-                move_check_2(current_board, (x, king_location))
-        except classes.IllegalMove:
+        if before_move:
+            cannot_move = move_check_2(
+                current_board,
+                (x, king_location),
+                ignore_location=old_location,
+                act_full=new_location
+            )
+        else:
+            cannot_move = move_check_2(current_board, (x, king_location))
+        if cannot_move:
             continue
         else:
-            places_attacking.append(x)
-            if break_early or len(places_attacking) > 1:
+            places_attacking.add(x)
+            if break_early:
                 return places_attacking
             else:
                 continue

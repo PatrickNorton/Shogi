@@ -1,34 +1,42 @@
 <MainScreen>:
+
     AppCore:
+        id: core
+        canvas.before:
+            Color:
+                rgba: app.get_background_color()
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-<AppCore>:
-    canvas.before:
-        Color:
-            rgba: app.get_background_color()
-        Rectangle:
-            pos: self.pos
-            size: self.size
+        ChessBoard:
+            id: board
+            size: root.width/2, root.width/2
+            pos: 0, root.height-root.width/2
 
-    ChessBoard:
-        id: board
-        size: root.width/2, root.width/2
-        pos: 0, root.height-root.width/2
+        CapturedGrid:
+            id: 0
+            size: root.width*2/9, root.width*1/9
+            pos: 0, root.height-23*root.width/36
 
-    CapturedGrid:
-        id: 0
-        size: root.width*2/9, root.width*1/9
-        pos: 0, root.height-23*root.width/36
+        CapturedGrid:
+            id: 1
+            size: root.width*2/9, root.width*1/9
+            pos: root.width*5/18, root.height-23*root.width/36
 
-    CapturedGrid:
-        id: 1
-        size: root.width*2/9, root.width*1/9
-        pos: root.width*5/18, root.height-23*root.width/36
+        Button:
+            size: root.width/25, root.width/25
+            pos: root.width-root.width/25, root.height-root.width/25
+            text: 'H'
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'help'
 
 
 <BoardSquare>:
     on_press: self.parent.space_pressed(self.board_position)
-    background_normal: "./images/Light square.jpg"
-    background_down: "./images/Light square.jpg"
+    background_normal: "Light square.jpg"
+    #background_down: app.get_background_image("Light square.jpg")
     canvas.before:
         Color:
             rgba: .5, .5, .5, 1
@@ -36,7 +44,7 @@
             width: 2
             rectangle: self.x, self.y, self.width, self.height
 #    Image:
-#        source: "./images/Dark square.jpg"
+#        source: "./Dark square.jpg"
 #        y: self.parent.y + self.parent.height / 4
 #        x: self.parent.x + self.parent.width / 4
 #        height: self.parent.height / 2
@@ -44,8 +52,8 @@
 
 
 <CapturedSquare>:
-    background_normal: "./images/Light square.jpg"
-    background_down: "./images/Light square.jpg"
+    background_normal: "Light square.jpg"
+    background_down: "Light square.jpg"
     background_color: 0, 0, 0, 0
     canvas.before:
         Color:
@@ -54,11 +62,13 @@
             width: 2
             rectangle: self.x, self.y, self.width, self.height
 
+
 <PromotionWindow>:
     size_hint: None, None
     size: 400, 400
     auto_dismiss: False
     title: "Promote piece?"
+
     GridLayout:
         size_hint_y: None
         height: root.height/3
@@ -71,3 +81,80 @@
         Button:
             text: "No"
             on_press: root.child_pressed(0)
+
+
+<MateWindow>:
+    title: "Checkmate!"
+
+
+<HelpScreen>:
+
+    Widget:
+        BoxLayout:
+            orientation: 'vertical'
+            size: root.width, root.height
+
+            HelpRst:
+                id: rst
+                color: app.get_background_color()
+                text: root.text
+
+            HelpText:
+                id: input
+                size_hint: None, None
+                size: root.width, self.minimum_height
+                on_text_validate:
+                    root.text_entered(self.text)
+
+        Button:
+            id: back
+            size: root.width/25, root.width/25
+            pos: root.width-root.width/25, root.height-root.width/25
+            text: '<-'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'main'
+
+
+<HelpText>:
+    size_hint: None, None
+    multiline: False
+    background_normal: "Light square.jpg"
+    background_active: "Light square.jpg"
+    foreground_color: 1, 1, 1, 1
+
+
+<HelpMenuScreen>:
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size: root.width, root.height
+
+
+<RstLiteralBlock>:
+    cols: 1
+    content: content
+    height: content.texture_size[1] + dp(20)
+    canvas:
+        Color:
+            rgb: parse_color('#eeeeee')
+        Rectangle:
+            pos: self.x - 1, self.y - 1
+            size: self.width + 2, self.height + 2
+        Color:
+            rgb: parse_color('#1e2022')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: content
+        markup: True
+        valign: 'top'
+        size: self.texture_size
+        text_size: self.width - 20, None
+        font_name: 'data/fonts/RobotoMono-Regular.ttf'
+        color: (0, 0, 0, 1)
+
+
+<RstTable>:
+    size_hint: None, None

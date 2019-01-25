@@ -13,6 +13,7 @@ class CapturedSquare(Button):
     :ivar occupant: occupant of the square
     :ivar position: position within grid
     """
+
     def __init__(self, position: int, **kwargs):
         """Initialise instance of CapturedSquare.
 
@@ -39,6 +40,7 @@ class CapturedSquare(Button):
         self.occupant = shogi.NoPiece()
 
     def on_press(self):
+        """Captured square was pressed."""
         if self.occupant:
             if self.is_highlighted:
                 self.un_light()

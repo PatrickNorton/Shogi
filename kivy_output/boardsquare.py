@@ -1,6 +1,6 @@
 from kivy.uix.button import Button
 
-from typing import List
+from typing import Iterable, Set
 
 import shogi
 
@@ -15,6 +15,7 @@ class BoardSquare(Button):
     :ivar board_position: position within board
     :ivar is_highlighted: whether ot not piece is highlighted
     """
+
     def __init__(
             self,
             position: shogi.AbsoluteCoord,
@@ -59,8 +60,8 @@ class BoardSquare(Button):
     def valid_moves(
             self,
             current_board: shogi.Board,
-            checking_spaces: List[shogi.AbsoluteCoord]
-    ) -> List[shogi.AbsoluteCoord]:
+            checking_spaces: Iterable[shogi.AbsoluteCoord]
+    ) -> Set[shogi.AbsoluteCoord]:
         """Get valid moves for square, given current board.
 
         :param current_board: current board position
@@ -68,7 +69,7 @@ class BoardSquare(Button):
         :return: list of valid spaces
         """
         current_piece = current_board[self.board_position]
-        valid_spaces = []
+        valid_spaces = set()
         for dir_number in range(8):
             direction = shogi.Direction(dir_number)
             direction_spaces = current_piece.valid_spaces(direction)
@@ -78,5 +79,5 @@ class BoardSquare(Button):
                 direction_spaces,
                 checking_spaces=checking_spaces
             )
-            valid_spaces += direction_spaces
+            valid_spaces.update(direction_spaces)
         return valid_spaces

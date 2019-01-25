@@ -20,6 +20,7 @@ class ChessBoard(GridLayout):
     :ivar move_from: space to move from
     :ivar in_check: list of pieces checking each king
     """
+
     def __init__(self, **kwargs):
         """Initialise instance of ChessBoard.
 
@@ -28,16 +29,13 @@ class ChessBoard(GridLayout):
         board = shogi.Board()
         super().__init__(cols=9, rows=9, **kwargs)
         # self.board: shogi.Board = shogi.Board()
-        for x in range(81):
-            coordinate = shogi.AbsoluteCoord((x % 9, x//9))
+        for x, y in board.iterate():
+            coordinate = shogi.AbsoluteCoord((x, y))
             square = BoardSquare(coordinate, board[coordinate])
             self.add_widget(square)
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
             x.board_position: x for x in self.children
         }
-        # self.make_move: bool = False
-        # self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
-        # self.in_check: List[List[shogi.AbsoluteCoord]] = [[], []]
 
     def space_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Light or make move when a specific space is pressed.

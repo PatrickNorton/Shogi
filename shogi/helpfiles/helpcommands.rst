@@ -1,6 +1,8 @@
-Help commands:
+Help commands
+=============
+
 help
-    Brings up this window
+    Brings up main help page
 help [piece name]
     Brings up that piece's info
 help rules

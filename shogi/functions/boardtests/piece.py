@@ -8,8 +8,8 @@ __all__ = [
 
 
 def piece_check(
-    current_board: classes.Board,
-    piece_string: str
+        current_board: classes.Board,
+        piece_string: str
 ) -> classes.AbsoluteCoord:
     """Check if inputted piece is valid.
 
@@ -22,8 +22,8 @@ def piece_check(
 
     is_valid: bool = input_piece(piece_string)
     if not is_valid:
-        raise classes.IllegalMove(11)
+        raise ValueError
     piece_location = classes.AbsoluteCoord(piece_string)
     if current_board[piece_location].color != current_board.current_player:
-        raise classes.IllegalMove(5)
+        raise ValueError
     return piece_location

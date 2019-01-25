@@ -87,7 +87,7 @@ class RelativeCoord(BaseCoord):
                 'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
-        elif isinstance(xy, int) and xy in range(-9, 9):
+        elif isinstance(xy, int) and xy in range(-8, 9):
             super().__init__((xy, xy))
         elif all(x in range(-9, 9) for x in xy):
             super().__init__(tuple(xy))
@@ -114,6 +114,18 @@ class RelativeCoord(BaseCoord):
 
     def __repr__(self):
         return f"RelativeCoord({self})"
+
+    @staticmethod
+    def same_xy():
+        yield from _same_xy_rel
+
+    @staticmethod
+    def positive_xy():
+        yield from _pos_xy_rel
+
+    @staticmethod
+    def negative_xy():
+        return _neg_xy_rel
 
 
 class AbsoluteCoord(BaseCoord):
@@ -187,6 +199,10 @@ class AbsoluteCoord(BaseCoord):
     def __repr__(self):
         return f"AbsoluteCoord('{self}')"
 
+    @staticmethod
+    def same_xy():
+        yield from _same_xy_abs
+
 
 class Direction(RelativeCoord):
     """A direction in which a piece moves.
@@ -242,6 +258,10 @@ class Direction(RelativeCoord):
     def __hash__(self):
         return hash(self.tup)
 
+    @staticmethod
+    def valid():
+        yield from _valid_dir
+
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.
 
@@ -269,7 +289,7 @@ class NullCoord(Direction):
     :ivar y: the y-coordinate (None)
     :ivar tup: the (x, y) tuple (None, None)
     :ivar x_str: the x part of board notation ('-')
-    :ivar y_str: the y part ot board notation ('-')
+    :ivar y_str: the y part of board notation ('-')
     """
 
     def __init__(self):
@@ -296,3 +316,12 @@ class NullCoord(Direction):
     def __hash__(self): return hash(self.tup)
 
     def __repr__(self): return "NullCoord()"
+
+
+_same_xy_rel = tuple(RelativeCoord(x) for x in range(-8, 9))
+_pos_xy_rel = tuple(RelativeCoord(x) for x in range(9))
+_neg_xy_rel = tuple(RelativeCoord(x) for x in range(0, -9, -1))
+
+_same_xy_abs = tuple(AbsoluteCoord(x) for x in range(9))
+
+_valid_dir = tuple(Direction(x) for x in range(8))

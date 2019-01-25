@@ -126,12 +126,11 @@ class Piece:
         elif magic_var == '1':
             valid.append(RelativeCoord(direct))
         elif magic_var == 'T':
-            xy = (direct.x, 2*direct.y)
+            xy = (direct.x, 2 * direct.y)
             valid.append(RelativeCoord(xy))
         elif magic_var == '+':
-            for x in range(9):
-                x = RelativeCoord(x)
-                relative_location = RelativeCoord(x*direct)
+            for x in RelativeCoord.positive_xy():
+                relative_location = RelativeCoord(x * direct)
                 if self.can_move(relative_location):
                     valid.append(relative_location)
         return valid

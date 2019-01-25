@@ -6,11 +6,11 @@ from .information import info
 from .locations import AbsoluteCoord, NullCoord
 from .pieces import Piece, NoPiece
 from .pieceattrs import Color
-from .exceptions import DemotedException, IllegalMove
+from .exceptions import DemotedException
 from .rows import Row
 
 __all__ = [
-    "Board"
+    "Board",
 ]
 
 
@@ -44,14 +44,18 @@ class Board(collections.abc.Sequence):
 
         self.pieces: Dict[AbsoluteCoord, Piece]
         if pieces is None:
-            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()}
+            self.pieces = {
+                AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
+            }
         else:
-            self.pieces = {AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()}
+            self.pieces = {
+                AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
+            }
         self.inverse_pieces = {v: x for x, v in self.pieces.items()}
         self.captured: Dict[Color, List[Piece]]
-        self.captured = {Color(x): [] for x in range(2)}
+        self.captured = {x: [] for x in Color.valid()}
         self.by_color: Dict[Color, Dict[AbsoluteCoord, Piece]]
-        self.by_color = {Color(0): {}, Color(1): {}}
+        self.by_color = {x: {} for x in Color.valid()}
         self.current_player = Color(0)
         for x in range(2):
             x_color = Color(x)
@@ -86,7 +90,7 @@ class Board(collections.abc.Sequence):
     def iterate() -> Generator:
         """Yield from all possible board positions."""
 
-        yield from ((x, y) for x in range(9) for y in range(9))
+        yield from ((x, y) for y in range(9) for x in range(9))
 
     def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
@@ -107,14 +111,14 @@ class Board(collections.abc.Sequence):
         del self.by_color[self[new].color][AbsoluteCoord(current)]
         self.inverse_pieces[self[new]] = new
 
-    def get_piece(self, location: Piece) -> AbsoluteCoord:
+    def get_piece(self, piece_name: Piece) -> AbsoluteCoord:
         """Return a location based on piece type.
 
-        :param location: piece type to check
+        :param piece_name: piece type to check
         :return: location of piece
         """
 
-        return self.inverse_pieces[location]
+        return self.inverse_pieces[piece_name]
 
     def capture(self, new: AbsoluteCoord):
         """Capture a piece at a location.
@@ -183,12 +187,12 @@ class Board(collections.abc.Sequence):
 
         player = self.current_player
         if not isinstance(self[moved_to], NoPiece):
-            raise IllegalMove(8)
+            return 8
         if piece.has_type('p'):
             row_to_test = Row(moved_to, 0)
             for loc in row_to_test.not_original:
                 if self[loc].is_piece('p', player):
-                    raise IllegalMove(9)
+                    return 9
         self.captured[player].remove(piece)
         self.by_color[piece.color][moved_to] = piece
         self.pieces[moved_to] = piece
