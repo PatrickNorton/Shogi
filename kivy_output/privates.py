@@ -14,12 +14,12 @@ def _open_help(file_name: str) -> IO[str]:
     :return: opened help file
     """
 
-    current_directory = pathlib.Path(__file__).parent
-    piece_path = current_directory / '../shogi/helpfiles/pieces' / file_name
+    current_dir = pathlib.Path(__file__).parent.parent
+    piece_path = current_dir / 'shogi' / ' helpfiles' / 'pieces' / file_name
     if piece_path.exists():
         return open(piece_path)
     else:
-        file_path = current_directory / f'../shogi/helpfiles/' / file_name
+        file_path = current_dir / 'shogi' / 'helpfiles' / file_name
         return open(file_path)
 
 

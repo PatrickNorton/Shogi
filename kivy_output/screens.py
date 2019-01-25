@@ -1,6 +1,6 @@
-import os
-
 from kivy.uix.screenmanager import Screen
+
+from .privates import _open_help
 
 __all__ = [
     "MainScreen",
@@ -24,12 +24,8 @@ class HelpScreen(Screen):
         :param help_file: name of help file to load
         :param kwargs: Kivy keyword arguments
         """
-        script_dir = os.path.dirname(__file__)
-        file_path = os.path.join(
-            script_dir,
-            f'../shogi/helpfiles/{help_file}.rst'
-        )
-        with open(file_path) as f:
+        file_name = f"{help_file}.rst"
+        with _open_help(file_name) as f:
             self.text = f.read()
         super().__init__(**kwargs)
 
@@ -42,8 +38,12 @@ class HelpScreen(Screen):
             try:
                 self.manager.add_widget(HelpScreen(help_file=text, name=text))
             except FileNotFoundError:
-                pass  # TODO: Interactive visual menu support
-        self.manager.current = text
+                self.ids['input'].text = 'File not found'
+                # TODO: Interactive visual menu support
+            else:
+                self.manager.current = text
+        else:
+            self.manager.current = text
 
     def focus_input(self):
         self.ids['input'].focus = True
