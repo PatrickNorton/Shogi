@@ -129,3 +129,30 @@
     BoxLayout:
         orientation: 'horizontal'
         size: root.width, root.height
+
+<RstLiteralBlock>:
+    cols: 1
+    content: content
+    height: content.texture_size[1] + dp(20)
+    canvas:
+        Color:
+            rgb: parse_color('#eeeeee')
+        Rectangle:
+            pos: self.x - 1, self.y - 1
+            size: self.width + 2, self.height + 2
+        Color:
+            rgb: parse_color('#1e2022')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: content
+        markup: True
+        valign: 'top'
+        size: self.texture_size
+        text_size: self.width - 20, None
+        font_name: 'data/fonts/RobotoMono-Regular.ttf'
+        color: (0, 0, 0, 1)
+
+<RstTable>:
+    size_hint: None, None
