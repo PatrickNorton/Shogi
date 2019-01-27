@@ -1,11 +1,11 @@
-from typing import Tuple, Optional, List, Union
+from typing import List, Optional, Tuple, Union
 
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException
 )
 from .information import info
 from .locations import RelativeCoord, Direction
-from .pieceattrs import Moves, Color, PieceType
+from .pieceattrs import Color, ColorLike, Moves, PieceType, PieceTypeLike
 
 __all__ = [
     "Piece",
@@ -27,8 +27,8 @@ class Piece:
 
     def __init__(
             self,
-            typ: Union[str, PieceType],
-            clr: Union[int, str, Color]
+            typ: PieceTypeLike,
+            clr: ColorLike
     ):
         """Initialise instance of Piece.
 

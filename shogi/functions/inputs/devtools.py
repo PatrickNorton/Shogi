@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 import curtsies
 
@@ -22,7 +22,7 @@ def setup_board(
     :return: newly set-up board
     """
 
-    piece_dict: Dict[classes.AbsoluteCoord, classes.Piece] = {}
+    piece_dict: classes.PieceDict = {}
     while True:
         to_display: List[str] = ['Choose location']
         inputted_text: str = get_input(input_gen, window, to_display)

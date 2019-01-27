@@ -1,6 +1,6 @@
 import json
 
-from typing import IO, Dict
+from typing import Dict, IO
 
 __all__ = [
     "_flatten_dict",

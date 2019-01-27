@@ -1,12 +1,11 @@
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional
 
-from kivy.uix.widget import Widget
 from kivy.clock import Clock
-
-from .boardsquare import BoardSquare
-from .inputs import PromotionWindow, MateWindow
+from kivy.uix.widget import Widget
 
 import shogi
+from .boardsquare import BoardSquare
+from .inputs import MateWindow, PromotionWindow
 
 __all__ = [
     "AppCore",
@@ -34,9 +33,9 @@ class AppCore(Widget):
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
         self.make_move: bool = False
         self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
-        self.in_check: Dict[shogi.Color, Set[shogi.AbsoluteCoord]] = {
-            shogi.Color(0): [],
-            shogi.Color(1): []
+        self.in_check: Dict[shogi.Color, shogi.CoordSet] = {
+            shogi.Color(0): set(),
+            shogi.Color(1): set()
         }
         self.to_add: shogi.Piece = shogi.NoPiece()
         self.to_promote: bool = None
@@ -85,7 +84,7 @@ class AppCore(Widget):
 
     def cleanup(
             self,
-            move: Tuple[Optional[shogi.AbsoluteCoord], shogi.AbsoluteCoord],
+            move: shogi.OptCoordTuple,
             is_a_capture: bool = False,
             dropped_piece: shogi.Piece = None
     ):
@@ -234,7 +233,7 @@ class AppCore(Widget):
 
     def update_game_log(
             self,
-            move: Tuple[Optional[shogi.AbsoluteCoord], shogi.AbsoluteCoord],
+            move: shogi.OptCoordTuple,
             is_a_capture: bool = False,
             is_a_promote: Optional[bool] = None,
             is_a_drop: bool = False

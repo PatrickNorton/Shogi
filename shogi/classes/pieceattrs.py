@@ -1,6 +1,5 @@
 import collections
-
-from typing import Union, Dict, Optional, Generator, Callable
+from typing import Callable, Dict, Generator, Optional, Union
 
 from .exceptions import (
     PromotedException, NotPromotableException, DemotedException
@@ -13,7 +12,13 @@ __all__ = [
     "PieceType",
     "Moves",
     "Move",
+    "ColorLike",
+    "PieceTypeLike",
 ]
+
+
+ColorLike = Union[int, str, 'Color']
+PieceTypeLike = Union[str, 'PieceType']
 
 
 class Color:
@@ -32,7 +37,7 @@ class Color:
 
     """
 
-    def __init__(self, turn_num: Union[int, str, 'Color']):
+    def __init__(self, turn_num: ColorLike):
         """Initialise instance of Color.
 
         :param turn_num: piece's color (w/b or 0/1)
@@ -91,7 +96,7 @@ class PieceType:
     :ivar name: the full name of the piece
     """
 
-    def __init__(self, typ: Union[str, 'PieceType'], promoted: bool = False):
+    def __init__(self, typ: PieceTypeLike, promoted: bool = False):
         """Initialise instance of PieceType.
 
         :param typ: type of piece ('n', 'b', etc.)
@@ -146,7 +151,7 @@ class Moves(collections.abc.Sequence):
     """
 
     def __init__(
-            self, piece_name: Union[str, PieceType],
+            self, piece_name: PieceTypeLike,
             clr: Color,
             promoted: bool = False
     ):

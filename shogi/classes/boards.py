@@ -1,12 +1,12 @@
 import collections
-
 from typing import Dict, List, Generator, Sequence, Optional
 
+from .aliases import PieceDict
+from .exceptions import DemotedException
 from .information import info
 from .locations import AbsoluteCoord, NullCoord
-from .pieces import Piece, NoPiece
 from .pieceattrs import Color
-from .exceptions import DemotedException
+from .pieces import Piece, NoPiece
 from .rows import Row
 
 __all__ = [
@@ -42,7 +42,7 @@ class Board(collections.abc.Sequence):
         :param pieces: for custom board setups
         """
 
-        self.pieces: Dict[AbsoluteCoord, Piece]
+        self.pieces: PieceDict
         if pieces is None:
             self.pieces = {
                 AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
@@ -54,7 +54,7 @@ class Board(collections.abc.Sequence):
         self.inverse_pieces = {v: x for x, v in self.pieces.items()}
         self.captured: Dict[Color, List[Piece]]
         self.captured = {x: [] for x in Color.valid()}
-        self.by_color: Dict[Color, Dict[AbsoluteCoord, Piece]]
+        self.by_color: Dict[Color, PieceDict]
         self.by_color = {x: {} for x in Color.valid()}
         self.current_player = Color(0)
         for x in range(2):
@@ -215,13 +215,13 @@ class Board(collections.abc.Sequence):
         self.current_player = self.other_player
 
     @property
-    def current_pieces(self) -> Dict[AbsoluteCoord, Piece]:
+    def current_pieces(self) -> PieceDict:
         """dict: Pieces of the current player."""
 
         return self.by_color[self.current_player]
 
     @property
-    def enemy_pieces(self) -> Dict[AbsoluteCoord, Piece]:
+    def enemy_pieces(self) -> PieceDict:
         """dict: Pieces of opposing player."""
 
         return self.by_color[self.other_player]
@@ -230,7 +230,7 @@ class Board(collections.abc.Sequence):
     def other_player(self):
         return Color(self.current_player.other_color)
 
-    def player_pieces(self, player: Color) -> Dict[AbsoluteCoord, Piece]:
+    def player_pieces(self, player: Color) -> PieceDict:
         """Return pieces of specific player
 
         :param player: player to return

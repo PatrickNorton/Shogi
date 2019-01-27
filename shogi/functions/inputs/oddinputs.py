@@ -5,7 +5,7 @@ import curtsies
 from shogi import classes
 from shogi.functions import boardtests
 from .help import help_desk
-from .inputfns import get_input, binary_input
+from .inputfns import binary_input, get_input
 
 __all__ = [
     "other_conditions",

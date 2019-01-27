@@ -1,6 +1,6 @@
-from kivy.uix.button import Button
+from typing import Iterable
 
-from typing import Iterable, Set
+from kivy.uix.button import Button
 
 import shogi
 
@@ -61,7 +61,7 @@ class BoardSquare(Button):
             self,
             current_board: shogi.Board,
             checking_spaces: Iterable[shogi.AbsoluteCoord]
-    ) -> Set[shogi.AbsoluteCoord]:
+    ) -> shogi.CoordSet:
         """Get valid moves for square, given current board.
 
         :param current_board: current board position

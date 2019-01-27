@@ -1,7 +1,6 @@
-from typing import List, Tuple
+from typing import List
 
 from shogi import classes
-
 from .check import check_check
 from .move import move_check_2
 
@@ -12,7 +11,7 @@ __all__ = [
 
 def check_move(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        coordinates: classes.CoordTuple,
         checking_spaces: List[classes.AbsoluteCoord] = None
 ):
     """A more complete check for if the move is legal.

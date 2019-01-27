@@ -1,4 +1,4 @@
-from typing import List, Iterable, Set
+from typing import List, Iterable
 
 from shogi import classes
 from shogi.functions import boardtests
@@ -13,7 +13,7 @@ def test_spaces(
         piece_location: classes.AbsoluteCoord,
         space_list: List[classes.RelativeCoord],
         checking_spaces: Iterable[classes.AbsoluteCoord] = None
-) -> Set[classes.AbsoluteCoord]:
+) -> classes.CoordSet:
     """Test which spaces in a list are valid moves.
 
     :param current_board: current state of the board
@@ -25,7 +25,7 @@ def test_spaces(
 
     if checking_spaces is None:
         checking_spaces = []
-    to_return: Set[classes.AbsoluteCoord] = set()
+    to_return: classes.CoordSet = set()
     for relative_location in space_list:
         try:
             absolute_location = piece_location + relative_location

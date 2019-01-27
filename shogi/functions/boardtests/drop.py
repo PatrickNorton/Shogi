@@ -1,5 +1,3 @@
-from typing import Set
-
 from shogi import classes
 
 from .mate import mate_check
@@ -57,7 +55,7 @@ def drop_check_check(
         piece_to_drop: classes.Piece,
         new_location: classes.AbsoluteCoord,
         king_color: classes.Color
-) -> Set[classes.AbsoluteCoord]:
+) -> classes.CoordSet:
     """Test if dropped piece is checking king.
 
     :param current_board: current board state

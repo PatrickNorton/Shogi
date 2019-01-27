@@ -1,8 +1,8 @@
 import collections
+from typing import Sequence
 
-from typing import Sequence, Union, Set
-
-from .locations import AbsoluteCoord, Direction, RelativeCoord
+from .aliases import CoordSet
+from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
 
 __all__ = [
     "Row"
@@ -17,7 +17,7 @@ class Row(collections.abc.Iterable):
     :ivar spaces: set of spaces in row
     """
 
-    def __init__(self, location: Sequence, vector: Union[Sequence, int]):
+    def __init__(self, location: Sequence, vector: CoordLike):
         """Initialise instance of Row.
 
         :param location: location of original space
@@ -39,7 +39,7 @@ class Row(collections.abc.Iterable):
                 self.spaces.add(AbsoluteCoord(location + x * vector))
             except ValueError:
                 break
-        self._not_original: Set[AbsoluteCoord] = set(
+        self._not_original: CoordSet = set(
             x for x in self if x != self.first_space
         )
 

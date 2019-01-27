@@ -1,5 +1,4 @@
 from itertools import product
-from typing import Tuple, List
 
 from shogi import classes
 from .goodinput import input_piece
@@ -15,7 +14,7 @@ __all__ = [
 def move_check(
         current_location: classes.AbsoluteCoord,
         move_string: str
-) -> Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]:
+) -> classes.CoordTuple:
     """Check if inputted piece is a valid piece.
 
     :param current_location: position of piece to be moved
@@ -33,7 +32,7 @@ def move_check(
 
 def move_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        coordinates: classes.CoordTuple,
         ignore_location: classes.AbsoluteCoord = None,
         act_full: classes.AbsoluteCoord = None,
         piece_pretend: classes.Piece = None,
@@ -114,7 +113,7 @@ def obstruction_check(
 
 def king_check(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord]
+        coordinates: classes.CoordTuple
 ):
     """Check if king is moving into check.
 
@@ -178,9 +177,10 @@ def into_check_check(
         current_board: classes.Board,
         coordinates: classes.AbsoluteCoord,
         king_color: classes.Color
-) -> Tuple[classes.AbsoluteCoord, List[classes.AbsoluteCoord]]:
+) -> classes.CoordAndSet:
+    # FIXME: Change return to set, not list
     old_location, new_location = coordinates
-    places_attacking: List[classes.AbsoluteCoord] = []
+    places_attacking: classes.CoordSet = set()
     king_tested: classes.Piece = classes.Piece('k', king_color)
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
     kings_enemy = not current_board[old_location].is_color(king_color)
@@ -192,7 +192,7 @@ def into_check_check(
             act_full=new_location
         )
         if not cannot_move:
-            places_attacking.append(new_location)
+            places_attacking.add(new_location)
             return king_location, places_attacking
     relative_move = classes.RelativeCoord(king_location - old_location)
     absolute_move: classes.RelativeCoord = abs(relative_move)
@@ -211,5 +211,5 @@ def into_check_check(
             act_full=new_location,
         )
         if not cannot_move:
-            places_attacking.append(x)
+            places_attacking.add(x)
             return king_location, places_attacking

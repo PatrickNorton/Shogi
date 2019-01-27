@@ -1,5 +1,5 @@
-from typing import List
 from pathlib import Path
+from typing import List
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -10,7 +10,6 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
 
 import shogi
-
 from .screens import HelpScreen, MainScreen
 
 __all__ = [

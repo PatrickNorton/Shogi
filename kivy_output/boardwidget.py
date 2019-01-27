@@ -1,9 +1,8 @@
-from kivy.uix.gridlayout import GridLayout
-
 from typing import Dict
 
-import shogi
+from kivy.uix.gridlayout import GridLayout
 
+import shogi
 from .boardsquare import BoardSquare
 
 __all__ = [

@@ -1,5 +1,5 @@
-from typing import IO
 import pathlib
+from typing import IO
 
 __all__ = [
     "_open_help",

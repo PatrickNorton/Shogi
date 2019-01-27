@@ -1,7 +1,7 @@
 import collections
+from typing import Sequence, Tuple, Union
 
 from numpy import sin, cos, sign, pi
-from typing import Sequence, Union, Tuple
 
 from .exceptions import NullCoordError
 
@@ -10,8 +10,12 @@ __all__ = [
     "RelativeCoord",
     "AbsoluteCoord",
     "Direction",
-    "NullCoord"
+    "NullCoord",
+    "CoordLike",
 ]
+
+
+CoordLike = Union[Sequence, int]
 
 
 class BaseCoord(collections.abc.Sequence):
@@ -74,7 +78,7 @@ class RelativeCoord(BaseCoord):
     outside of the (-9, 9) range, a ValueError is raised.
     """
 
-    def __init__(self, xy: Union[Sequence, int]):
+    def __init__(self, xy: CoordLike):
         """Initialise instance of RelativeCoord.
 
         If xy is an integer, the coordinate (xy, xy) is created.
@@ -142,7 +146,7 @@ class AbsoluteCoord(BaseCoord):
     :ivar y_str: the y part of board notation
     """
 
-    def __init__(self, xy: Union[Sequence, int]):
+    def __init__(self, xy: CoordLike):
         """Initialise instance of AbsoluteCoord.
 
         If xy is an integer, the coordinate (xy, xy) is created.
@@ -231,7 +235,7 @@ class Direction(RelativeCoord):
         (round(sin(pi * x / 4)), -round(cos(pi * x / 4))) for x in range(8)
     ]
 
-    def __init__(self, direction: Union[Sequence, int]):
+    def __init__(self, direction: CoordLike):
         self.direction: int
         if direction == (0, 0):
             self.direction = 8

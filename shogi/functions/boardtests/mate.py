@@ -1,5 +1,4 @@
 from itertools import product
-from typing import Set
 
 from shogi import classes
 from .move import move_check_2
@@ -12,7 +11,7 @@ __all__ = [
 def mate_check(
         current_board: classes.Board,
         king_location: classes.AbsoluteCoord,
-        places_attacking: Set[classes.AbsoluteCoord]
+        places_attacking: classes.CoordSet
 ) -> bool:
     """Test if king is in checkmate.
 

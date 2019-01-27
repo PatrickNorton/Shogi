@@ -1,7 +1,6 @@
 from kivy.uix.gridlayout import GridLayout
 
 import shogi
-
 from .capturedsquare import CapturedSquare
 
 __all__ = [

@@ -1,6 +1,6 @@
 import json
 
-from typing import Dict, List, Union, TextIO
+from typing import Dict, List, TextIO, Union
 
 __all__ = [
     "_InfoClass",

@@ -1,5 +1,3 @@
-from typing import Tuple, Set, Optional
-
 from shogi import classes
 from .drop import drop_check_check
 from .move import move_check_2
@@ -12,14 +10,12 @@ __all__ = [
 
 def check_check(
         current_board: classes.Board,
-        coordinates: Tuple[
-            Optional[classes.AbsoluteCoord], classes.AbsoluteCoord
-        ],
+        coordinates: classes.OptCoordTuple,
         king_color: classes.Color,
         break_early: bool = False,
         before_move: bool = False,
         dropped_piece: classes.Piece = None
-) -> Tuple[classes.AbsoluteCoord, Set[classes.AbsoluteCoord]]:
+) -> classes.CoordAndSet:
     """Find if king is in check.
 
     :param current_board: current game board
@@ -27,11 +23,12 @@ def check_check(
     :param king_color: color of king to test
     :param break_early: break after first finding of check
     :param before_move: whether or not the move has been made
+    :param dropped_piece: piece to be dropped
     :return: location of king, list of coordinates attacking king
     """
 
     old_location, new_location = coordinates
-    places_attacking: Set[classes.AbsoluteCoord] = set()
+    places_attacking: classes.CoordSet = set()
     king_tested: classes.Piece = classes.Piece('k', king_color)
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
 
@@ -77,12 +74,12 @@ def check_check(
 
 def check_check_2(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        coordinates: classes.CoordTuple,
         king_location: classes.AbsoluteCoord,
-        places_attacking: Set[classes.AbsoluteCoord],
+        places_attacking: classes.CoordSet,
         break_early: bool = False,
         before_move: bool = False
-) -> Set[classes.AbsoluteCoord]:
+) -> classes.CoordSet:
     """Test if non-moved pieces can check king.
 
     :param current_board: current board
