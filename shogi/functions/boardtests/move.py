@@ -178,11 +178,9 @@ def into_check_check(
         coordinates: classes.AbsoluteCoord,
         king_color: classes.Color
 ) -> classes.CoordAndSet:
-    # FIXME: Change return to set, not list
     old_location, new_location = coordinates
     places_attacking: classes.CoordSet = set()
-    king_tested: classes.Piece = classes.Piece('k', king_color)
-    king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+    king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
     kings_enemy = not current_board[old_location].is_color(king_color)
     if kings_enemy:
         cannot_move = move_check_2(
@@ -201,8 +199,7 @@ def into_check_check(
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
     attacking_color: classes.Color = current_board[king_location].color.other
-    current_pieces = current_board.player_pieces(attacking_color)
-    pieces = (x for x in direction_of_attack if x in current_pieces)
+    pieces = (x for x in direction_of_attack if x.is_color(attacking_color))
     for x in pieces:
         cannot_move = move_check_2(
             current_board,

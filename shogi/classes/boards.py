@@ -5,7 +5,7 @@ from .aliases import PieceDict
 from .exceptions import DemotedException
 from .information import info
 from .locations import AbsoluteCoord, NullCoord
-from .pieceattrs import Color
+from .pieceattrs import Color, ColorLike
 from .pieces import Piece, NoPiece
 from .rows import Row
 
@@ -28,9 +28,7 @@ class Board(collections.abc.Sequence):
     move made should be stored in the "last_move" attribute.
 
     :ivar pieces: Each coordinate and corresponding piece
-    :ivar inverse_pieces: Inverse of pieces
     :ivar captured: List of captured pieces for each color
-    :ivar by_color: Same as pieces, but separated by color
     :ivar current_player: Active player
     :ivar last_move: Previous move performed
     :ivar next_move: Move about to be performed
@@ -44,26 +42,22 @@ class Board(collections.abc.Sequence):
 
         self.pieces: PieceDict
         if pieces is None:
-            self.pieces = {
+            self.pieces: PieceDict = {
                 AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
             }
         else:
-            self.pieces = {
+            self.pieces: PieceDict = {
                 AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
             }
-        self.inverse_pieces = {v: x for x, v in self.pieces.items()}
         self.captured: Dict[Color, List[Piece]]
         self.captured = {x: [] for x in Color.valid()}
-        self.by_color: Dict[Color, PieceDict]
-        self.by_color = {x: {} for x in Color.valid()}
         self.current_player = Color(0)
-        for x in range(2):
-            x_color = Color(x)
-            for loc, pc in self.pieces.items():
-                if pc.is_color(x_color):
-                    self.by_color[x_color][loc] = pc
         self.last_move = (NullCoord(), NullCoord())
         self.next_move = (NullCoord(), NullCoord())
+        self.kings: Dict[Color, AbsoluteCoord] = {}
+        for x, y in self.pieces.items():
+            if y.has_type('k'):
+                self.kings[y.color] = x
 
     def __str__(self):
         to_return = ""
@@ -94,6 +88,7 @@ class Board(collections.abc.Sequence):
 
         yield from ((x, y) for y in range(9) for x in range(9))
 
+    @property
     def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
 
@@ -109,18 +104,19 @@ class Board(collections.abc.Sequence):
         if not isinstance(self[new], NoPiece):
             self.capture(new)
         self.pieces[AbsoluteCoord(new)] = self.pieces.pop(current)
-        self.by_color[self[new].color][AbsoluteCoord(new)] = self[new]
-        del self.by_color[self[new].color][AbsoluteCoord(current)]
-        self.inverse_pieces[self[new]] = new
+        if self.pieces[new].has_type('k'):
+            self.kings[self.pieces[new].color] = new
 
-    def get_piece(self, piece_name: Piece) -> AbsoluteCoord:
+    def get_king(self, king_color: ColorLike) -> AbsoluteCoord:
         """Return a location based on piece type.
 
-        :param piece_name: piece type to check
+        :param king_color: piece type to check
         :return: location of piece
         """
 
-        return self.inverse_pieces[piece_name]
+        for x, y in self.pieces.items():
+            if y.is_piece('k', king_color):
+                return x
 
     def capture(self, new: AbsoluteCoord):
         """Capture a piece at a location.
@@ -129,6 +125,8 @@ class Board(collections.abc.Sequence):
         """
 
         piece = self[new]
+        if piece.has_type('k'):
+            raise ValueError("Kings may not be captured. You win.")
         try:
             piece.demote()
         except DemotedException:
@@ -136,12 +134,6 @@ class Board(collections.abc.Sequence):
         new_piece = piece.flip_sides()
         self.captured[self.current_player].append(new_piece)
         del self.pieces[new]
-        del self.by_color[piece.color][AbsoluteCoord(new)]
-        if piece in self.pieces.values():
-            gen = [loc for loc, x in self.pieces.items() if x == piece]
-            self.inverse_pieces[piece] = gen[0]
-        else:
-            del self.inverse_pieces[piece]
 
     def can_promote(self, space: AbsoluteCoord) -> bool:
         """Check if a piece is in a promotion zone.
@@ -186,8 +178,6 @@ class Board(collections.abc.Sequence):
         piece = self[space]
         piece = piece.promote()
         self.pieces[space] = piece
-        self.by_color[piece.color][space] = piece
-        self.inverse_pieces[piece] = space
 
     def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
         """Move a piece from capture into play.
@@ -207,34 +197,39 @@ class Board(collections.abc.Sequence):
                 if self[loc].is_piece('p', player):
                     return 9
         self.captured[player].remove(piece)
-        self.by_color[piece.color][moved_to] = piece
         self.pieces[moved_to] = piece
-        self.inverse_pieces[piece] = moved_to
 
     def flip_turn(self):
+        """Flip the turn from one player to the other."""
         self.current_player = self.other_player
 
     @property
-    def current_pieces(self) -> PieceDict:
+    def current_pieces(self) -> Generator:
         """dict: Pieces of the current player."""
 
-        return self.by_color[self.current_player]
+        for x, y in self.pieces.items():
+            if y.is_color(self.other_player):
+                yield (x, y)
 
     @property
-    def enemy_pieces(self) -> PieceDict:
+    def enemy_pieces(self) -> Generator:
         """dict: Pieces of opposing player."""
 
-        return self.by_color[self.other_player]
+        for x, y in self.pieces.items():
+            if y.is_color(self.other_player):
+                yield (x, y)
 
     @property
-    def other_player(self):
+    def other_player(self) -> Color:
         return Color(self.current_player.other_color)
 
-    def player_pieces(self, player: Color) -> PieceDict:
-        """Return pieces of specific player
+    def player_pieces(self, player: Color) -> Generator:
+        """Return generator yielding loc, piece pairs for player.
 
         :param player: player to return
         :return: pieces of player
         """
 
-        return self.by_color[player]
+        for x, y in self.pieces.items():
+            if y.is_color(player):
+                yield (x, y)

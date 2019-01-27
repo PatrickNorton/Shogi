@@ -23,8 +23,7 @@ def drop_check(
     if current_board[move_location]:
         return 1
     player_int = int(current_board.current_player)
-    enemy_king = classes.Piece('k', current_board.current_player.other)
-    king_location = current_board.get_piece(enemy_king)
+    king_location = current_board.get_king(current_board.other_player)
     must_promote = current_board.auto_promote(move_location, piece)
     if must_promote:
         return 1
@@ -63,7 +62,7 @@ def drop_check_check(
     :param new_location: location to drop piece at
     :param king_color: color of king to attack
     """
-    king_location = current_board.get_piece(classes.Piece('k', king_color))
+    king_location = current_board.get_king(king_color)
     places_attacking = set()
     cannot_move = move_check_2(
         current_board,

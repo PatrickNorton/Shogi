@@ -15,7 +15,7 @@ def to_notation(
         is_drop: bool = False,
         is_capture: bool = False,
         is_promote: Optional[bool] = None,
-        dropped_piece: Optional[classes.Piece] = classes.NoPiece(),
+        dropped_piece: Optional[classes.Piece] = None,
         before_move: bool = False
 ) -> str:
     old_location, new_location = move
@@ -57,11 +57,7 @@ def piece_can_move(
         piece: classes.Piece,
         to: classes.AbsoluteCoord
 ) -> List[classes.AbsoluteCoord]:
-    try:
-        current_board.inverse_pieces[piece]
-    except KeyError:
-        return []
-    else:
+    if piece in current_board.pieces.items():
         pieces = (
             x for x, y in current_board.pieces.items() if y == piece
         )

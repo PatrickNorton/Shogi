@@ -29,8 +29,7 @@ def check_check(
 
     old_location, new_location = coordinates
     places_attacking: classes.CoordSet = set()
-    king_tested: classes.Piece = classes.Piece('k', king_color)
-    king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+    king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
 
     if dropped_piece is not None:
         checking_spaces = drop_check_check(
@@ -99,8 +98,7 @@ def check_check_2(
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
     attacking_color: classes.Color = current_board[king_location].color.other
-    current_pieces = current_board.player_pieces(attacking_color)
-    pieces = (x for x in direction_of_attack if x in current_pieces)
+    pieces = (x for x in direction_of_attack if current_board[x].is_color(attacking_color))
     for x in pieces:
         if before_move:
             cannot_move = move_check_2(

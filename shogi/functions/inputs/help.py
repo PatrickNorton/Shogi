@@ -148,8 +148,7 @@ def list_moves(
     """
 
     moves = {}
-    current_pieces = current_board.current_pieces
-    for location, piece in current_pieces.items():
+    for location, piece in current_board.current_pieces:
         move_list = []
         for x in classes.Direction.valid():
             to_list = piece.valid_spaces(x)
@@ -157,7 +156,7 @@ def list_moves(
             move_list += to_list
         moves[location] = move_list
     file_string = ''
-    for location, piece in current_pieces.items():
+    for location, piece in current_board.current_pieces:
         file_string += f"{piece !r} at {location}:\n"
         to_print = (str(x) for x in moves[location])
         file_string += f"    {', '.join(to_print)}\n"

@@ -42,12 +42,6 @@ class ChessBoard(GridLayout):
         :param coordinate: location of pressed square
         """
         self.parent.board_pressed(coordinate)
-        """
-        if not self.parent.make_move or self.parent.move_from == coordinate:
-            self.parent.light_moves(coordinate)
-        else:
-            self.parent.make_moves(self.parent.move_from, coordinate)
-        """
 
     def update_squares(self, *to_update: shogi.AbsoluteCoord):
         """Update specific squares.
@@ -58,7 +52,7 @@ class ChessBoard(GridLayout):
             space = self.children_dict[coordinate]
             space.text = space.set_string(self.board[coordinate])
 
-    def get_piece(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
+    def get_pieces(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
         """Get piece at location.
 
         :param position: position to get piece at
@@ -75,24 +69,6 @@ class ChessBoard(GridLayout):
         for space in highlighted_spaces.values():
             space.un_light()
         self.parent.make_move = False
-
-    def in_play_light(self, piece):
-        self.un_light_all()
-        empty_children = {
-            x: y for x, y in self.children_dict.items() if not y.text
-        }
-        if piece.color == self.board.current_player:
-            for space, x in empty_children.items():
-                promotion_zones = ((0, 1, 2), (8, 7, 6))
-                player_int = int(piece.color)
-                try:
-                    index = promotion_zones[player_int].index(space.y)
-                except ValueError:
-                    x.light()
-                else:
-                    if index >= piece.auto_promote:
-                        x.light()
-            self.parent.make_move = True
 
     @property
     def board(self):

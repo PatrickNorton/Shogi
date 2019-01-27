@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException
@@ -153,7 +153,7 @@ class Piece:
 
         return self.type == other.type
 
-    def is_color(self, clr: Union[Color, int, str]) -> bool:
+    def is_color(self, clr: ColorLike) -> bool:
         """Check if piece is of a certain color.
 
         This can take either a color, an int, or a str object. It
@@ -172,7 +172,7 @@ class Piece:
             return int(self.color) == clr
         return False
 
-    def has_type(self, typ: Union[PieceType, str]) -> bool:
+    def has_type(self, typ: PieceTypeLike) -> bool:
         """Check if piece is of a certain type.
 
         This can take either a PieceType or a str object. It should
@@ -190,8 +190,8 @@ class Piece:
         return False
 
     def is_piece(self,
-                 typ: Union[PieceType, str],
-                 clr: Union[Color, int, str]
+                 typ: PieceTypeLike,
+                 clr: ColorLike
                  ) -> bool:
         """Check if the piece is of a certain color and type/
 
