@@ -70,28 +70,30 @@ class AppCore(Widget):
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
                 self.to_promote = True
-                self.cleanup((current, to), is_a_capture)
+                self.cleanup((current, to), is_a_capture=is_a_capture)
             else:
                 pops = PromotionWindow(caller=self)
                 pops.bind(
                     on_dismiss=lambda x: self.cleanup(
                         (current, to),
-                        is_a_capture
+                        is_a_capture=is_a_capture
                     )
                 )
                 pops.open()
         else:
-            self.cleanup((current, to), is_a_capture)
+            self.cleanup((current, to), is_a_capture=is_a_capture)
 
     def cleanup(
             self,
-            move: Tuple[shogi.AbsoluteCoord, shogi.AbsoluteCoord],
-            is_a_capture: bool
+            move: Tuple[Optional[shogi.AbsoluteCoord], shogi.AbsoluteCoord],
+            is_a_capture: bool = False,
+            dropped_piece: shogi.Piece = None
     ):
         """Cleanup operations for a piece move.
 
         :param move: from, to of move
         :param is_a_capture: if the move involved a capture
+        :param dropped_piece: piece to be dropped, if it is a drop
         """
         current, to = move
         is_a_promote = self.to_promote
@@ -102,7 +104,8 @@ class AppCore(Widget):
         king_location, is_in_check = shogi.check_check(
             self.board,
             (current, to),
-            self.board.current_player.other
+            self.board.other_player,
+            dropped_piece=dropped_piece
         )
         if is_in_check:
             mate = shogi.mate_check(
@@ -114,15 +117,17 @@ class AppCore(Widget):
                 pops = MateWindow()
                 pops.open()
                 # TODO: run EOG when checkmate happens
-        self.in_check[self.board.current_player.other] = is_in_check
+        self.in_check[self.board.other_player] = is_in_check
         self.update_game_log(
             move,
             is_a_capture=is_a_capture,
-            is_a_promote=is_a_promote
+            is_a_promote=is_a_promote,
+            is_a_drop=(dropped_piece is not None)
         )
-        self.board.current_player = self.board.current_player.other
+        self.board.flip_turn()
         self.make_move = False
         self.move_from = shogi.NullCoord()
+        self.to_add = None
         self.un_light_all()
         if is_a_capture:
             self.update_captured(self.board)
@@ -132,32 +137,16 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        promotion_zones = ((0, 1, 2), (8, 7, 6))
-        player_int = int(self.to_add.color)
-        try:
-            index = promotion_zones[player_int].index(space_to.y)
-        except ValueError:
-            put_in_play = True
-        else:
-            put_in_play = (index >= self.to_add.auto_promote)
-        if put_in_play:
+        cannot_drop = shogi.drop_check(
+            self.board,
+            self.to_add,
+            space_to
+        )
+        if not cannot_drop:
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
-            enemy_king = shogi.Piece('k', self.board.current_player.other)
-            king_location = self.board.get_piece(enemy_king)
-            cannot_move = shogi.move_check_2(
-                self.board,
-                (space_to, king_location)
-            )
-            if not cannot_move:
-                self.in_check[self.board.current_player.other] = {space_to}
-            self.un_light_all()
-            self.update_game_log(
-                (None, space_to),
-                is_a_drop=True
-            )
-            self.board.current_player = self.board.current_player.other
+            self.cleanup((None, space_to), dropped_piece=self.to_add)
 
     # Lighting methods
     def light_moves(self, coordinate: shogi.AbsoluteCoord):

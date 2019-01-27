@@ -86,6 +86,8 @@ class Board(collections.abc.Sequence):
 
     def __len__(self) -> int: return len(tuple(self))
 
+    def __repr__(self): return f"Board(pieces={self.pieces})"
+
     @staticmethod
     def iterate() -> Generator:
         """Yield from all possible board positions."""
@@ -151,17 +153,28 @@ class Board(collections.abc.Sequence):
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         return space.y in promotion_zones[int(self.current_player)]
 
-    def auto_promote(self, space: AbsoluteCoord) -> bool:
+    def auto_promote(
+            self,
+            space: AbsoluteCoord,
+            piece: Piece = NoPiece()
+    ) -> bool:
         """Check if piece must be promoted.
 
         :param space: location to be checked
+        :param piece: piece to check for auto-promotion
         :return: if piece must promote
         """
 
+        if piece == NoPiece():
+            piece = self[space]
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         player_int = int(self.current_player)
-        index = promotion_zones[player_int].index(space.y)
-        return index < self[space].auto_promote
+        try:
+            index = promotion_zones[player_int].index(space.y)
+        except ValueError:
+            return False
+        else:
+            return index < piece.auto_promote
 
     def promote(self, space: AbsoluteCoord):
         """Promote the piece at a location.
@@ -198,6 +211,9 @@ class Board(collections.abc.Sequence):
         self.pieces[moved_to] = piece
         self.inverse_pieces[piece] = moved_to
 
+    def flip_turn(self):
+        self.current_player = self.other_player
+
     @property
     def current_pieces(self) -> Dict[AbsoluteCoord, Piece]:
         """dict: Pieces of the current player."""
@@ -208,7 +224,11 @@ class Board(collections.abc.Sequence):
     def enemy_pieces(self) -> Dict[AbsoluteCoord, Piece]:
         """dict: Pieces of opposing player."""
 
-        return self.by_color[self.current_player.other]
+        return self.by_color[self.other_player]
+
+    @property
+    def other_player(self):
+        return Color(self.current_player.other_color)
 
     def player_pieces(self, player: Color) -> Dict[AbsoluteCoord, Piece]:
         """Return pieces of specific player

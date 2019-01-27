@@ -317,6 +317,10 @@ class NullCoord(Direction):
 
     def __repr__(self): return "NullCoord()"
 
+    @staticmethod
+    def valid():
+        yield from _valid_nul
+
 
 _same_xy_rel = tuple(RelativeCoord(x) for x in range(-8, 9))
 _pos_xy_rel = tuple(RelativeCoord(x) for x in range(9))
@@ -325,3 +329,5 @@ _neg_xy_rel = tuple(RelativeCoord(x) for x in range(0, -9, -1))
 _same_xy_abs = tuple(AbsoluteCoord(x) for x in range(9))
 
 _valid_dir = tuple(Direction(x) for x in range(8))
+
+_valid_nul = (NullCoord(),)

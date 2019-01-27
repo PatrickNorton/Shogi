@@ -24,17 +24,12 @@ def drop_check(
     """
     if current_board[move_location]:
         return 1
-    promotion_zones = ((0, 1, 2), (8, 7, 6))
     player_int = int(current_board.current_player)
     enemy_king = classes.Piece('k', current_board.current_player.other)
     king_location = current_board.get_piece(enemy_king)
-    try:
-        index = promotion_zones[player_int].index(move_location.y)
-    except ValueError:
-        pass
-    else:
-        if index < piece.auto_promote:
-            return 1
+    must_promote = current_board.auto_promote(move_location, piece)
+    if must_promote:
+        return 1
     if piece.has_type('p'):
         space_row = classes.Row(move_location, 0)
         if any(current_board[x].is_piece('p', player_int) for x in space_row):

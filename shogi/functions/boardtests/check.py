@@ -1,6 +1,7 @@
-from typing import Tuple, Set
+from typing import Tuple, Set, Optional
 
 from shogi import classes
+from .drop import drop_check_check
 from .move import move_check_2
 
 __all__ = [
@@ -11,10 +12,13 @@ __all__ = [
 
 def check_check(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
+        coordinates: Tuple[
+            Optional[classes.AbsoluteCoord], classes.AbsoluteCoord
+        ],
         king_color: classes.Color,
         break_early: bool = False,
         before_move: bool = False,
+        dropped_piece: classes.Piece = None
 ) -> Tuple[classes.AbsoluteCoord, Set[classes.AbsoluteCoord]]:
     """Find if king is in check.
 
@@ -30,6 +34,15 @@ def check_check(
     places_attacking: Set[classes.AbsoluteCoord] = set()
     king_tested: classes.Piece = classes.Piece('k', king_color)
     king_location: classes.AbsoluteCoord = current_board.get_piece(king_tested)
+
+    if dropped_piece is not None:
+        checking_spaces = drop_check_check(
+            current_board,
+            dropped_piece,
+            new_location,
+            king_color
+        )
+        return king_location, checking_spaces
 
     if before_move:
         kings_enemy = not current_board[old_location].is_color(king_color)
