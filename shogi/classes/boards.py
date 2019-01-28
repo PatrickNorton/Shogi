@@ -1,7 +1,7 @@
 import collections
-from typing import Dict, List, Generator, Sequence, Optional
+from typing import Dict, Generator, List, Optional, Sequence
 
-from .aliases import PieceDict
+from .aliases import CoordTuple, PieceDict
 from .exceptions import DemotedException
 from .information import info
 from .locations import AbsoluteCoord, NullCoord
@@ -40,7 +40,6 @@ class Board(collections.abc.Sequence):
         :param pieces: for custom board setups
         """
 
-        self.pieces: PieceDict
         if pieces is None:
             self.pieces: PieceDict = {
                 AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
@@ -49,11 +48,12 @@ class Board(collections.abc.Sequence):
             self.pieces: PieceDict = {
                 AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
             }
-        self.captured: Dict[Color, List[Piece]]
-        self.captured = {x: [] for x in Color.valid()}
-        self.current_player = Color(0)
-        self.last_move = (NullCoord(), NullCoord())
-        self.next_move = (NullCoord(), NullCoord())
+        self.captured: Dict[Color, List[Piece]] = {
+            x: [] for x in Color.valid()
+        }
+        self.current_player: Color = Color(0)
+        self.last_move: CoordTuple = (NullCoord(), NullCoord())
+        self.next_move: CoordTuple = (NullCoord(), NullCoord())
         self.kings: Dict[Color, AbsoluteCoord] = {}
         for x, y in self.pieces.items():
             if y.has_type('k'):

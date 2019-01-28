@@ -24,17 +24,17 @@ def mate_check(
     for king_move_tested in classes.Direction.valid():
         try:
             new_location = king_move_tested + king_location
+            new_location = classes.AbsoluteCoord(new_location)
         except ValueError:
             continue
+        cannot_move = move_check_2(
+            current_board,
+            (king_location, new_location)
+        )
+        if cannot_move:
+            continue
         else:
-            cannot_move = move_check_2(
-                current_board,
-                (king_location, new_location)
-            )
-            if cannot_move:
-                continue
-            else:
-                return False
+            return False
     if len(places_attacking) > 1:
         return True
     check_location = places_attacking.pop()

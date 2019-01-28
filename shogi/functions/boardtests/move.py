@@ -132,44 +132,42 @@ def king_check(
             current_test = new_location + direction * distance
         except (ValueError, IndexError):
             continue
+        if isinstance(current_test, classes.RelativeCoord):
+            continue
+        if current_board[current_test].same_color(old_occupant):
+            continue
+        cannot_move = move_check_2(
+            current_board,
+            (current_test, new_location),
+            ignore_location=old_location,
+            act_full=new_location,
+        )
+        if cannot_move == 2:
+            break
+        elif cannot_move:
+            continue
         else:
-            if isinstance(current_test, classes.RelativeCoord):
-                continue
-            if current_board[current_test].same_color(old_occupant):
-                continue
-            cannot_move = move_check_2(
-                current_board,
-                (current_test, new_location),
-                ignore_location=old_location,
-                act_full=new_location,
-            )
-            if cannot_move == 2:
-                break
-            elif cannot_move:
-                continue
-            else:
-                return 6
+            return 6
     for move_x, move_y in product((-1, 1), (-1, 1)):
         relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         try:
             absolute_position = new_location + relative_position
         except (ValueError, IndexError):
             continue
+        if isinstance(absolute_position, classes.RelativeCoord):
+            continue
+        if current_board[absolute_position].same_color(old_occupant):
+            continue
+        cannot_move = move_check_2(
+            current_board,
+            (absolute_position, new_location),
+            ignore_location=old_location,
+            act_full=new_location,
+        )
+        if cannot_move:
+            continue
         else:
-            if isinstance(absolute_position, classes.RelativeCoord):
-                continue
-            if current_board[absolute_position].same_color(old_occupant):
-                continue
-            cannot_move = move_check_2(
-                current_board,
-                (absolute_position, new_location),
-                ignore_location=old_location,
-                act_full=new_location,
-            )
-            if cannot_move:
-                continue
-            else:
-                return 6
+            return 6
     return 0
 
 
