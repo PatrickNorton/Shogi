@@ -1,7 +1,7 @@
 import collections
+import functools
+from math import sin, cos, pi, copysign
 from typing import Sequence, Tuple, Union
-
-from numpy import sin, cos, sign, pi
 
 from .exceptions import NullCoordError
 
@@ -93,10 +93,10 @@ class RelativeCoord(BaseCoord):
             super().__init__(coordinate_tuple)
         elif isinstance(xy, int) and xy in range(-8, 9):
             super().__init__((xy, xy))
-        elif all(x in range(-9, 9) for x in xy):
+        elif all(x in range(-8, 9) for x in xy):
             super().__init__(tuple(xy))
         else:
-            raise ValueError(xy)
+            raise ValueError(f"{xy} not in correct range")
 
     def __add__(self, other):
         coordinates = super().__add__(other)
@@ -166,7 +166,7 @@ class AbsoluteCoord(BaseCoord):
             xy = (int(xy[0]), int(xy[1]))
             super().__init__(xy)
         else:
-            raise ValueError(xy)
+            raise ValueError(f"{xy} not in correct range")
         self.x_str = '987654321'[self.x]
         self.y_str = 'abcdefghi'[self.y]
 
@@ -208,6 +208,9 @@ class AbsoluteCoord(BaseCoord):
         yield from _same_xy_abs
 
 
+_sign = functools.partial(copysign, 1)
+
+
 class Direction(RelativeCoord):
     """A direction in which a piece moves.
 
@@ -232,7 +235,10 @@ class Direction(RelativeCoord):
         (round(sin(pi * x / 4)), -round(cos(pi * x / 4))): x for x in range(8)
     }
     inverse_directions = [
-        (round(sin(pi * x / 4)), -round(cos(pi * x / 4))) for x in range(8)
+        (
+            round(sin(pi * x / 4)),
+            round(cos(pi * x / 4))
+        ) for x in range(8)
     ]
 
     def __init__(self, direction: CoordLike):
@@ -275,7 +281,7 @@ class Direction(RelativeCoord):
         """
 
         if not x_var == y_var == 0:
-            return self.direction_set[(int(sign(x_var)), int(sign(y_var)))]
+            return self.direction_set[(_sign(x_var), _sign(y_var))]
         return 8
 
 
