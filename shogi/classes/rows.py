@@ -52,7 +52,7 @@ class Row(collections.abc.Iterable):
             else:
                 return False
         else:
-            return False
+            return NotImplemented
 
     def __repr__(self): return f"Row({self.first_space}, {self.vector})"
 

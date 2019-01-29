@@ -28,7 +28,9 @@ def test_spaces(
     to_return: classes.CoordSet = set()
     for relative_location in space_list:
         try:
-            absolute_location = piece_location + relative_location
+            absolute_location = classes.AbsoluteCoord(
+                piece_location + relative_location
+            )
         except ValueError:
             continue
         if isinstance(absolute_location, classes.RelativeCoord):

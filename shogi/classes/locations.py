@@ -208,7 +208,7 @@ class AbsoluteCoord(BaseCoord):
         yield from _same_xy_abs
 
 
-_sign = functools.partial(copysign, 1)
+def _sign(x): return int(x > 0) - int(x < 0)
 
 
 class Direction(RelativeCoord):
@@ -237,7 +237,7 @@ class Direction(RelativeCoord):
     inverse_directions = [
         (
             round(sin(pi * x / 4)),
-            round(cos(pi * x / 4))
+            -round(cos(pi * x / 4))
         ) for x in range(8)
     ]
 
@@ -245,8 +245,6 @@ class Direction(RelativeCoord):
         self.direction: int
         if direction == (0, 0):
             self.direction = 8
-        elif isinstance(direction, AbsoluteCoord):
-            self.direction = self._make(direction.x, direction.y)
         elif isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
         elif isinstance(direction, int):
