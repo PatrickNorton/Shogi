@@ -1,6 +1,5 @@
 import collections
-import functools
-from math import sin, cos, pi, copysign
+from math import sin, cos, pi
 from typing import Sequence, Tuple, Union
 
 from .exceptions import NullCoordError
