@@ -46,23 +46,32 @@ class BaseCoord(collections.abc.Sequence):
     def __getitem__(self, index): return self.tup[index]
 
     def __add__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x + other.x, self.y + other.y))
+        return BaseCoord(self._add(other))
 
     def __sub__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x - other.x, self.y - other.y))
+        return BaseCoord(self._sub(other))
 
     def __mul__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x * other.x, self.y * other.y))
+        return BaseCoord(self._mul(other))
 
     def __hash__(self): return hash(self.tup)
 
-    def __abs__(self): return AbsoluteCoord((abs(self.x), abs(self.y)))
+    def __abs__(self): return BaseCoord((abs(self.x), abs(self.y)))
 
     def __bool__(self): return not isinstance(self, NullCoord)
 
     def __len__(self): return len(self.tup)
 
     def __repr__(self): return f"BaseCoord({self})"
+
+    def _add(self, other: 'BaseCoord') -> Tuple[int, int]:
+        return self.x + other.x, self.y + other.y
+
+    def _sub(self, other: 'BaseCoord') -> Tuple[int, int]:
+        return self.x - other.x, self.y - other.y
+
+    def _mul(self, other: 'BaseCoord') -> Tuple[int, int]:
+        return self.x * other.x, self.y * other.y
 
 
 class RelativeCoord(BaseCoord):
@@ -97,16 +106,22 @@ class RelativeCoord(BaseCoord):
         else:
             raise ValueError(f"{xy} not in correct range")
 
-    def __add__(self, other):
-        coordinates = super().__add__(other)
+    def __add__(self, other: CoordLike):
+        if not isinstance(other, BaseCoord):
+            other = RelativeCoord(other)
+        coordinates = self._add(other)
         return RelativeCoord(coordinates)
 
-    def __sub__(self, other):
-        coordinates = super().__sub__(other)
+    def __sub__(self, other: CoordLike):
+        if not isinstance(other, BaseCoord):
+            other = RelativeCoord(other)
+        coordinates = self._sub(other)
         return RelativeCoord(coordinates)
 
-    def __mul__(self, other):
-        coordinates = super().__mul__(other)
+    def __mul__(self, other: CoordLike):
+        if not isinstance(other, BaseCoord):
+            other = RelativeCoord(other)
+        coordinates = self._mul(other)
         return RelativeCoord(coordinates)
 
     def __hash__(self):
@@ -173,21 +188,27 @@ class AbsoluteCoord(BaseCoord):
         return self.y_str + self.x_str
 
     def __add__(self, other):
-        coordinates = super().__add__(other)
+        if not isinstance(other, BaseCoord):
+            other = AbsoluteCoord(other)
+        coordinates = self._add(other)
         try:
             return AbsoluteCoord(coordinates)
         except ValueError:
             return RelativeCoord(coordinates)
 
     def __sub__(self, other):
-        coordinates = super().__sub__(other)
+        if not isinstance(other, BaseCoord):
+            other = AbsoluteCoord(other)
+        coordinates = self._sub(other)
         try:
             return AbsoluteCoord(coordinates)
         except ValueError:
             return RelativeCoord(coordinates)
 
     def __mul__(self, other):
-        coordinates = super().__mul__(other)
+        if not isinstance(other, BaseCoord):
+            other = AbsoluteCoord(other)
+        coordinates = self._mul(other)
         try:
             return AbsoluteCoord(coordinates)
         except ValueError:

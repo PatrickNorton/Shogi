@@ -220,6 +220,12 @@ class Board(collections.abc.Sequence):
                 yield (x, y)
 
     @property
+    def enemy_spaces(self) -> Generator:
+        for x, y in self.pieces.items():
+            if y.is_color(self.other_player):
+                yield x
+
+    @property
     def other_player(self) -> Color:
         return Color(self.current_player.other_color)
 

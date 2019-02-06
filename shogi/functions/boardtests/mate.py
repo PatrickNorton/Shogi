@@ -44,7 +44,7 @@ def mate_check(
     has_space = not all(x in {-1, 0, 1} for x in relative_position)
     if has_pieces and not_a_knight and has_space:
         return False
-    for loc in current_board.enemy_pieces:
+    for loc in current_board.enemy_spaces:
         cannot_move = move_check_2(current_board, (loc, check_location))
         if cannot_move:
             continue
@@ -52,7 +52,7 @@ def mate_check(
             return False
     move = king_location - check_location
     move_direction = classes.Direction(move)
-    for pos, z in product(current_board.enemy_pieces, range(max(abs(move)))):
+    for pos, z in product(current_board.enemy_spaces, range(max(abs(move)))):
         new_location = check_location * move_direction * z
         cannot_move = move_check_2(current_board, (pos, new_location))
         if cannot_move:
