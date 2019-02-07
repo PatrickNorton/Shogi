@@ -96,7 +96,7 @@ class RelativeCoord(BaseCoord):
         if isinstance(xy, str):
             coordinate_tuple = (
                 '987654321'.index(xy[1]),
-                'abcdefghi'.index(xy[0])
+                8-'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
         elif isinstance(xy, int) and xy in range(-8, 9):
@@ -170,8 +170,8 @@ class AbsoluteCoord(BaseCoord):
 
         if isinstance(xy, str):
             coordinate_tuple = (
-                '987654321'.index(xy[1]),
-                'abcdefghi'.index(xy[0])
+                '123456789'.index(xy[1]),
+                8-'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
         elif isinstance(xy, int) and xy in range(9):
@@ -181,8 +181,8 @@ class AbsoluteCoord(BaseCoord):
             super().__init__(xy)
         else:
             raise ValueError(f"{xy} not in correct range")
-        self.x_str = '987654321'[self.x]
-        self.y_str = 'abcdefghi'[self.y]
+        self.x_str = '123456789'[self.x]
+        self.y_str = 'abcdefghi'[::-1][self.y]
 
     def __str__(self):
         return self.y_str + self.x_str

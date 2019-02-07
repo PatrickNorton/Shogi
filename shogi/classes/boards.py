@@ -63,9 +63,10 @@ class Board(collections.abc.Sequence):
         to_return = ""
         captured_string = [str(x) for x in self.captured[Color(1)]]
         to_return += f"Black pieces: {' '.join(captured_string)}\n\n"
-        to_return += f"  {'  '.join('987654321')}\n"
+        to_return += f"  {'  '.join('123456789')}\n"
         for x, var in enumerate(self):
-            to_return += f"{'abcdefghi'[x]} {' '.join(str(k) for k in var)}\n"
+            to_return += f"{'abcdefghi'[::-1][x]} "
+            to_return += f"{' '.join(str(k) for k in var)}\n"
         captured_string = [str(x) for x in self.captured[Color(0)]]
         to_return += f"White pieces: {' '.join(captured_string)}\n"
         return to_return
