@@ -19,4 +19,8 @@ class NumberLayout(BoxLayout):
         }
         to_display = types_dict[self.orientation]
         for index, letter in enumerate(to_display):
-            self.add_widget(Button(text=letter), index=index)
+            self.add_widget(NumButton(text=letter), index=index)
+
+
+class NumButton(Button):
+    pass

@@ -9,21 +9,6 @@
                 pos: self.pos
                 size: self.size
 
-        ChessBoard:
-            id: board
-            size: root.width/2, root.width/2
-            pos: 0, root.height-root.width/2
-
-        CapturedGrid:
-            id: 0
-            size: root.width*2/9, root.width*1/9
-            pos: 0, root.height-23*root.width/36
-
-        CapturedGrid:
-            id: 1
-            size: root.width*2/9, root.width*1/9
-            pos: root.width*5/18, root.height-23*root.width/36
-
         NumberLayout:
             orientation: 'horizontal'
             size: root.width/2, root.width/18
@@ -33,6 +18,25 @@
             orientation: 'vertical'
             size: root.width/18, root.width/2
             pos: root.width/2, root.height-root.width/2
+
+        NumButton:
+            size: root.width/18, root.width/18
+            pos: root.width/2, root.height-root.width/2-root.width/18
+
+        ChessBoard:
+            id: board
+            size: root.width/2, root.width/2
+            pos: 0, root.height-root.width/2
+
+        CapturedGrid:
+            id: 0
+            size: root.width*2/9, root.width*1/9
+            pos: 0, root.height-23*root.width/36-root.width/18
+
+        CapturedGrid:
+            id: 1
+            size: root.width*2/9, root.width*1/9
+            pos: root.width*5/18, root.height-23*root.width/36-root.width/18
 
         Button:
             size: root.width/25, root.width/25
@@ -168,3 +172,7 @@
 
 <RstTable>:
     size_hint: None, None
+
+
+<NumButton>:
+    background_color: 0, 0, 0, 0
