@@ -68,7 +68,6 @@ class ChessBoard(GridLayout):
         }
         for space in highlighted_spaces.values():
             space.un_light()
-        self.parent.make_move = False
 
     @property
     def board(self):

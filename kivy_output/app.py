@@ -5,21 +5,14 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
-from kivy.factory import Factory
 from kivy.resources import resource_add_path
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
 
 import shogi
-from .boardsquare import BoardSquare
-from .boardwidget import ChessBoard
-from .captured import CapturedGrid
-from .capturedsquare import CapturedSquare
-from .core import AppCore
-from .inputs import HelpRst, PromotionWindow, MateWindow, HelpText
-from .movetable import MoveGrid, MoveBox
-from .numbers import NumberLayout
 from .screens import HelpScreen, MainScreen
+
+from .registration import register_classes
 
 __all__ = [
     "ShogiBoard",
@@ -48,10 +41,7 @@ class ShogiBoard(App):
         super().__init__(**kwargs)
         self.board = shogi.Board()
         Window.bind(on_keyboard=self._on_keyboard)
-        for cls in (BoardSquare, ChessBoard, CapturedGrid, CapturedSquare,
-                    AppCore, HelpRst, PromotionWindow, MateWindow, HelpText,
-                    NumberLayout, MoveGrid, MoveBox):
-            Factory.register(cls.__name__, cls=cls)
+        register_classes()
 
     @staticmethod
     def get_background_color():
