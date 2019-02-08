@@ -1,4 +1,6 @@
 <MainScreen>:
+    board_size: self.width/2
+    space_size: self.width/18
 
     AppCore:
         id: core
@@ -11,32 +13,32 @@
 
         NumberLayout:
             orientation: 'horizontal'
-            size: root.width/2, root.width/18
-            pos: 0, root.height-root.width/2-root.width/18
+            size: root.board_size, root.space_size
+            pos: 0, root.height-root.board_size-root.space_size
 
         NumberLayout:
             orientation: 'vertical'
-            size: root.width/18, root.width/2
-            pos: root.width/2, root.height-root.width/2
+            size: root.space_size, root.board_size
+            pos: root.board_size, root.height-root.board_size
 
         NumButton:
-            size: root.width/18, root.width/18
-            pos: root.width/2, root.height-root.width/2-root.width/18
+            size: root.space_size, root.space_size
+            pos: root.board_size, root.height-root.board_size - root.space_size
 
         ChessBoard:
             id: board
-            size: root.width/2, root.width/2
-            pos: 0, root.height-root.width/2
+            size: root.board_size, root.board_size
+            pos: 0, root.height-root.board_size
 
         CapturedGrid:
             id: 0
             size: root.width*2/9, root.width*1/9
-            pos: 0, root.height-23*root.width/36-root.width/18
+            pos: 0, root.height-23*root.width/36-root.space_size
 
         CapturedGrid:
             id: 1
             size: root.width*2/9, root.width*1/9
-            pos: root.width*5/18, root.height-23*root.width/36-root.width/18
+            pos: root.width*5/18, root.height-23*root.width/36-root.space_size
 
         Button:
             size: root.width/25, root.width/25

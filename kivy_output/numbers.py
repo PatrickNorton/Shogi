@@ -15,7 +15,7 @@ class NumberLayout(BoxLayout):
     def _setup_subwidgets(self, _):
         types_dict = {
             'horizontal': '123456789',
-            'vertical': 'abcdefghi'[::-1]
+            'vertical': 'abcdefghi'
         }
         to_display = types_dict[self.orientation]
         for index, letter in enumerate(to_display):

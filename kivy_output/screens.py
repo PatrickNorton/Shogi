@@ -1,3 +1,4 @@
+from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import Screen
 
 from .privates import _open_help
@@ -9,7 +10,8 @@ __all__ = [
 
 
 class MainScreen(Screen):
-    pass
+    board_size = NumericProperty(0)
+    space_size = NumericProperty(0)
 
 
 class HelpScreen(Screen):
