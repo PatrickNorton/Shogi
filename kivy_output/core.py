@@ -180,7 +180,7 @@ class AppCore(Widget):
     def un_light_all(self):
         """Un-light all squares."""
         values = (
-            y for x, y in self.parent.ids.items() if x != 'core'
+            y for x, y in self.parent.ids.items() if x not in ('core', 'moves')
         )
         for x in values:
             x.un_light_all()
@@ -255,6 +255,7 @@ class AppCore(Widget):
             is_promote=is_a_promote
         )
         self.game_log[-1].append(to_log)
+        self.parent.ids['moves'].add_move(to_log)
 
     # Child pressed methods
     def captured_press(self, piece: shogi.Piece, is_highlighted: bool):

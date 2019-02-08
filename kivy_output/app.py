@@ -17,6 +17,7 @@ from .captured import CapturedGrid
 from .capturedsquare import CapturedSquare
 from .core import AppCore
 from .inputs import HelpRst, PromotionWindow, MateWindow, HelpText
+from .movetable import MoveGrid, MoveBox
 from .numbers import NumberLayout
 from .screens import HelpScreen, MainScreen
 
@@ -49,7 +50,7 @@ class ShogiBoard(App):
         Window.bind(on_keyboard=self._on_keyboard)
         for cls in (BoardSquare, ChessBoard, CapturedGrid, CapturedSquare,
                     AppCore, HelpRst, PromotionWindow, MateWindow, HelpText,
-                    NumberLayout):
+                    NumberLayout, MoveGrid, MoveBox):
             Factory.register(cls.__name__, cls=cls)
 
     @staticmethod

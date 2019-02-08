@@ -4,6 +4,7 @@ from kivy.uix.button import Button
 
 __all__ = [
     "NumberLayout",
+    "NumButton",
 ]
 
 
@@ -14,7 +15,7 @@ class NumberLayout(BoxLayout):
 
     def _setup_subwidgets(self, _):
         types_dict = {
-            'horizontal': '123456789',
+            'horizontal': '123456789'[::-1],
             'vertical': 'abcdefghi'
         }
         to_display = types_dict[self.orientation]

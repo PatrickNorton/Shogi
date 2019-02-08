@@ -40,6 +40,11 @@
             size: root.width*2/9, root.width*1/9
             pos: root.width*5/18, root.height-23*root.width/36-root.space_size
 
+        MoveBox:
+            id: moves
+            size: root.width*1/5, root.height*3/5
+            pos: root.width*2/3, root.height*1/6
+
         Button:
             size: root.width/25, root.width/25
             pos: root.width-root.width/25, root.height-root.width/25
@@ -178,3 +183,19 @@
 
 <NumButton>:
     background_color: 0, 0, 0, 0
+
+
+<MoveBox>:
+    layout_content: layout_content
+    BoxLayout:
+        id: bl
+        pos: self.parent.pos
+        ScrollView:
+            size: self.size
+            MoveGrid:
+                box_amount: self.parent.parent.height/20
+                id: layout_content
+                size_hint_y: None
+                cols: 2
+                row_default_height: '20dp'
+                row_force_default: True
