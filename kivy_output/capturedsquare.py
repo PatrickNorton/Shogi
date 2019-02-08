@@ -42,13 +42,12 @@ class CapturedSquare(Button):
     def on_press(self):
         """Captured square was pressed."""
         if self.occupant:
-            if self.is_highlighted:
+            to_light = self.is_highlighted
+            self.parent.space_pressed(self.position, self.is_highlighted)
+            if to_light:
                 self.un_light()
-                self.parent.parent.un_light_all()
-            elif not self.parent.parent.make_move:
-                self.parent.space_pressed(self.position, self.is_highlighted)
-                if self.parent.parent.make_move:
-                    self.light()
+            else:
+                self.light()
 
     def light(self):
         """Highlight self."""

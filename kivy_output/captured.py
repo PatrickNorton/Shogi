@@ -56,4 +56,5 @@ class CapturedGrid(GridLayout):
     def un_light_all(self):
         """Un light all sub-spaces of self."""
         for x in self.children:
-            x.un_light()
+            if x.is_highlighted:
+                x.un_light()
