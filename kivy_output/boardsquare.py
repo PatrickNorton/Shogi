@@ -34,15 +34,15 @@ class BoardSquare(Button):
 
     def light(self):
         """Highlight self."""
-        self.background_normal = "./images/Highlighted space.jpg"
-        self.background_down = "./images/Highlighted space.jpg"
+        self.background_normal = "Highlighted space.jpg"
+        self.background_down = "Highlighted space.jpg"
         self.color = 0, 0, 0, 1
         self.is_highlighted = True
 
     def un_light(self):
         """Un-highlight self."""
-        self.background_normal = "./images/Light square.jpg"
-        self.background_down = "./images/Light square.jpg"
+        self.background_normal = "Light square.jpg"
+        self.background_down = "Light square.jpg"
         self.color = 1, 1, 1, 1
         self.is_highlighted = False
 

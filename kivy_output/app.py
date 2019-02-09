@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.resources import resource_add_path
@@ -55,10 +54,7 @@ class ShogiBoard(App):
         """
         sm = ScreenManager()
         sm.add_widget(MainScreen(name="main"))
-        Clock.schedule_once(
-            lambda x: sm.add_widget(HelpScreen(name='help')),
-            0
-        )
+        sm.add_widget(HelpScreen(name='help'))
         return sm
 
     def _on_keyboard(
