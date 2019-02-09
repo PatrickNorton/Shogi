@@ -52,9 +52,9 @@ class AppCore(Widget):
         :param current: location of piece
         :param to: location to move piece to
         """
-        checking_spaces = [
+        checking_spaces = (
             x for x in self.in_check[self.board.current_player] if x != to
-        ]
+        )
         cannot_move = shogi.check_move(
             self.board,
             (current, to),
@@ -136,11 +136,7 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        cannot_drop = shogi.drop_check(
-            self.board,
-            self.to_add,
-            space_to
-        )
+        cannot_drop = shogi.drop_check(self.board, self.to_add, space_to)
         if not cannot_drop:
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
@@ -165,9 +161,7 @@ class AppCore(Widget):
                 self.board,
                 self.in_check[pressed_piece.color]
             )
-            valid_spaces = (
-                self.board_spaces[x] for x in valid_moves
-            )
+            valid_spaces = (self.board_spaces[x] for x in valid_moves)
             for space in valid_spaces:
                 space.light()
             if self.board[coordinate]:
@@ -179,11 +173,8 @@ class AppCore(Widget):
 
     def un_light_all(self):
         """Un-light all squares."""
-        values = (
-            y for x, y in self.parent.ids.items() if x not in ('core', 'moves')
-        )
-        for x in values:
-            x.un_light_all()
+        for x in ('board', '0', '1'):
+            self.parent.ids[x].un_light_all()
 
     def un_light_captured(self):
         """Un-light all captured squares."""
@@ -201,16 +192,10 @@ class AppCore(Widget):
         """
         self.un_light_all()
         board_spaces = self.board_spaces.items()
-        empty_children = {
-            x: y for x, y in board_spaces if not y.text
-        }
+        empty_children = {x: y for x, y in board_spaces if not y.text}
         if piece.color == self.board.current_player:
             for space, x in empty_children.items():
-                cannot_drop = shogi.drop_check(
-                    self.board,
-                    piece,
-                    space
-                )
+                cannot_drop = shogi.drop_check(self.board, piece, space)
                 if not cannot_drop:
                     x.light()
             self.make_move = True

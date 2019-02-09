@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterable
 
 from shogi import classes
 from .check import check_check
@@ -12,7 +12,7 @@ __all__ = [
 def check_move(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
-        checking_spaces: List[classes.AbsoluteCoord] = None
+        checking_spaces: Iterable[classes.AbsoluteCoord] = None
 ):
     """A more complete check for if the move is legal.
 
@@ -23,7 +23,7 @@ def check_move(
     """
     current, to = coordinates
     if checking_spaces is None:
-        checking_spaces = []
+        checking_spaces = ()
     cannot_move = move_check_2(current_board, coordinates)
     if cannot_move:
         return cannot_move
