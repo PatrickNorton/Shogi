@@ -10,7 +10,6 @@ from kivy.utils import get_color_from_hex
 
 import shogi
 from .screens import HelpScreen, MainScreen
-
 from .registration import register_classes
 
 __all__ = [

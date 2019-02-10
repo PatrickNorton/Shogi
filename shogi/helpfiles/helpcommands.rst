@@ -9,3 +9,5 @@ help rules
     Brings up rules page
 help commands
     Brings up commands list
+help notation
+    Brings up notation info

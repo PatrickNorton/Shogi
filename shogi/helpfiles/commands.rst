@@ -24,3 +24,5 @@ help rules
     Brings up rules page
 help commands
     Brings up commands list (this page)
+help notation
+    Brings up notation info
