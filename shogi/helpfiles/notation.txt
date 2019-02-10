@@ -14,7 +14,7 @@ The Dash:
 
 Additional add-ons:
     If the piece was eligible for promotion, then there is another character.
-    If the piece was promoted, then there is a * added.
+    If the piece was promoted, then there is a ^ added.
     Otherwise, there is an = added.
     If the move checked the king, a + is added.
     On checkmate, there is a # added to the end.

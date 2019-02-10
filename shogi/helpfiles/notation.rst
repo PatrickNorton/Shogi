@@ -23,7 +23,7 @@ On the drop of a piece, the dash is replaced with a *.
 Add-ons
 -------
 
-\*
+\^
     Piece was promoted
 \=
     Piece could promote, but didn't
@@ -43,7 +43,7 @@ kxc3
     King moved to c3, capturing a piece
 l*d7
     Lance dropped at d7
-n-h5*
+n-h5^
     Knight moved to h5, and promoted
 s-a4=
     Silver general moved to a4, did not promote
