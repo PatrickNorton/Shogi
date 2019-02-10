@@ -95,11 +95,9 @@ class AppCore(Widget):
         :param dropped_piece: piece to be dropped, if it is a drop
         """
         current, to = move
-        is_a_promote = self.to_promote
         if self.to_promote:
             self.board.promote(to)
             self.update_board(to)
-            self.to_promote = None
         king_location, is_in_check = shogi.check_check(
             self.board,
             (current, to),
@@ -116,17 +114,21 @@ class AppCore(Widget):
                 pops = MateWindow()
                 pops.open()
                 # TODO: run EOG when checkmate happens
+        else:
+            mate = False
         self.in_check[self.board.other_player] = is_in_check
         self.update_game_log(
             move,
             is_a_capture=is_a_capture,
-            is_a_promote=is_a_promote,
-            is_a_drop=(dropped_piece is not None)
+            is_a_promote=self.to_promote,
+            is_a_drop=(dropped_piece is not None),
+            is_mate=(mate if is_in_check else None)
         )
         self.board.flip_turn()
         self.make_move = False
         self.move_from = shogi.NullCoord()
         self.to_add = None
+        self.to_promote = None
         self.un_light_all()
         if is_a_capture:
             self.update_captured(self.board)
@@ -221,7 +223,8 @@ class AppCore(Widget):
             move: shogi.OptCoordTuple,
             is_a_capture: bool = False,
             is_a_promote: Optional[bool] = None,
-            is_a_drop: bool = False
+            is_a_drop: bool = False,
+            is_mate: Optional[bool] = None
     ):
         """Update the game log to add new move.
 
@@ -229,6 +232,7 @@ class AppCore(Widget):
         :param is_a_capture: if the move involved a capture
         :param is_a_promote: if the move involved a promotion
         :param is_a_drop: if the move was a drop
+        :param is_mate: if move is mate (None if not check)
         """
         if not self.game_log or len(self.game_log[-1]) == 2:
             self.game_log.append([])
@@ -237,7 +241,9 @@ class AppCore(Widget):
             move,
             is_drop=is_a_drop,
             is_capture=is_a_capture,
-            is_promote=is_a_promote
+            is_promote=is_a_promote,
+            is_check=(is_mate is not None),
+            is_mate=is_mate
         )
         self.game_log[-1].append(to_log)
         self.parent.ids['moves'].add_move(to_log)
