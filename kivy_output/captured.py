@@ -1,4 +1,5 @@
 from kivy.uix.gridlayout import GridLayout
+from typing import List
 
 import shogi
 from .capturedsquare import CapturedSquare
@@ -19,7 +20,7 @@ class CapturedGrid(GridLayout):
         super().__init__(cols=4, rows=2, **kwargs)
         for x in range(8):
             self.add_widget(CapturedSquare(x))
-        self.ordered_children = self.children[::-1]
+        self.ordered_children: List[CapturedSquare] = self.children[::-1]
 
     def update(
             self,
@@ -38,20 +39,12 @@ class CapturedGrid(GridLayout):
         for space, occupant in zip(children, captured_pieces):
             space.give_piece(occupant)
 
-    def space_pressed(
-            self,
-            position: int,
-            is_highlighted: bool
-    ):
+    def space_pressed(self, position: int):
         """A space of the grid was pressed.
 
         :param position: position of square within grid
-        :param is_highlighted: if the space is highlighted
         """
-        self.parent.captured_press(
-            self.ordered_children[position].occupant,
-            is_highlighted
-        )
+        self.parent.captured_press(self.ordered_children[position])
 
     def un_light_all(self):
         """Un light all sub-spaces of self."""

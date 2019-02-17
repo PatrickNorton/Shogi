@@ -5,6 +5,7 @@ from kivy.uix.widget import Widget
 
 import shogi
 from .boardsquare import BoardSquare
+from .capturedsquare import CapturedSquare
 from .inputs import MateWindow, PromotionWindow
 
 __all__ = [
@@ -192,10 +193,10 @@ class AppCore(Widget):
 
         :param piece: piece to be drop-tested
         """
-        self.un_light_all()
-        board_spaces = self.board_spaces.items()
-        empty_children = {x: y for x, y in board_spaces if not y.text}
-        if piece.color == self.board.current_player:
+        if piece.is_color(self.board.current_player):
+            self.un_light_all()
+            board_spaces = self.board_spaces.items()
+            empty_children = {x: y for x, y in board_spaces if not y.text}
             for space, x in empty_children.items():
                 cannot_drop = shogi.drop_check(self.board, piece, space)
                 if not cannot_drop:
@@ -249,18 +250,26 @@ class AppCore(Widget):
         self.parent.ids['moves'].add_move(to_log)
 
     # Child pressed methods
-    def captured_press(self, piece: shogi.Piece, is_highlighted: bool):
+    def captured_press(self, square: CapturedSquare):
         """One of the captured grids was clicked.
 
-        :param piece: piece clicked
-        :param is_highlighted: if square clicked is highlighted
+        :param square: square pressed
         """
-        if not is_highlighted:
-            self.in_play_light(piece)
-            self.to_add = piece
+        if not square.occupant.is_color(self.board.current_player):
+            return
+        piece = square.occupant
+        is_highlighted = square.is_highlighted
+        if not self.make_move:
+            if is_highlighted:
+                raise RuntimeError("make_move should not be false & space lit")
+            else:
+                self.in_play_light(piece)
+                self.to_add = piece
+                square.light()
         else:
-            self.un_light_all()
-            self.make_move = False
+            if is_highlighted:
+                self.un_light_all()
+                self.make_move = False
 
     def board_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Board was clicked.
