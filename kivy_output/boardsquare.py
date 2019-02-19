@@ -13,7 +13,7 @@ class BoardSquare(Button):
     """The class for a board square.
 
     :ivar board_position: position within board
-    :ivar is_highlighted: whether ot not piece is highlighted
+    :ivar is_highlighted: whether or not piece is highlighted
     """
 
     def __init__(
@@ -51,6 +51,8 @@ class BoardSquare(Button):
         """Get string of a piece.
 
         Mostly a placeholder for now for images later.
+        This will be used for the setting of images when I get around
+        to it.
 
         :param piece: piece to get string of.
         :return: string of piece
@@ -64,9 +66,13 @@ class BoardSquare(Button):
     ) -> shogi.CoordSet:
         """Get valid moves for square, given current board.
 
+        This function takes an iterable of spaces checking the king
+        and the current board state in order to produce the set of
+        spaces to which it may travel.
+
         :param current_board: current board position
         :param checking_spaces: spaces checking king
-        :return: list of valid spaces
+        :return: set of valid spaces
         """
         current_piece = current_board[self.board_position]
         valid_spaces = set()

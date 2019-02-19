@@ -12,6 +12,13 @@ from .screens import HelpScreen, MainScreen
 
 
 def register_classes():
+    """Register all classes to Kivy.
+
+    This is necessary for kivy to function.
+    It should be done automatically (I think), but it seems not to
+    work, so instead I have added this.
+    It registers to kivy every class currently defined.
+    """
     for cls in (BoardSquare, ChessBoard, CapturedGrid, CapturedSquare,
                 AppCore, HelpRst, PromotionWindow, MateWindow, HelpText,
                 NumberLayout, HelpScreen, MainScreen, MoveGrid, MoveBox):

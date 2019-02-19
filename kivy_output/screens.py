@@ -10,6 +10,11 @@ __all__ = [
 
 
 class MainScreen(Screen):
+    """The class representing the main screen.
+
+    :cvar board_size: size of board
+    :cvar space_size: size of space
+    """
     board_size = NumericProperty(0)
     space_size = NumericProperty(0)
 
@@ -33,6 +38,16 @@ class HelpScreen(Screen):
 
     def text_entered(self, text: str):
         """Actions for when text was entered into the prompt.
+
+        Different actions
+        -----------------
+
+        Text in the list of current screen names:
+            Jumps to that screen
+        Text is a valid screen name:
+            Adds that screen and changes to it
+        Text is not a valid screen:
+            Puts "file not found" in the prompt
 
         :param text: text entered
         """

@@ -39,7 +39,7 @@ class AppCore(Widget):
             shogi.Color(1): set()
         }
         self.to_add: shogi.Piece = shogi.NoPiece()
-        self.to_promote: bool = None
+        self.to_promote: Optional[bool] = None
         self.game_log: List[List[str]] = []
         Clock.schedule_once(self._set_captured, 0)
 
@@ -49,6 +49,12 @@ class AppCore(Widget):
             to: shogi.AbsoluteCoord
     ):
         """Move piece between two locations.
+
+        This function first checks that the move is valid, and then
+        opens a popup window if it is necessary.
+        It also handles promotion opportunities, but check/checkmate
+        handling and the actual relocation of pieces does not happen
+        until it calls the cleanup() function.
 
         :param current: location of piece
         :param to: location to move piece to
@@ -90,6 +96,12 @@ class AppCore(Widget):
             dropped_piece: shogi.Piece = None
     ):
         """Cleanup operations for a piece move.
+
+        This function is called as a byproduct of make_moves.
+        It runs all of the post-move cleanup, and the check and mate
+        validation.
+        It modifies the state of the application, and so it probably
+        should not be called by itself without good cause.
 
         :param move: from, to of move
         :param is_a_capture: if the move involved a capture
@@ -149,6 +161,10 @@ class AppCore(Widget):
     # Lighting methods
     def light_moves(self, coordinate: shogi.AbsoluteCoord):
         """Light up legal moves from a coordinate.
+
+        As a consequence of this function being called, make_moves
+        is set, corresponding to whether or not the next press should
+        move the piece or not.
 
         :param coordinate: coordinate to move from
         """
@@ -288,8 +304,8 @@ class AppCore(Widget):
         """Set captured_spaces method.
 
         This needs to exist, as self.parent.ids is not accessible during
-        __init__, but this should still be created then. DO NOT USE
-        OUTSIDE OF __init__!!
+        __init__, but this should still be created then. **DO NOT USE
+        OUTSIDE OF __init__!!**
         """
         self.captured_spaces = {
             shogi.Color(0): self.parent.ids['0'],

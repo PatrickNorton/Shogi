@@ -67,7 +67,9 @@ class ShogiBoard(App):
         """Keyboard binding code.
 
         This runs the keyboard shortcuts necessary to make the app
-        run properly.
+        run properly. Parameters starting with an underscore are not
+        currently used, but passed into the function by kivy, so they
+        must remain there.
 
         :param _instance: instance of window, unused and unknown
         :param key: integer of key pressed

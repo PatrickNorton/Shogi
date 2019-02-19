@@ -39,12 +39,18 @@ class ChessBoard(GridLayout):
     def space_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Light or make move when a specific space is pressed.
 
+        This is simply a delegate call to the board_pressed method
+        of its parent, and does not do any processing itself.
+
         :param coordinate: location of pressed square
         """
         self.parent.board_pressed(coordinate)
 
     def update_squares(self, *to_update: shogi.AbsoluteCoord):
         """Update specific squares.
+
+        This, given an iterable of coordinates, updates their
+        corresponding board positions.
 
         :param to_update: list of squares to update
         """

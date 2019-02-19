@@ -29,6 +29,11 @@ class CapturedGrid(GridLayout):
     ):
         """Update square.
 
+        For now, this removes all pieces from the squares,
+        and then reassigns them according to how they were
+        given.
+        This should be changed.
+
         :param current_board: current board
         :param color: color of grid layout
         """

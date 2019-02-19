@@ -58,6 +58,7 @@ class PromotionWindow(Popup):
 
 
 class MateWindow(Popup):
+    """The window for when checkmate happens."""
     pass
 
 
