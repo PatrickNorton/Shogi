@@ -1,11 +1,17 @@
+.. _notation:
+
 Shogi Notation
 ==============
+
+.. _notation_basic:
 
 Basic Notation
 --------------
 
 The basic shogi notation is of the form [Piece]-[Location].
 This is what most moves consist of, but some are more complex.
+
+.. _notation_identical:
 
 Identical Moves
 ---------------
@@ -14,11 +20,15 @@ If two pieces could move to the same location, a differentiating coordinate is
 added after the piece.
 Only one half of a coordinate is ever added, to save space.
 
+.. _notation_dash:
+
 Middle Dash
 -----------
 
 If the previous move was a capture, the dash is replaced by an x.
 On the drop of a piece, the dash is replaced with a *.
+
+.. _notation_add_ons:
 
 Add-ons
 -------
@@ -31,6 +41,8 @@ Add-ons
     Check
 \#
     Checkmate
+
+.. _notation_examples:
 
 Examples
 --------

@@ -1,17 +1,25 @@
+.. _rules:
+
 Rules of shogi
 ==============
 
-Shogi is a chess-style Japanese boardgame.
+Shogi is a chess-style Japanese board game.
+
+.. _rules_objective:
 
 Objective
 ---------
 
 To checkmate the king. See "`Checkmate`_", below.
 
+.. _rules_movement:
+
 Movement
 --------
 
 For detailed rules on movement, type the piece's first letter into the prompt.
+
+.. _rules_promotion:
 
 Promotion
 ---------
@@ -23,6 +31,8 @@ you wish to promote the piece, type 'y' and press Return. Otherwise, type 'n'.
 A piece may only be promoted on a turn in which it is moved. If a piece
 reaches a position in the board from which it cannot further move unless it is
 promoted, it must promote, and is automatically promoted.
+
+.. _rules_drop:
 
 Drops
 -----
@@ -37,6 +47,8 @@ Restrictions on drops:
     2. A pawn may not be dropped to give immediate checkmate.
     3. A piece may not be dropped somewhere where it must be promoted.
 
+.. _rules_check:
+
 Check
 -----
 
@@ -46,6 +58,8 @@ remove the check.
 The program announces check when it happens.
 
 .. Not yet, it'll happen...
+
+.. _rules_checkmate:
 
 Checkmate
 ---------

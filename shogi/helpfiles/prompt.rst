@@ -1,3 +1,5 @@
+.. _prompt:
+
 Prompt help
 ===========
 

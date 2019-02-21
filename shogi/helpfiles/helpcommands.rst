@@ -1,3 +1,5 @@
+.. _help_commands:
+
 Help commands
 =============
 
