@@ -4,6 +4,7 @@ from typing import List
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
+from kivy.properties import StringProperty
 from kivy.resources import resource_add_path
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
@@ -30,6 +31,8 @@ class ShogiBoard(App):
 
     :ivar self.board: current game board
     """
+
+    background_color = StringProperty("#1e2022")
 
     def __init__(self, **kwargs):
         """Initialise instance of ShogiBoard.

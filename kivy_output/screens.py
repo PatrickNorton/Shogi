@@ -1,4 +1,4 @@
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
 from .privates import _open_help
@@ -25,16 +25,19 @@ class HelpScreen(Screen):
     :ivar text: text of help file
     """
 
-    def __init__(self, help_file="main", **kwargs):
+    help_file = StringProperty("main")
+    text = StringProperty(None)
+
+    def __init__(self, **kwargs):
         """Initialise instance of HelpScreen.
 
         :param help_file: name of help file to load
         :param kwargs: Kivy keyword arguments
         """
-        file_name = f"{help_file}.rst"
+        super().__init__(**kwargs)
+        file_name = f"{self.help_file}.rst"
         with _open_help(file_name) as f:
             self.text = f.read()
-        super().__init__(**kwargs)
 
     def text_entered(self, text: str):
         """Actions for when text was entered into the prompt.

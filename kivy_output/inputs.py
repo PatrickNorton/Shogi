@@ -1,3 +1,4 @@
+from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
 from kivy.uix.textinput import TextInput
@@ -36,13 +37,14 @@ class PromotionWindow(Popup):
     :ivar caller: object that called the popup window
     """
 
-    def __init__(self, caller=None, **kwargs):
+    caller = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
         """Initialise instance of PromotionWindow.
 
         :param caller: object that called the window
         :param kwargs: Kivy keyword arguments
         """
-        self.caller = caller
         super().__init__(**kwargs)
 
     def child_pressed(self, promote: bool):
