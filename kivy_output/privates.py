@@ -29,9 +29,9 @@ def _get_image_loc(file_name: str) -> str:
     :param file_name: name of file
     :return: image file
     """
-    current_directory = pathlib.Path(__file__).parent
-    piece_path = current_directory / '../images/pieces' / file_name
-    file_path = current_directory / '../images' / file_name
+    current_dir = pathlib.Path(__file__).parent.parent
+    piece_path = current_dir / 'images' / 'pieces' / file_name
+    file_path = current_dir / 'images' / file_name
     if piece_path.exists():
         return str(piece_path)
     elif file_path.exists():
