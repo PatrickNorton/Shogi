@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import List
 
@@ -80,19 +81,21 @@ class ShogiBoard(App):
         :param code_point: text of pressed key
         :param modifiers: list of modifiers pressed in conjunction
         """
-        is_meta_modifier = (modifiers == ['meta'])
+        is_mac = sys.platform == 'darwin'
+        is_meta_modifier = (modifiers == ['meta' if is_mac else 'ctrl'])
         is_help_screen = isinstance(self.root.current_screen, HelpScreen)
-        if modifiers:
-            if is_meta_modifier and code_point == 'w':
+        is_main_screen = (self.root.current == 'main')
+        if is_meta_modifier:
+            if code_point == 'w':
                 self.stop()
-            if is_meta_modifier and code_point == '/':
-                if self.root.current == 'main':
+            if code_point == '/':
+                if is_main_screen:
                     self.root.transition.direction = 'left'
                     self.root.current = 'help'
                 elif is_help_screen:
                     self.root.transition.direction = 'right'
                     self.root.current = 'main'
-            if is_meta_modifier and key == 276:
+            if key == 276:
                 if is_help_screen:
                     self.root.transition.direction = 'right'
                     self.root.current = 'main'
