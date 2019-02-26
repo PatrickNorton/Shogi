@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from shogi import move_check_2
+from shogi.functions.boardtests.move import move_check_2
 from .aliases import OptCoordTuple
 from .boards import Board
 from .locations import AbsoluteCoord
