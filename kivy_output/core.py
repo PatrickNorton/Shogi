@@ -40,7 +40,7 @@ class AppCore(Widget):
         }
         self.to_add: shogi.Piece = shogi.NoPiece()
         self.to_promote: Optional[bool] = None
-        self.game_log: List[List[str]] = []
+        self.game_log: List[List[shogi.Move]] = []
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
@@ -48,7 +48,7 @@ class AppCore(Widget):
             current: shogi.AbsoluteCoord,
             to: shogi.AbsoluteCoord
     ):
-        """PieceMoves piece between two locations.
+        """Moves piece between two locations.
 
         This function first checks that the move is valid, and then
         opens a popup window if it is necessary.
@@ -69,30 +69,30 @@ class AppCore(Widget):
         )
         if cannot_move:
             return
-        is_a_capture = bool(self.board[to])
+        captured_piece = self.board[to]
         self.board.move(current, to)
         self.update_board(current, to)
         can_promote = self.board.can_promote(to)
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
                 self.to_promote = True
-                self.cleanup((current, to), is_a_capture=is_a_capture)
+                self.cleanup((current, to), captured_piece=captured_piece)
             else:
                 pops = PromotionWindow(caller=self)
                 pops.bind(
                     on_dismiss=lambda x: self.cleanup(
                         (current, to),
-                        is_a_capture=is_a_capture
+                        captured_piece=captured_piece
                     )
                 )
                 pops.open()
         else:
-            self.cleanup((current, to), is_a_capture=is_a_capture)
+            self.cleanup((current, to), captured_piece=captured_piece)
 
     def cleanup(
             self,
             move: shogi.OptCoordTuple,
-            is_a_capture: bool = False,
+            captured_piece: shogi.Piece = None,
             dropped_piece: shogi.Piece = None
     ):
         """Cleanup operations for a piece move.
@@ -104,9 +104,10 @@ class AppCore(Widget):
         should not be called by itself without good cause.
 
         :param move: from, to of move
-        :param is_a_capture: if the move involved a capture
+        :param captured_piece: piece captured (None if no capture)
         :param dropped_piece: piece to be dropped, if it is a drop
         """
+        is_a_capture = bool(captured_piece)
         current, to = move
         if self.to_promote:
             self.board.promote(to)
@@ -133,6 +134,7 @@ class AppCore(Widget):
         self.update_game_log(
             move,
             is_a_capture=is_a_capture,
+            captured_piece=captured_piece,
             is_a_promote=self.to_promote,
             is_a_drop=(dropped_piece is not None),
             is_mate=(mate if is_in_check else None)
@@ -239,6 +241,7 @@ class AppCore(Widget):
             self,
             move: shogi.OptCoordTuple,
             is_a_capture: bool = False,
+            captured_piece: shogi.Piece = None,
             is_a_promote: Optional[bool] = None,
             is_a_drop: bool = False,
             is_mate: Optional[bool] = None
@@ -247,17 +250,19 @@ class AppCore(Widget):
 
         :param move: move made
         :param is_a_capture: if the move involved a capture
+        :param captured_piece: piece captured
         :param is_a_promote: if the move involved a promotion
         :param is_a_drop: if the move was a drop
         :param is_mate: if move is mate (None if not check)
         """
         if not self.game_log or len(self.game_log[-1]) == 2:
             self.game_log.append([])
-        to_log = shogi.to_notation(
+        to_log = shogi.Move(
             self.board,
             move,
             is_drop=is_a_drop,
             is_capture=is_a_capture,
+            captured_piece=captured_piece,
             is_promote=is_a_promote,
             is_check=(is_mate is not None),
             is_mate=is_mate

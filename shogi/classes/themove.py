@@ -80,7 +80,7 @@ def _piece_can_move(
 ) -> List[AbsoluteCoord]:
     if piece in current_board.pieces.values():
         pieces = (
-            x for x, y in current_board.pieces.values() if y == piece
+            x for x, y in current_board.pieces.items() if y == piece
         )
         valid_spaces = []
         for location in pieces:
