@@ -18,11 +18,11 @@ class Move:
             move: OptCoordTuple,
             is_drop: bool = False,
             is_capture: bool = False,
+            captured_piece: Piece = NoPiece(),
             is_promote: Optional[bool] = None,
             is_check: bool = False,
             is_mate: bool = False,
     ):
-        # TODO: Input validation
         self.start = move[0]
         self.end = move[1]
         self.piece = current_board[move[1]]
@@ -30,6 +30,9 @@ class Move:
             raise ValueError
         self.is_drop = is_drop
         self.is_capture = is_capture
+        self.captured_piece = captured_piece
+        if self.is_capture and isinstance(self.captured_piece, NoPiece):
+            raise ValueError
         self.is_promote = is_promote
         if self.is_promote and not self.piece.prom:
             raise ValueError
