@@ -12,6 +12,20 @@ __all__ = [
 
 
 class Move:
+    """The class representing a completed move.
+
+    :ivar start: the original position of the piece
+    :ivar end: the end location of the piece
+    :ivar piece: the piece moved
+    :ivar is_drop: if the move is a drop
+    :ivar is_capture: if the move is a capture
+    :ivar captured_piece: the captured piece
+    :ivar is_promote: if the moved piece was promoted
+    :ivar is_check: if the move checked the king
+    :ivar is_mate: if the move checkmated
+    :ivar tuple: (start, end) tuple
+    :ivar string: the move in Shogi move notation
+    """
     def __init__(
             self,
             current_board: Board,
@@ -23,6 +37,17 @@ class Move:
             is_check: bool = False,
             is_mate: bool = False,
     ):
+        """Initialise instance of Moves.
+
+        :param current_board: the current board
+        :param move: tuple of the start and end of move
+        :param is_drop: if the move was a drop
+        :param is_capture: if the move was a capture
+        :param captured_piece: the captured piece
+        :param is_promote: if the move involved promotion
+        :param is_check: if the move caused check
+        :param is_mate: if the move caused checkmate
+        """
         self.start = move[0]
         self.end = move[1]
         self.piece = current_board[move[1]]
@@ -46,6 +71,11 @@ class Move:
     def __str__(self): return self.string
 
     def to_string(self, current_board: Board) -> str:
+        """Create notation string out of the move.
+
+        :param current_board: current board state
+        :return: notation string
+        """
         if self.is_promote:
             piece_notation = str(self.piece)[0].lower()
         else:
@@ -78,6 +108,17 @@ def _piece_can_move(
         piece: Piece,
         to: AbsoluteCoord
 ) -> List[AbsoluteCoord]:
+    """Check if any pieces can move to a location.
+
+    This is a mirror of the function in shogi.functions.
+    It exists in order to prevent circular imports.
+    Please change with caution.
+
+    :param current_board: current board state
+    :param piece: piece to check for move
+    :param to: space piece is moved to
+    :return: list of possible spaces that can move there
+    """
     if piece in current_board.pieces.values():
         pieces = (
             x for x, y in current_board.pieces.items() if y == piece
