@@ -31,7 +31,7 @@ class Board(collections.abc.Sequence):
     :ivar captured: List of captured pieces for each color
     :ivar current_player: Active player
     :ivar last_move: Previous move performed
-    :ivar next_move: Move about to be performed
+    :ivar next_move: PieceMoves about to be performed
     """
 
     def __init__(self, pieces: Optional[dict] = None):
@@ -96,7 +96,7 @@ class Board(collections.abc.Sequence):
         yield from self.pieces
 
     def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
-        """Move a piece between locations.
+        """PieceMoves a piece between locations.
 
         :param current: location of piece
         :param new: location to move piece to
@@ -181,7 +181,7 @@ class Board(collections.abc.Sequence):
         self.pieces[space] = piece
 
     def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
-        """Move a piece from capture into play.
+        """PieceMoves a piece from capture into play.
 
         :param piece: the piece to put in play
         :param moved_to: where to put the piece

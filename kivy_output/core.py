@@ -48,7 +48,7 @@ class AppCore(Widget):
             current: shogi.AbsoluteCoord,
             to: shogi.AbsoluteCoord
     ):
-        """Move piece between two locations.
+        """PieceMoves piece between two locations.
 
         This function first checks that the move is valid, and then
         opens a popup window if it is necessary.

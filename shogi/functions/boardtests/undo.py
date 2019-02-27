@@ -11,7 +11,7 @@ __all__ = [
 
 def undo_move(
         current_board: classes.Board,
-        move: classes.Move
+        move: classes.PieceMoves
 ):
     if move.is_drop:
         current_board.un_drop(move.end)
