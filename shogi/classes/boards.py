@@ -180,16 +180,23 @@ class Board(collections.abc.Sequence):
         piece = piece.promote()
         self.pieces[space] = piece
 
-    def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
+    def put_in_play(
+            self,
+            piece: Piece,
+            moved_to: AbsoluteCoord,
+            player: Color = None,
+            flip_sides: bool = False
+    ):
         """Moves a piece from capture into play.
 
         :param piece: the piece to put in play
         :param moved_to: where to put the piece
-        :raises IllegalMove: if capturing on drop
-        :raises IllegalMove: if capturing 2-pawn rule
+        :param player: color of piece to put in play
+        :param flip_sides: if the piece should flip sides
         """
 
-        player = self.current_player
+        if player is None:
+            player = self.current_player
         if not isinstance(self[moved_to], NoPiece):
             return 8
         if piece.has_type('p'):
@@ -198,6 +205,8 @@ class Board(collections.abc.Sequence):
                 if self[loc].is_piece('p', player):
                     return 9
         self.captured[player].remove(piece)
+        if flip_sides:
+            piece = piece.flip_sides()
         self.pieces[moved_to] = piece
 
     def un_drop(self, location: AbsoluteCoord):

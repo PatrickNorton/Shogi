@@ -96,7 +96,8 @@ class AppCore(Widget):
             move: shogi.OptCoordTuple,
             captured_piece: shogi.Piece = None,
             dropped_piece: shogi.Piece = None,
-            clear_undone: bool = True
+            clear_undone: bool = True,
+            update_game_log: bool = True,
     ):
         """Cleanup operations for a piece move.
 
@@ -110,6 +111,7 @@ class AppCore(Widget):
         :param captured_piece: piece captured (None if no capture)
         :param dropped_piece: piece to be dropped, if it is a drop
         :param clear_undone: if the undone moves should be cleared
+        :param update_game_log: if game log should be updated
         """
         is_a_capture = bool(captured_piece)
         current, to = move
@@ -135,14 +137,15 @@ class AppCore(Widget):
         else:
             mate = False
         self.in_check[self.board.other_player] = is_in_check
-        self.update_game_log(
-            move,
-            is_a_capture=is_a_capture,
-            captured_piece=captured_piece,
-            is_a_promote=self.to_promote,
-            is_a_drop=(dropped_piece is not None),
-            is_mate=(mate if is_in_check else None)
-        )
+        if update_game_log:
+            self.update_game_log(
+                move,
+                is_a_capture=is_a_capture,
+                captured_piece=captured_piece,
+                is_a_promote=self.to_promote,
+                is_a_drop=(dropped_piece is not None),
+                is_mate=(mate if is_in_check else None)
+            )
         if clear_undone:
             self.undone_moves.clear()
         self.board.flip_turn()
@@ -180,7 +183,13 @@ class AppCore(Widget):
             self.board.move(last_move.end, last_move.start)
             if last_move.is_capture:
                 self.board.put_in_play(
-                    last_move.captured_piece.flip_sides(), last_move.end)
+                    last_move.captured_piece.flip_sides(),
+                    last_move.end,
+                    player=last_move.captured_piece.color.other,
+                    flip_sides=True
+                )
+        if last_move.is_promote:
+            self.board[last_move.start].demote()
         if self.game_log:
             earlier_move = self.game_log[-1].pop()
             self.cleanup(
@@ -188,10 +197,14 @@ class AppCore(Widget):
                 captured_piece=earlier_move.captured_piece,
                 dropped_piece=(
                     earlier_move.piece if earlier_move.is_drop else None),
-                clear_undone=False
+                clear_undone=False,
+                update_game_log=False
             )
         self.undone_moves.append(last_move)
-        self.update_board(last_move.start, last_move.end)
+        if last_move.start:
+            self.update_board(last_move.start, last_move.end)
+        else:
+            self.update_board(last_move.end)
         self.update_captured(self.board)
         self.parent.ids['moves'].remove_last()
         self.board.current_player = last_move.player_color
