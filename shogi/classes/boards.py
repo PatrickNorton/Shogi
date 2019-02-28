@@ -129,7 +129,7 @@ class Board(collections.abc.Sequence):
         if piece.has_type('k'):
             raise ValueError("Kings may not be captured. You win.")
         try:
-            piece.demote()
+            piece = piece.demote()
         except DemotedException:
             pass
         new_piece = piece.flip_sides()
@@ -181,7 +181,7 @@ class Board(collections.abc.Sequence):
         self.pieces[space] = piece
 
     def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
-        """PieceMoves a piece from capture into play.
+        """Moves a piece from capture into play.
 
         :param piece: the piece to put in play
         :param moved_to: where to put the piece
@@ -199,6 +199,22 @@ class Board(collections.abc.Sequence):
                     return 9
         self.captured[player].remove(piece)
         self.pieces[moved_to] = piece
+
+    def un_drop(self, location: AbsoluteCoord):
+        """Un-drop piece.
+
+        This takes a piece and put it back into the captured slots.
+        This should not be used in an actual game, as it is illegal.
+        It exists solely for undoing of moves.
+
+        :param location: location of piece to un-drop
+        """
+        un_dropped = self.pieces.pop(location)
+        try:
+            un_dropped = un_dropped.demote()
+        except DemotedException:
+            pass
+        self.captured[un_dropped.color].append(un_dropped)
 
     def flip_turn(self):
         """Flip the turn from one player to the other."""

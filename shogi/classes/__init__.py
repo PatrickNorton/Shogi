@@ -11,5 +11,5 @@ from .information import *
 from .locations import *
 from .pieceattrs import *
 from .pieces import *
-from .themove import *
 from .rows import *
+from .themove import *

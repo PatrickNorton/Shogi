@@ -11,8 +11,13 @@ __all__ = [
 
 def undo_move(
         current_board: classes.Board,
-        move: classes.PieceMoves
+        move: 'classes.Move'
 ):
+    """Undo given move.
+
+    :param current_board: current board state
+    :param move: move to undo
+    """
     if move.is_drop:
         current_board.un_drop(move.end)
         cannot_drop = drop_check(

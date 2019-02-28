@@ -6,3 +6,4 @@ from .mate import *
 from .move import *
 from .notation import *
 from .piece import *
+from .undo import *

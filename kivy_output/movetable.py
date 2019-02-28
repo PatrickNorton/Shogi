@@ -39,6 +39,11 @@ class MoveBox(FloatLayout):
         """
         self.ids['layout_content'].add_move(move)
 
+    def remove_last(self):
+        """Remove last move from list.
+        """
+        self.ids['layout_content'].remove_last()
+
 
 class MoveGrid(GridLayout):
     """Grid layout holding the moves.
@@ -70,9 +75,21 @@ class MoveGrid(GridLayout):
                 box.text = str(move)
                 break
 
+    def remove_last(self):
+        if not self.boxes[-1].text:
+            self.boxes[-2].text = ''
+            self.remove_last_box()
+            self.remove_last_box()
+        else:
+            self.boxes[-1].text = ''
+
     def add_box(self):
         """Add a box to self.
         """
         a = Button()
         self.add_widget(a)
         self.boxes.append(a)
+
+    def remove_last_box(self):
+        self.remove_widget(self.boxes[-1])
+        del self.boxes[-1]

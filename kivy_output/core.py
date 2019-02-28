@@ -22,6 +22,7 @@ class AppCore(Widget):
     :ivar move_from: where the piece is moving from
     :ivar in_check: pieces attacking king for each color
     :ivar to_add: piece to add to board
+    :ivar game_log: log of current game
     """
 
     def __init__(self, **kwargs):
@@ -41,6 +42,7 @@ class AppCore(Widget):
         self.to_add: shogi.Piece = shogi.NoPiece()
         self.to_promote: Optional[bool] = None
         self.game_log: List[List[shogi.Move]] = []
+        self.undone_moves: List[shogi.Move] = []
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
@@ -93,7 +95,8 @@ class AppCore(Widget):
             self,
             move: shogi.OptCoordTuple,
             captured_piece: shogi.Piece = None,
-            dropped_piece: shogi.Piece = None
+            dropped_piece: shogi.Piece = None,
+            clear_undone: bool = True
     ):
         """Cleanup operations for a piece move.
 
@@ -106,6 +109,7 @@ class AppCore(Widget):
         :param move: from, to of move
         :param captured_piece: piece captured (None if no capture)
         :param dropped_piece: piece to be dropped, if it is a drop
+        :param clear_undone: if the undone moves should be cleared
         """
         is_a_capture = bool(captured_piece)
         current, to = move
@@ -139,6 +143,8 @@ class AppCore(Widget):
             is_a_drop=(dropped_piece is not None),
             is_mate=(mate if is_in_check else None)
         )
+        if clear_undone:
+            self.undone_moves.clear()
         self.board.flip_turn()
         self.make_move = False
         self.move_from = shogi.NullCoord()
@@ -159,6 +165,42 @@ class AppCore(Widget):
             self.update_board(space_to)
             self.update_captured(self.board)
             self.cleanup((None, space_to), dropped_piece=self.to_add)
+
+    def undo_last_move(self):
+        """Undo the last move made."""
+        last_move = self.game_log[-1].pop()
+        if not self.game_log[-1]:
+            self.game_log.pop()
+        if last_move.is_drop:
+            self.board.un_drop(last_move.end)
+            if last_move.is_capture:
+                self.board.put_in_play(
+                    last_move.captured_piece.flip_sides(), last_move.end)
+        else:
+            self.board.move(last_move.end, last_move.start)
+            if last_move.is_capture:
+                self.board.put_in_play(
+                    last_move.captured_piece.flip_sides(), last_move.end)
+        if self.game_log:
+            earlier_move = self.game_log[-1].pop()
+            self.cleanup(
+                earlier_move.tuple,
+                captured_piece=earlier_move.captured_piece,
+                dropped_piece=(
+                    earlier_move.piece if earlier_move.is_drop else None),
+                clear_undone=False
+            )
+        self.undone_moves.append(last_move)
+        self.update_board(last_move.start, last_move.end)
+        self.update_captured(self.board)
+        self.parent.ids['moves'].remove_last()
+        self.board.current_player = last_move.player_color
+
+    def redo_last_move(self):
+        """Redo the last move undone."""
+        last_move = self.undone_moves.pop()
+        self.make_moves(last_move.start, last_move.end)
+        self.board.current_player = last_move.player_color.other
 
     # Lighting methods
     def light_moves(self, coordinate: shogi.AbsoluteCoord):

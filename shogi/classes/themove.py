@@ -17,6 +17,7 @@ class Move:
     :ivar start: the original position of the piece
     :ivar end: the end location of the piece
     :ivar piece: the piece moved
+    :ivar player_color: color of piece moved
     :ivar is_drop: if the move is a drop
     :ivar is_capture: if the move is a capture
     :ivar captured_piece: the captured piece
@@ -53,6 +54,7 @@ class Move:
         self.piece = current_board[move[1]]
         if isinstance(self.piece, NoPiece):
             raise ValueError
+        self.player_color = self.piece.color
         self.is_drop = is_drop
         self.is_capture = is_capture
         self.captured_piece = captured_piece
