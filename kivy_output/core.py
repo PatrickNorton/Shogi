@@ -213,7 +213,11 @@ class AppCore(Widget):
     def redo_last_move(self):
         """Redo the last move undone."""
         last_move = self.undone_moves.pop()
-        self.make_moves(last_move.start, last_move.end)
+        if last_move.is_drop:
+            self.to_add = last_move.piece
+            self.drop_piece(last_move.end)
+        else:
+            self.make_moves(last_move.start, last_move.end)
         self.board.current_player = last_move.player_color.other
 
     # Lighting methods
