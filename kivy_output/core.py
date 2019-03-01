@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional
+from collections import deque
+from typing import Dict, List, Optional, Deque
 
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
@@ -42,7 +43,7 @@ class AppCore(Widget):
         self.to_add: shogi.Piece = shogi.NoPiece()
         self.to_promote: Optional[bool] = None
         self.game_log: List[List[shogi.Move]] = []
-        self.undone_moves: List[shogi.Move] = []
+        self.undone_moves: Deque[shogi.Move] = deque()
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
