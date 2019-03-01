@@ -172,6 +172,8 @@ class AppCore(Widget):
 
     def undo_last_move(self):
         """Undo the last move made."""
+        if not self.game_log:
+            return
         last_move = self.game_log[-1].pop()
         if not self.game_log[-1]:
             self.game_log.pop()
@@ -212,6 +214,8 @@ class AppCore(Widget):
 
     def redo_last_move(self):
         """Redo the last move undone."""
+        if not self.undone_moves:
+            return
         last_move = self.undone_moves.pop()
         if last_move.is_drop:
             self.to_add = last_move.piece
