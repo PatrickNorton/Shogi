@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional
+from collections import deque
+from typing import Dict, List, Optional, Deque
 
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
@@ -22,6 +23,7 @@ class AppCore(Widget):
     :ivar move_from: where the piece is moving from
     :ivar in_check: pieces attacking king for each color
     :ivar to_add: piece to add to board
+    :ivar game_log: log of current game
     """
 
     def __init__(self, **kwargs):
@@ -40,7 +42,8 @@ class AppCore(Widget):
         }
         self.to_add: shogi.Piece = shogi.NoPiece()
         self.to_promote: Optional[bool] = None
-        self.game_log: List[List[str]] = []
+        self.game_log: List[List[shogi.Move]] = []
+        self.undone_moves: Deque[shogi.Move] = deque()
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
@@ -48,7 +51,7 @@ class AppCore(Widget):
             current: shogi.AbsoluteCoord,
             to: shogi.AbsoluteCoord
     ):
-        """Move piece between two locations.
+        """Moves piece between two locations.
 
         This function first checks that the move is valid, and then
         opens a popup window if it is necessary.
@@ -69,31 +72,33 @@ class AppCore(Widget):
         )
         if cannot_move:
             return
-        is_a_capture = bool(self.board[to])
+        captured_piece = self.board[to]
         self.board.move(current, to)
         self.update_board(current, to)
         can_promote = self.board.can_promote(to)
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
                 self.to_promote = True
-                self.cleanup((current, to), is_a_capture=is_a_capture)
+                self.cleanup((current, to), captured_piece=captured_piece)
             else:
                 pops = PromotionWindow(caller=self)
                 pops.bind(
                     on_dismiss=lambda x: self.cleanup(
                         (current, to),
-                        is_a_capture=is_a_capture
+                        captured_piece=captured_piece
                     )
                 )
                 pops.open()
         else:
-            self.cleanup((current, to), is_a_capture=is_a_capture)
+            self.cleanup((current, to), captured_piece=captured_piece)
 
     def cleanup(
             self,
             move: shogi.OptCoordTuple,
-            is_a_capture: bool = False,
-            dropped_piece: shogi.Piece = None
+            captured_piece: shogi.Piece = None,
+            dropped_piece: shogi.Piece = None,
+            clear_undone: bool = True,
+            update_game_log: bool = True,
     ):
         """Cleanup operations for a piece move.
 
@@ -104,9 +109,12 @@ class AppCore(Widget):
         should not be called by itself without good cause.
 
         :param move: from, to of move
-        :param is_a_capture: if the move involved a capture
+        :param captured_piece: piece captured (None if no capture)
         :param dropped_piece: piece to be dropped, if it is a drop
+        :param clear_undone: if the undone moves should be cleared
+        :param update_game_log: if game log should be updated
         """
+        is_a_capture = bool(captured_piece)
         current, to = move
         if self.to_promote:
             self.board.promote(to)
@@ -130,13 +138,17 @@ class AppCore(Widget):
         else:
             mate = False
         self.in_check[self.board.other_player] = is_in_check
-        self.update_game_log(
-            move,
-            is_a_capture=is_a_capture,
-            is_a_promote=self.to_promote,
-            is_a_drop=(dropped_piece is not None),
-            is_mate=(mate if is_in_check else None)
-        )
+        if update_game_log:
+            self.update_game_log(
+                move,
+                is_a_capture=is_a_capture,
+                captured_piece=captured_piece,
+                is_a_promote=self.to_promote,
+                is_a_drop=(dropped_piece is not None),
+                is_mate=(mate if is_in_check else None)
+            )
+        if clear_undone:
+            self.undone_moves.clear()
         self.board.flip_turn()
         self.make_move = False
         self.move_from = shogi.NullCoord()
@@ -157,6 +169,52 @@ class AppCore(Widget):
             self.update_board(space_to)
             self.update_captured(self.board)
             self.cleanup((None, space_to), dropped_piece=self.to_add)
+
+    def undo_last_move(self):
+        """Undo the last move made."""
+        last_move = self.game_log[-1].pop()
+        if not self.game_log[-1]:
+            self.game_log.pop()
+        if last_move.is_drop:
+            self.board.un_drop(last_move.end)
+            if last_move.is_capture:
+                self.board.put_in_play(
+                    last_move.captured_piece.flip_sides(), last_move.end)
+        else:
+            self.board.move(last_move.end, last_move.start)
+            if last_move.is_capture:
+                self.board.put_in_play(
+                    last_move.captured_piece.flip_sides(),
+                    last_move.end,
+                    player=last_move.captured_piece.color.other,
+                    flip_sides=True
+                )
+        if last_move.is_promote:
+            self.board[last_move.start].demote()
+        if self.game_log:
+            earlier_move = self.game_log[-1].pop()
+            self.cleanup(
+                earlier_move.tuple,
+                captured_piece=earlier_move.captured_piece,
+                dropped_piece=(
+                    earlier_move.piece if earlier_move.is_drop else None),
+                clear_undone=False,
+                update_game_log=False
+            )
+        self.undone_moves.append(last_move)
+        if last_move.start:
+            self.update_board(last_move.start, last_move.end)
+        else:
+            self.update_board(last_move.end)
+        self.update_captured(self.board)
+        self.parent.ids['moves'].remove_last()
+        self.board.current_player = last_move.player_color
+
+    def redo_last_move(self):
+        """Redo the last move undone."""
+        last_move = self.undone_moves.pop()
+        self.make_moves(last_move.start, last_move.end)
+        self.board.current_player = last_move.player_color.other
 
     # Lighting methods
     def light_moves(self, coordinate: shogi.AbsoluteCoord):
@@ -239,6 +297,7 @@ class AppCore(Widget):
             self,
             move: shogi.OptCoordTuple,
             is_a_capture: bool = False,
+            captured_piece: shogi.Piece = None,
             is_a_promote: Optional[bool] = None,
             is_a_drop: bool = False,
             is_mate: Optional[bool] = None
@@ -247,17 +306,19 @@ class AppCore(Widget):
 
         :param move: move made
         :param is_a_capture: if the move involved a capture
+        :param captured_piece: piece captured
         :param is_a_promote: if the move involved a promotion
         :param is_a_drop: if the move was a drop
         :param is_mate: if move is mate (None if not check)
         """
         if not self.game_log or len(self.game_log[-1]) == 2:
             self.game_log.append([])
-        to_log = shogi.to_notation(
+        to_log = shogi.Move(
             self.board,
             move,
             is_drop=is_a_drop,
             is_capture=is_a_capture,
+            captured_piece=captured_piece,
             is_promote=is_a_promote,
             is_check=(is_mate is not None),
             is_mate=is_mate

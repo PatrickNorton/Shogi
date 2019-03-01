@@ -4,6 +4,8 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 
+import shogi
+
 __all__ = [
     "MoveBox",
     "MoveGrid",
@@ -37,10 +39,16 @@ class MoveBox(FloatLayout):
         """
         self.ids['layout_content'].add_move(move)
 
+    def remove_last(self):
+        """Remove last move from list.
+        """
+        self.ids['layout_content'].remove_last()
+
 
 class MoveGrid(GridLayout):
     """Grid layout holding the moves.
 
+    :ivar boxes: list of MoveBoxes holding a turn
     """
     box_amount = NumericProperty(0)
 
@@ -52,7 +60,7 @@ class MoveGrid(GridLayout):
         super().__init__(**kwargs)
         self.boxes = []
 
-    def add_move(self, move: str):
+    def add_move(self, move: shogi.Move):
         """Add a move to the grid.
 
         :param move: string of move to be added
@@ -60,12 +68,20 @@ class MoveGrid(GridLayout):
         if not self.boxes or self.boxes[-1].text:
             self.add_box()
             self.add_box()
-            self.boxes[-2].text = move
+            self.boxes[-2].text = str(move)
             return
         for box in self.boxes:
             if not box.text:
-                box.text = move
+                box.text = str(move)
                 break
+
+    def remove_last(self):
+        if not self.boxes[-1].text:
+            self.boxes[-2].text = ''
+            self.remove_last_box()
+            self.remove_last_box()
+        else:
+            self.boxes[-1].text = ''
 
     def add_box(self):
         """Add a box to self.
@@ -73,3 +89,7 @@ class MoveGrid(GridLayout):
         a = Button()
         self.add_widget(a)
         self.boxes.append(a)
+
+    def remove_last_box(self):
+        self.remove_widget(self.boxes[-1])
+        del self.boxes[-1]

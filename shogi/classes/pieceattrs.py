@@ -11,14 +11,16 @@ __all__ = [
     "Color",
     "PieceType",
     "Moves",
-    "Move",
+    "PieceMoves",
     "ColorLike",
     "PieceTypeLike",
+    "MoveFnLike",
 ]
 
 
 ColorLike = Union[int, str, 'Color']
 PieceTypeLike = Union[str, 'PieceType']
+MoveFnLike = Callable[[RelativeCoord], bool]
 
 
 class Color:
@@ -248,21 +250,21 @@ class Moves(collections.abc.Sequence):
         return Moves(self.name, self.color, False)
 
 
-class Move:
-    """The class representing a single move.
+class PieceMoves:
+    """The class representing the possible moves.
 
-    This class is used for the representation of a single move for
-    the piece.
+    This class is used for the representation of all possible moves
+    for the piece.
 
     :ivar move_function: function for move
     """
 
     def __init__(self, move_var: str):
-        """Initialise instance of Move.
+        """Initialise instance of PieceMoves.
 
         :param move_var: string detailing the move
         """
-        self.move_function = _move_functions[move_var]
+        self.move_function: MoveFnLike = _move_functions[move_var]
 
     def try_move(self, move: RelativeCoord) -> bool:
         return self.move_function(move)

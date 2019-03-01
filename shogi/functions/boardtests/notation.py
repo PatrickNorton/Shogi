@@ -96,3 +96,4 @@ def piece_can_move(
             if not cannot_move:
                 valid_spaces.append(location)
         return valid_spaces
+    return []

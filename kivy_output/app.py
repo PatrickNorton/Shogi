@@ -10,7 +10,6 @@ from kivy.resources import resource_add_path
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import get_color_from_hex
 
-import shogi
 from .screens import HelpScreen, MainScreen
 from .registration import register_classes
 
@@ -41,7 +40,6 @@ class ShogiBoard(App):
         :param kwargs: Kivy keyword arguments
         """
         super().__init__(**kwargs)
-        self.board = shogi.Board()
         Window.bind(on_keyboard=self._on_keyboard)
         register_classes()
 
@@ -81,11 +79,14 @@ class ShogiBoard(App):
         :param code_point: text of pressed key
         :param modifiers: list of modifiers pressed in conjunction
         """
-        is_mac = sys.platform == 'darwin'
-        is_meta_modifier = (modifiers == ['meta' if is_mac else 'ctrl'])
+        is_mac = (sys.platform == 'darwin')
+        meta = 'meta' if is_mac else 'ctrl'
+        has_meta = (meta in modifiers)
+        has_shift = ('shift' in modifiers)
+        is_only_meta = (modifiers == [meta])
         is_help_screen = isinstance(self.root.current_screen, HelpScreen)
         is_main_screen = (self.root.current == 'main')
-        if is_meta_modifier:
+        if is_only_meta:
             if code_point == 'w':
                 self.stop()
             if code_point == '/':
@@ -95,10 +96,17 @@ class ShogiBoard(App):
                 elif is_help_screen:
                     self.root.transition.direction = 'right'
                     self.root.current = 'main'
+            if code_point == 'z' and is_main_screen:
+                self.root.current_screen.ids['core'].undo_last_move()
+            if code_point == 'y' and is_main_screen:
+                self.root.current_screen.ids['core'].redo_last_move()
             if key == 276:
                 if is_help_screen:
                     self.root.transition.direction = 'right'
                     self.root.current = 'main'
+        elif has_meta and has_shift:
+            if code_point == 'z' and is_main_screen:
+                self.root.current_screen.ids['core'].redo_last_move()
         else:
             if key == 27:
                 if is_help_screen:

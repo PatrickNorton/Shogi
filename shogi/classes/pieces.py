@@ -9,7 +9,7 @@ from .pieceattrs import Color, ColorLike, Moves, PieceType, PieceTypeLike
 
 __all__ = [
     "Piece",
-    "NoPiece"
+    "NoPiece",
 ]
 
 

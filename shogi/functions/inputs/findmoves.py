@@ -47,9 +47,9 @@ def test_spaces(
                 break_early=True,
                 before_move=True
             )
-            checking_spaces = [
+            checking_spaces = (
                 x for x in checking_spaces if x != absolute_location
-            ]
+            )
             if checking_own or king_location == piece_location:
                 checking_spaces = []
             for space in checking_spaces:

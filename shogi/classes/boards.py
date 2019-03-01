@@ -31,7 +31,7 @@ class Board(collections.abc.Sequence):
     :ivar captured: List of captured pieces for each color
     :ivar current_player: Active player
     :ivar last_move: Previous move performed
-    :ivar next_move: Move about to be performed
+    :ivar next_move: PieceMoves about to be performed
     """
 
     def __init__(self, pieces: Optional[dict] = None):
@@ -96,7 +96,7 @@ class Board(collections.abc.Sequence):
         yield from self.pieces
 
     def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
-        """Move a piece between locations.
+        """PieceMoves a piece between locations.
 
         :param current: location of piece
         :param new: location to move piece to
@@ -129,7 +129,7 @@ class Board(collections.abc.Sequence):
         if piece.has_type('k'):
             raise ValueError("Kings may not be captured. You win.")
         try:
-            piece.demote()
+            piece = piece.demote()
         except DemotedException:
             pass
         new_piece = piece.flip_sides()
@@ -180,16 +180,23 @@ class Board(collections.abc.Sequence):
         piece = piece.promote()
         self.pieces[space] = piece
 
-    def put_in_play(self, piece: Piece, moved_to: AbsoluteCoord):
-        """Move a piece from capture into play.
+    def put_in_play(
+            self,
+            piece: Piece,
+            moved_to: AbsoluteCoord,
+            player: Color = None,
+            flip_sides: bool = False
+    ):
+        """Moves a piece from capture into play.
 
         :param piece: the piece to put in play
         :param moved_to: where to put the piece
-        :raises IllegalMove: if capturing on drop
-        :raises IllegalMove: if capturing 2-pawn rule
+        :param player: color of piece to put in play
+        :param flip_sides: if the piece should flip sides
         """
 
-        player = self.current_player
+        if player is None:
+            player = self.current_player
         if not isinstance(self[moved_to], NoPiece):
             return 8
         if piece.has_type('p'):
@@ -198,7 +205,25 @@ class Board(collections.abc.Sequence):
                 if self[loc].is_piece('p', player):
                     return 9
         self.captured[player].remove(piece)
+        if flip_sides:
+            piece = piece.flip_sides()
         self.pieces[moved_to] = piece
+
+    def un_drop(self, location: AbsoluteCoord):
+        """Un-drop piece.
+
+        This takes a piece and put it back into the captured slots.
+        This should not be used in an actual game, as it is illegal.
+        It exists solely for undoing of moves.
+
+        :param location: location of piece to un-drop
+        """
+        un_dropped = self.pieces.pop(location)
+        try:
+            un_dropped = un_dropped.demote()
+        except DemotedException:
+            pass
+        self.captured[un_dropped.color].append(un_dropped)
 
     def flip_turn(self):
         """Flip the turn from one player to the other."""
