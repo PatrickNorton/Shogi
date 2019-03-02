@@ -44,6 +44,7 @@ class AppCore(Widget):
         self.to_promote: Optional[bool] = None
         self.game_log: List[List[shogi.Move]] = []
         self.undone_moves: Deque[shogi.Move] = deque()
+        self.popup_open: bool = False
         Clock.schedule_once(self._set_captured, 0)
 
     def make_moves(
@@ -88,6 +89,7 @@ class AppCore(Widget):
                         captured_piece=captured_piece
                     )
                 )
+                self.popup_open = True
                 pops.open()
         else:
             self.cleanup((current, to), captured_piece=captured_piece)
@@ -114,6 +116,7 @@ class AppCore(Widget):
         :param clear_undone: if the undone moves should be cleared
         :param update_game_log: if game log should be updated
         """
+        self.popup_open = False
         is_a_capture = bool(captured_piece)
         current, to = move
         if self.to_promote:

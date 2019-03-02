@@ -18,6 +18,9 @@ class MainScreen(Screen):
     board_size = NumericProperty(0)
     space_size = NumericProperty(0)
 
+    def focus_input(self):
+        pass
+
 
 class HelpScreen(Screen):
     """The screen for displaying help files.

@@ -1,0 +1,58 @@
+{
+  "darwin": {
+    "any_screen": [
+      {
+        "key": "w",
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "stop"
+      }
+    ],
+    "main_screen": [
+      {
+        "key": "/",
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "switch_help"
+      },
+      {
+        "key": "z",
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "undo"
+      },
+      {
+        "key": "z",
+        "modifiers": ["meta", "shift"],
+        "optional": [],
+        "action": "redo"
+      },
+      {
+        "key": "y",
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "redo"
+      }
+    ],
+    "help_screen": [
+      {
+        "key": "/",
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "switch_main"
+      },
+      {
+        "key": 276,
+        "modifiers": ["meta"],
+        "optional": [],
+        "action": "switch_main"
+      },
+      {
+        "key": 27,
+        "modifiers": [],
+        "optional": [],
+        "action": "focus_input"
+      }
+    ]
+  }
+}

@@ -3,6 +3,7 @@
 """
 
 from .app import *
+from .bindings import *
 from .boardsquare import *
 from .boardwidget import *
 from .captured import *
