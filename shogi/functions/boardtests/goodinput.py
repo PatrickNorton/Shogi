@@ -1,7 +1,7 @@
 from shogi import classes
 
 __all__ = [
-    "input_piece"
+    "input_piece",
 ]
 
 

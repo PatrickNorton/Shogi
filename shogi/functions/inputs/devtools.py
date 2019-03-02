@@ -7,7 +7,7 @@ from shogi.functions import boardtests
 from .inputfns import get_input
 
 __all__ = [
-    "setup_board"
+    "setup_board",
 ]
 
 

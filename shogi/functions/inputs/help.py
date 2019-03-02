@@ -14,7 +14,7 @@ __all__ = [
     "help_desk",
     "letter_to_name",
     "help_menu",
-    "list_moves"
+    "list_moves",
 ]
 
 

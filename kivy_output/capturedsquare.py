@@ -4,7 +4,7 @@ from kivy.uix.button import Button
 import shogi
 
 __all__ = [
-    "CapturedSquare"
+    "CapturedSquare",
 ]
 
 

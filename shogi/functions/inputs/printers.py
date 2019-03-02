@@ -3,7 +3,7 @@ from typing import List
 import curtsies
 
 __all__ = [
-    "display_file"
+    "display_file",
 ]
 
 

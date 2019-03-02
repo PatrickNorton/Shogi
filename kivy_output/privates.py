@@ -3,7 +3,7 @@ from typing import IO
 
 __all__ = [
     "_open_help",
-    "_get_image_loc"
+    "_get_image_loc",
 ]
 
 

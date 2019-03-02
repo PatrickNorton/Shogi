@@ -4,7 +4,7 @@ from shogi import classes
 from .move import move_check_2
 
 __all__ = [
-    "mate_check"
+    "mate_check",
 ]
 
 

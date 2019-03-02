@@ -3,7 +3,7 @@ from shogi import classes
 from .goodinput import input_piece
 
 __all__ = [
-    "piece_check"
+    "piece_check",
 ]
 
 

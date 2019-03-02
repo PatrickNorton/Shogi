@@ -5,7 +5,7 @@ import shogi
 from .capturedsquare import CapturedSquare
 
 __all__ = [
-    "CapturedGrid"
+    "CapturedGrid",
 ]
 
 

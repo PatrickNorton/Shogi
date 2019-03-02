@@ -4,7 +4,7 @@ from shogi import classes
 from shogi.functions import boardtests
 
 __all__ = [
-    "test_spaces"
+    "test_spaces",
 ]
 
 

@@ -4,7 +4,7 @@ from typing import Dict, List, TextIO, Union
 
 __all__ = [
     "_InfoClass",
-    "_open_data"
+    "_open_data",
 ]
 
 

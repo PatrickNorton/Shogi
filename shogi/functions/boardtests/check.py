@@ -4,7 +4,7 @@ from .move import move_check_2
 
 __all__ = [
     "check_check",
-    "check_check_2"
+    "check_check_2",
 ]
 
 

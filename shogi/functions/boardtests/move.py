@@ -7,7 +7,7 @@ __all__ = [
     "move_check",
     "move_check_2",
     "obstruction_check",
-    "king_check"
+    "king_check",
 ]
 
 

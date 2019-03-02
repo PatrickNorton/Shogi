@@ -1,4 +1,5 @@
 import json
+import os
 
 from typing import Dict, IO
 
@@ -6,7 +7,7 @@ __all__ = [
     "_flatten_dict",
     "_open_data",
     "_open_help",
-    "_getfile"
+    "_getfile",
 ]
 
 
@@ -35,7 +36,6 @@ def _open_data(file_name: str) -> IO[str]:
     :return: opened data file
     """
 
-    import os
     cwd = os.path.dirname(__file__)
     file_path = os.path.join(cwd, f'../../datafiles/{file_name}')
     return open(file_path)
@@ -48,7 +48,6 @@ def _open_help(file_name: str) -> IO[str]:
     :return: opened help file
     """
 
-    import os
     cwd = os.path.dirname(__file__)
     file_path = os.path.join(cwd, f'../helpfiles/{file_name}')
     piece_path = os.path.join(cwd, '../helpfiles/pieces')

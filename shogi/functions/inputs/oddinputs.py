@@ -10,7 +10,7 @@ from .inputfns import binary_input, get_input
 __all__ = [
     "other_conditions",
     "drop_piece",
-    "may_quit"
+    "may_quit",
 ]
 
 

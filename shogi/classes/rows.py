@@ -5,7 +5,7 @@ from .aliases import CoordSet
 from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
 
 __all__ = [
-    "Row"
+    "Row",
 ]
 
 

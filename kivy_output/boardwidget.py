@@ -6,7 +6,7 @@ import shogi
 from .boardsquare import BoardSquare
 
 __all__ = [
-    "ChessBoard"
+    "ChessBoard",
 ]
 
 

@@ -5,7 +5,7 @@ from curtsies import events
 
 __all__ = [
     "get_input",
-    "binary_input"
+    "binary_input",
 ]
 
 
