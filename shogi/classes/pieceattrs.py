@@ -63,8 +63,8 @@ class Color:
             self.name = 'wb'[self.int]
         else:
             raise TypeError
-        self.other_color = 'bw'[self.int]
-        self.full_name = ['White', 'Black'][self.int]
+        self.other_color: str = 'bw'[self.int]
+        self.full_name: str = ['White', 'Black'][self.int]
 
     def __str__(self): return self.name
 

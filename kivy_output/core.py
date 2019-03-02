@@ -75,7 +75,6 @@ class AppCore(Widget):
             return
         captured_piece = self.board[to]
         self.board.move(current, to)
-        self.update_board(current, to)
         can_promote = self.board.can_promote(to)
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
@@ -118,13 +117,11 @@ class AppCore(Widget):
         """
         self.popup_open = False
         is_a_capture = bool(captured_piece)
-        current, to = move
         if self.to_promote:
-            self.board.promote(to)
-            self.update_board(to)
+            self.board.promote(move[1])
         king_location, is_in_check = shogi.check_check(
             self.board,
-            (current, to),
+            move,
             self.board.other_player,
             dropped_piece=dropped_piece
         )
@@ -158,6 +155,7 @@ class AppCore(Widget):
         self.to_add = None
         self.to_promote = None
         self.un_light_all()
+        self.update_board(*move)
         if is_a_capture:
             self.update_captured(self.board)
 
