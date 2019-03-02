@@ -3,7 +3,7 @@ import pathlib
 import sys
 
 from collections import namedtuple
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Callable
 
 from .screens import HelpScreen
 
@@ -11,6 +11,11 @@ __all__ = [
     "Keybindings",
     "CodeTuple",
 ]
+
+
+CodeTuple = namedtuple('CodeTuple', ['key', 'modifiers'])
+BindingsDict = List[Dict[str, Union[str, List[str]]]]
+TupleDict = Dict[CodeTuple, Callable]
 
 
 class Keybindings:
@@ -27,8 +32,8 @@ class Keybindings:
         """
         bindings_path = pathlib.Path(__file__).parent / "keybindings.json"
         with open(bindings_path) as f:
-            self.bindings = json.load(f)[sys.platform]
-        self.functions = {
+            self.bindings: Dict[str, BindingsDict] = json.load(f)[sys.platform]
+        self.functions: Dict[str, Callable] = {
             "stop": parent.stop,
             "switch_help": parent.switch_help,
             "switch_main": parent.switch_main,
@@ -38,9 +43,7 @@ class Keybindings:
         }
         self.parent = parent
 
-        def create_dict(
-                code_set: List[Dict[str, Union[str, List[str]]]]
-        ) -> Dict[CodeTuple, Union[str, List[str]]]:
+        def create_dict(code_set: BindingsDict) -> TupleDict:
             to_return = {}
             for x in code_set:
                 action = self.functions[x['action']]
@@ -89,6 +92,3 @@ class Keybindings:
         except KeyError:
             return
         action()
-
-
-CodeTuple = namedtuple('CodeTuple', ['key', 'modifiers'])
