@@ -155,7 +155,7 @@ class AppCore(Widget):
         self.to_add = None
         self.to_promote = None
         self.un_light_all()
-        self.update_board(*move)
+        self.update_board(*(x for x in move if x is not None))
         if is_a_capture:
             self.update_captured(self.board)
 
