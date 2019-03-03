@@ -116,9 +116,10 @@ class AppCore(Widget):
         :param update_game_log: if game log should be updated
         """
         self.popup_open = False
+        current, to = move
         is_a_capture = bool(captured_piece)
         if self.to_promote:
-            self.board.promote(move[1])
+            self.board.promote(to)
         king_location, is_in_check = shogi.check_check(
             self.board,
             move,
@@ -155,7 +156,7 @@ class AppCore(Widget):
         self.to_add = None
         self.to_promote = None
         self.un_light_all()
-        self.update_board(*(x for x in move if x is not None))
+        self.update_board(*move)
         if is_a_capture:
             self.update_captured(self.board)
 
@@ -205,10 +206,7 @@ class AppCore(Widget):
                 update_game_log=False
             )
         self.undone_moves.append(last_move)
-        if last_move.start:
-            self.update_board(last_move.start, last_move.end)
-        else:
-            self.update_board(last_move.end)
+        self.update_board(*last_move)
         self.update_captured(self.board)
         self.parent.ids['moves'].remove_last()
         self.board.current_player = last_move.player_color

@@ -72,6 +72,8 @@ class Move:
 
     def __str__(self): return self.string
 
+    def __iter__(self): yield from self.tuple
+
     def to_string(self, current_board: Board) -> str:
         """Create notation string out of the move.
 

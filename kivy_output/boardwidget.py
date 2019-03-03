@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from kivy.uix.gridlayout import GridLayout
 
@@ -46,7 +46,7 @@ class ChessBoard(GridLayout):
         """
         self.parent.board_pressed(coordinate)
 
-    def update_squares(self, *to_update: shogi.AbsoluteCoord):
+    def update_squares(self, *to_update: Optional[shogi.AbsoluteCoord]):
         """Update specific squares.
 
         This, given an iterable of coordinates, updates their
@@ -55,6 +55,8 @@ class ChessBoard(GridLayout):
         :param to_update: list of squares to update
         """
         for coordinate in to_update:
+            if coordinate is None:
+                continue
             space = self.children_dict[coordinate]
             space.text = space.set_string(self.board[coordinate])
 
