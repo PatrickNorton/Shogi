@@ -98,7 +98,8 @@ def check_check_2(
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
     attacking_color: classes.Color = current_board[king_location].color.other
-    pieces = (x for x in direction_of_attack if current_board[x].is_color(attacking_color))
+    pieces = (x for x in direction_of_attack
+              if current_board[x].is_color(attacking_color))
     for x in pieces:
         if before_move:
             cannot_move = move_check_2(

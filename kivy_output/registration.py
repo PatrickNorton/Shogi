@@ -7,7 +7,7 @@ from .capturedsquare import CapturedSquare
 from .core import AppCore
 from .inputs import HelpRst, PromotionWindow, MateWindow, HelpText
 from .movetable import MoveGrid, MoveBox
-from .numbers import NumberLayout
+from .numbers import NumberLayout, NumButton
 from .screens import HelpScreen, MainScreen
 
 
@@ -21,5 +21,6 @@ def register_classes():
     """
     for cls in (BoardSquare, ChessBoard, CapturedGrid, CapturedSquare,
                 AppCore, HelpRst, PromotionWindow, MateWindow, HelpText,
-                NumberLayout, HelpScreen, MainScreen, MoveGrid, MoveBox):
+                NumberLayout, HelpScreen, MainScreen, MoveGrid, MoveBox,
+                NumButton):
         Factory.register(cls.__name__, cls=cls)
