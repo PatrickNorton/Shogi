@@ -47,7 +47,8 @@ class Keybindings:
             to_return = {}
             for x in code_set:
                 action = self.functions[x['action']]
-                to_return[CodeTuple(x['key'], set(x['modifiers']))] = action
+                key = CodeTuple(x['key'], frozenset(x['modifiers']))
+                to_return[key] = action
             return to_return
 
         self.any_screen = create_dict(self.bindings['any_screen'])
@@ -85,7 +86,7 @@ class Keybindings:
             raise ValueError
         key = CodeTuple(
             code_point if code_point is not None else key,
-            set(modifiers)
+            frozenset(modifiers)
         )
         try:
             action = bindings[key]
