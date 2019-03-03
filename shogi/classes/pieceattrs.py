@@ -11,7 +11,7 @@ __all__ = [
     "Color",
     "PieceType",
     "Moves",
-    "PieceMoves",
+    "PieceMove",
     "ColorLike",
     "PieceTypeLike",
     "MoveFnLike",
@@ -250,8 +250,8 @@ class Moves(collections.abc.Sequence):
         return Moves(self.name, self.color, False)
 
 
-class PieceMoves:
-    """The class representing the possible moves.
+class PieceMove:
+    """The class representing a move type for a piece.
 
     This class is used for the representation of all possible moves
     for the piece.
@@ -260,7 +260,7 @@ class PieceMoves:
     """
 
     def __init__(self, move_var: str):
-        """Initialise instance of PieceMoves.
+        """Initialise instance of PieceMove.
 
         :param move_var: string detailing the move
         """
