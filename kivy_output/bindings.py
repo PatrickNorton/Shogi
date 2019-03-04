@@ -39,7 +39,7 @@ class Keybindings:
             "switch_main": parent.switch_main,
             "undo": parent.core.undo_last_move,
             "redo": parent.core.redo_last_move,
-            "focus_input": parent.root.current_screen.focus_input
+            "focus_input": parent.focus_input,
         }
         self.parent = parent
 

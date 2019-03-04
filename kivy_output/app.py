@@ -67,12 +67,27 @@ class ShogiBoard(App):
         return self.root.get_screen('main')
 
     def switch_help(self):
+        """Switch to the help screen.
+
+        Used for keybindings.
+        """
         self.root.transition.direction = 'left'
         self.root.current = 'help'
 
     def switch_main(self):
+        """Switch to the main screen.
+
+        Used for keybindings.
+        """
         self.root.transition.direction = 'right'
         self.root.current = 'main'
+
+    def focus_input(self):
+        """Focus the input on the current screen.
+
+        Used for keybindings.
+        """
+        self.root.current_screen.focus_input()
 
     def _keyboard_setup(self, _):
         self.keybindings = Keybindings(self)
