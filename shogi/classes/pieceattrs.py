@@ -109,8 +109,8 @@ class PieceType:
         self.type: str
         self.name: str
         if promoted:
-            self.type = typ.lower()
-            self.name = f"+{info.name_info[self.type]}"
+            self.type = typ.upper()
+            self.name = f"+{info.name_info[self.type.lower()]}"
         else:
             self.type = typ.lower()
             self.name = info.name_info[self.type]
@@ -125,15 +125,11 @@ class PieceType:
 
     def prom(self) -> 'PieceType':
         """Promote the piece."""
-        self.type = self.type.upper()
-        self.name = '+' + self.name
-        return self
+        return PieceType(self, promoted=True)
 
     def dem(self) -> 'PieceType':
         """Demote the piece."""
-        self.type = self.type.lower()
-        self.name = self.name.replace('+', '')
-        return self
+        return PieceType(self, promoted=False)
 
 
 class Moves(collections.abc.Sequence):
@@ -153,7 +149,8 @@ class Moves(collections.abc.Sequence):
     """
 
     def __init__(
-            self, piece_name: PieceTypeLike,
+            self,
+            piece_name: PieceTypeLike,
             clr: Color,
             promoted: bool = False
     ):
@@ -165,7 +162,7 @@ class Moves(collections.abc.Sequence):
         :raises NotPromotableException: if un-promotable is promoted
         """
 
-        piece_name = str(piece_name)
+        piece_name = str(piece_name).lower()
         move_list = list(info.move_info[piece_name])
         if clr == Color(1):
             for y, var in enumerate(move_list):

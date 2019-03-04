@@ -28,7 +28,8 @@ class Piece:
     def __init__(
             self,
             typ: PieceTypeLike,
-            clr: ColorLike
+            clr: ColorLike,
+            promoted: bool = False
     ):
         """Initialise instance of Piece.
 
@@ -36,8 +37,8 @@ class Piece:
         :param clr: 1-letter color of piece
         """
 
-        self.type: PieceType = PieceType(typ)
-        self.moves: Moves = Moves(self.type, Color(clr))
+        self.type: PieceType = PieceType(typ, promoted=promoted)
+        self.moves: Moves = Moves(self.type, Color(clr), promoted=promoted)
         self.color: Color = Color(clr)
         self.tup: Tuple[PieceType, Color] = (self.type, self.color)
         self.prom: Optional[bool]
@@ -48,7 +49,9 @@ class Piece:
         else:
             self.prom = False
             self.is_promotable = True
-        other_attributes: dict = info.piece_info[str(typ)]
+        if promoted:
+            self.prom = True
+        other_attributes: dict = info.piece_info[str(typ).lower()]
         self.auto_promote: int = other_attributes['autopromote']
 
     def __str__(self):
@@ -75,10 +78,7 @@ class Piece:
         elif self.prom:
             raise PromotedException
         else:
-            self.type = self.type.prom()
-            self.moves = self.moves.prom()
-            self.prom = True
-            return self
+            return Piece(self.type, self.color, promoted=True)
 
     def demote(self) -> 'Piece':
         """Demote piece.
@@ -86,22 +86,21 @@ class Piece:
         :raises DemotedException: piece is not promoted
         :return: demoted piece
         """
-
         if not self.prom:
             raise DemotedException
         else:
-            self.type = self.type.dem()
-            self.moves = self.moves.dem()
-            self.prom = False
-            return self
+            return Piece(self.type, self.color)
 
     def flip_sides(self) -> 'Piece':
         """Change sides piece is on.
 
         :return: flipped-color piece
         """
-
-        return Piece(str(self.type), self.color.other_color)
+        return Piece(
+            str(self.type),
+            self.color.other_color,
+            promoted=self.prom
+        )
 
     def can_move(self, relative_location: RelativeCoord) -> bool:
         """Check if piece can move to location.
@@ -189,10 +188,11 @@ class Piece:
             return str(self.type) == typ
         return False
 
-    def is_piece(self,
-                 typ: PieceTypeLike,
-                 clr: ColorLike
-                 ) -> bool:
+    def is_piece(
+            self,
+            typ: PieceTypeLike,
+            clr: ColorLike
+    ) -> bool:
         """Check if the piece is of a certain color and type/
 
         :param typ: type to check

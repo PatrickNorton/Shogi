@@ -173,11 +173,19 @@ class Board(collections.abc.Sequence):
         """Promote the piece at a location.
 
         :param space: space to promote piece at
-        :return:
         """
 
         piece = self[space]
         piece = piece.promote()
+        self.pieces[space] = piece
+
+    def demote(self, space: AbsoluteCoord):
+        """Demote the piece at a location.
+
+        :param space: space to demote at
+        """
+        piece = self[space]
+        piece = piece.demote()
         self.pieces[space] = piece
 
     def put_in_play(

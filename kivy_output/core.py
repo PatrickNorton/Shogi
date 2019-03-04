@@ -187,16 +187,21 @@ class AppCore(Widget):
         else:
             self.board.move(last_move.end, last_move.start)
             if last_move.is_capture:
+                in_play = last_move.captured_piece.flip_sides()
+                if in_play.prom:
+                    in_play = in_play.demote()
                 self.board.put_in_play(
-                    last_move.captured_piece.flip_sides(),
+                    in_play,
                     last_move.end,
                     player=last_move.captured_piece.color.other,
                     flip_sides=True
                 )
+                if last_move.captured_piece.prom:
+                    self.board.promote(last_move.end)
         if last_move.is_promote:
-            self.board[last_move.start].demote()
+            self.board.demote(last_move.start)
         if self.game_log:
-            earlier_move = self.game_log[-1].pop()
+            earlier_move = self.game_log[-1][-1]
             self.cleanup(
                 earlier_move.tuple,
                 captured_piece=earlier_move.captured_piece,
