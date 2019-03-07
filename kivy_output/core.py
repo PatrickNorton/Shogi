@@ -63,35 +63,36 @@ class AppCore(Widget):
         :param current: location of piece
         :param to: location to move piece to
         """
+        move = (current, to)
         checking_spaces = (
             x for x in self.in_check[self.board.current_player] if x != to
         )
         cannot_move = shogi.check_move(
             self.board,
-            (current, to),
+            move,
             checking_spaces=checking_spaces
         )
         if cannot_move:
             return
         captured_piece = self.board[to]
-        self.board.move(current, to)
+        self.board.move(*move)
         can_promote = self.board.can_promote(to)
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
                 self.to_promote = True
-                self.cleanup((current, to), captured_piece=captured_piece)
+                self.cleanup(move, captured_piece=captured_piece)
             else:
                 pops = PromotionWindow(caller=self)
                 pops.bind(
                     on_dismiss=lambda x: self.cleanup(
-                        (current, to),
+                        move,
                         captured_piece=captured_piece
                     )
                 )
                 self.popup_open = True
                 pops.open()
         else:
-            self.cleanup((current, to), captured_piece=captured_piece)
+            self.cleanup(move, captured_piece=captured_piece)
 
     def cleanup(
             self,
@@ -218,9 +219,10 @@ class AppCore(Widget):
 
     def redo_last_move(self):
         """Redo the last move undone."""
-        if not self.undone_moves:
+        try:
+            last_move = self.undone_moves.pop()
+        except IndexError:
             return
-        last_move = self.undone_moves.pop()
         if last_move.is_drop:
             self.to_add = last_move.piece
             self.drop_piece(last_move.end)
