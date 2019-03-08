@@ -375,6 +375,17 @@ class AppCore(Widget):
         else:
             self.light_moves(coordinate)
 
+    def text_entered(self, text: str):
+        """Text was entered from text box.
+
+        :param text: text entered
+        """
+        try:
+            coordinate = shogi.AbsoluteCoord(text)
+        except ValueError:
+            return
+        self.board_pressed(coordinate)
+
     def _set_captured(self, _):
         """Set captured_spaces method.
 

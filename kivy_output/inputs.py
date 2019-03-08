@@ -1,3 +1,4 @@
+from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
@@ -66,3 +67,18 @@ class MateWindow(Popup):
 
 class HelpText(TextInput):
     pass
+
+
+class MainText(TextInput):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(
+            lambda x: self.bind(focus=self._on_focus_change)
+        )
+
+    def _on_focus_change(self, *_):
+        if self.focus:
+            self.background_color = (.25, .25, .25, 1)
+        else:
+            self.background_color = (0, 0, 0, 0)
+            self.text = ''

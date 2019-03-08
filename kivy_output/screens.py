@@ -19,7 +19,11 @@ class MainScreen(Screen):
     space_size = NumericProperty(0)
 
     def focus_input(self):
-        pass
+        input_box = self.ids['input']
+        if not input_box.focus:
+            input_box.focus = True
+        else:
+            input_box.focus = False
 
 
 class HelpScreen(Screen):
@@ -69,7 +73,7 @@ class HelpScreen(Screen):
             self.manager.current = text
 
     def focus_input(self):
-        self.ids['input'].focus = True
+        self.ids['input'].focus = not self.ids['input'].focus
 
 
 class HelpMenuScreen(Screen):

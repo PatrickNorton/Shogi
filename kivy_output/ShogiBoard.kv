@@ -53,6 +53,17 @@
                 root.manager.transition.direction = 'left'
                 root.manager.current = 'help'
 
+        MainText:
+            id: input
+            pos: 0, 0
+            size_hint: None, None
+            size: root.width, self.minimum_height
+            background_color: 0, 0, 0, 0
+            foreground_color: 1, 1, 1, 1
+            multiline: False
+            on_text_validate:
+                self.parent.text_entered(self.text)
+                self.focus = False
 
 <BoardSquare>:
     on_press: self.parent.space_pressed(self.board_position)

@@ -32,6 +32,12 @@
         "modifiers": ["meta"],
         "optional": [],
         "action": "redo"
+      },
+      {
+        "key": 27,
+        "modifiers": [],
+        "optional": [],
+        "action": "focus_input"
       }
     ],
     "help_screen": [
@@ -88,6 +94,12 @@
         "modifiers": ["control"],
         "optional": [],
         "action": "redo"
+      },
+      {
+        "key": 27,
+        "modifiers": [],
+        "optional": [],
+        "action": "focus_input"
       }
     ],
     "help_screen": [
