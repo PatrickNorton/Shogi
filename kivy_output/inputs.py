@@ -1,4 +1,3 @@
-from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
@@ -72,9 +71,7 @@ class HelpText(TextInput):
 class MainText(TextInput):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Clock.schedule_once(
-            lambda x: self.bind(focus=self._on_focus_change)
-        )
+        self.bind(focus=self._on_focus_change)
 
     def _on_focus_change(self, *_):
         if self.focus:
