@@ -50,7 +50,8 @@ class AppCore(Widget):
     def make_moves(
             self,
             current: shogi.AbsoluteCoord,
-            to: shogi.AbsoluteCoord
+            to: shogi.AbsoluteCoord,
+            clear_undone: bool = False
     ):
         """Moves piece between two locations.
 
@@ -62,6 +63,7 @@ class AppCore(Widget):
 
         :param current: location of piece
         :param to: location to move piece to
+        :param clear_undone: whether to clear undone moves or not
         """
         move = (current, to)
         checking_spaces = (
@@ -77,22 +79,22 @@ class AppCore(Widget):
         captured_piece = self.board[to]
         self.board.move(*move)
         can_promote = self.board.can_promote(to)
+
+        def std_cleanup(*_): self.cleanup(move,
+                                          captured_piece=captured_piece,
+                                          clear_undone=clear_undone)
+
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
                 self.to_promote = True
-                self.cleanup(move, captured_piece=captured_piece)
+                std_cleanup()
             else:
                 pops = PromotionWindow(caller=self)
-                pops.bind(
-                    on_dismiss=lambda x: self.cleanup(
-                        move,
-                        captured_piece=captured_piece
-                    )
-                )
+                pops.bind(on_dismiss=std_cleanup)
                 self.popup_open = True
                 pops.open()
         else:
-            self.cleanup(move, captured_piece=captured_piece)
+            std_cleanup()
 
     def cleanup(
             self,
@@ -227,7 +229,7 @@ class AppCore(Widget):
             self.to_add = last_move.piece
             self.drop_piece(last_move.end)
         else:
-            self.make_moves(last_move.start, last_move.end)
+            self.make_moves(last_move.start, last_move.end, clear_undone=False)
         self.board.current_player = last_move.player_color.other
 
     # Lighting methods
