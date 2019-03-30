@@ -31,9 +31,11 @@ class AppCore(Widget):
 
         :param kwargs: keyword arguments to pass
         """
-        self.board = shogi.Board()
+        self.board: shogi.Board = shogi.Board()
         super().__init__(**kwargs)
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
+        self.main_board = None
+        self.board_spaces = None
         self.make_move: bool = False
         self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
         self.in_check: Dict[shogi.Color, shogi.CoordSet] = {
@@ -45,7 +47,7 @@ class AppCore(Widget):
         self.game_log: List[List[shogi.Move]] = []
         self.undone_moves: Deque[shogi.Move] = deque()
         self.popup_open: bool = False
-        Clock.schedule_once(self._set_captured, 0)
+        Clock.schedule_once(self._set_id_based, 0)
 
     def make_moves(
             self,
@@ -80,9 +82,11 @@ class AppCore(Widget):
         self.board.move(*move)
         can_promote = self.board.can_promote(to)
 
-        def std_cleanup(*_): self.cleanup(move,
-                                          captured_piece=captured_piece,
-                                          clear_undone=clear_undone)
+        def std_cleanup(*_): self.cleanup(
+            move,
+            captured_piece=captured_piece,
+            clear_undone=clear_undone
+        )
 
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
@@ -388,8 +392,8 @@ class AppCore(Widget):
             return
         self.board_pressed(coordinate)
 
-    def _set_captured(self, _):
-        """Set captured_spaces method.
+    def _set_id_based(self, _):
+        """Set id based variables.
 
         This needs to exist, as self.parent.ids is not accessible during
         __init__, but this should still be created then. **DO NOT USE
@@ -399,11 +403,5 @@ class AppCore(Widget):
             shogi.Color(0): self.parent.ids['0'],
             shogi.Color(1): self.parent.ids['1']
         }
-
-    @property
-    def main_board(self):
-        return self.parent.ids['board']
-
-    @property
-    def board_spaces(self) -> dict:
-        return self.main_board.children_dict
+        self.main_board = self.parent.ids['board']
+        self.board_spaces = self.main_board.children_dict
