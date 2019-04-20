@@ -89,7 +89,7 @@ def obstruction_check(
         move_position: classes.AbsoluteCoord,
         ignore_location: classes.AbsoluteCoord = None,
         act_full: classes.AbsoluteCoord = None,
-):
+) -> int:
     """Check if piece is obstructing move.
 
     :param current_board: current board state
@@ -114,7 +114,7 @@ def obstruction_check(
 def king_check(
         current_board: classes.Board,
         coordinates: classes.CoordTuple
-):
+) -> int:
     """Check if king is moving into check.
 
     :param current_board: current board state
@@ -192,7 +192,7 @@ def into_check_check(
             return king_location, places_attacking
     relative_move = classes.RelativeCoord(king_location - old_location)
     absolute_move: classes.RelativeCoord = abs(relative_move)
-    if absolute_move.x != absolute_move.y and min(absolute_move):
+    if not absolute_move.is_linear():
         return king_location, places_attacking
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
