@@ -68,7 +68,7 @@ def move_check_2(
     elif new_loc_piece.same_color(piece):
         if new != ignore_location:
             return 4
-    elif move_variable == 'T':
+    elif isinstance(move_variable, list):
         pass
     elif piece.has_type('k'):
         return king_check(current_board, (current, new))
