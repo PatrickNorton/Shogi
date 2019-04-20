@@ -17,7 +17,7 @@ def to_notation(
         is_promote: Optional[bool] = None,
         dropped_piece: Optional[classes.Piece] = None,
         before_move: bool = False,
-        is_check: bool = False,
+        is_checking: bool = False,
         is_mate: bool = False,
 ) -> str:
     """Take a move and convert it into shogi notation.
@@ -31,7 +31,7 @@ def to_notation(
     :param is_promote: if the moved piece was promoted
     :param dropped_piece: piece dropped, if applicable
     :param before_move: if this is before the move
-    :param is_check: if the move put the king in check
+    :param is_checking: if the move put the king in check
     :param is_mate: if the move put the king in checkmate
     :return: string representing the move
     """
@@ -62,7 +62,7 @@ def to_notation(
         notation += f"{'x' if is_capture else '-'}{new_location}"
         if is_promote is not None:
             notation += '^' if is_promote else '='
-    if is_check:
+    if is_checking:
         notation += '#' if is_mate else '+'
     return notation
 

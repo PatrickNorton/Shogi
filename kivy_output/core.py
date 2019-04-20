@@ -341,7 +341,7 @@ class AppCore(Widget):
             is_capture=is_a_capture,
             captured_piece=captured_piece,
             is_promote=is_a_promote,
-            is_check=(is_mate is not None),
+            is_checking=(is_mate is not None),
             is_mate=is_mate
         )
         self.game_log[-1].append(to_log)

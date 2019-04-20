@@ -15,7 +15,7 @@ def is_check(
         break_early: bool = False,
         before_move: bool = False,
         dropped_piece: classes.Piece = None
-) -> classes.CoordAndSet:
+) -> classes.CoordSet:
     """Find if king is in check.
 
     :param current_board: current game board
@@ -38,7 +38,7 @@ def is_check(
             new_location,
             king_color
         )
-        return king_location, checking_spaces
+        return checking_spaces
 
     if before_move:
         kings_enemy = not current_board[old_location].is_color(king_color)
@@ -59,7 +59,7 @@ def is_check(
     if can_move:
         places_attacking.add(new_location)
         if break_early:
-            return king_location, places_attacking
+            return places_attacking
     places_attacking = unmoved_can_check(
         current_board,
         (old_location, new_location),
@@ -68,7 +68,7 @@ def is_check(
         break_early=break_early,
         before_move=before_move
     )
-    return king_location, places_attacking
+    return places_attacking
 
 
 def unmoved_can_check(

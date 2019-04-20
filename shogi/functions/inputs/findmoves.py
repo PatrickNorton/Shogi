@@ -40,16 +40,18 @@ def test_spaces(
             (piece_location, absolute_location)
         )
         if can_move:
-            king_location, checking_own = boardtests.is_check(
+            king_color = current_board[piece_location].color
+            checking_own = boardtests.is_check(
                 current_board,
                 (piece_location, absolute_location),
-                current_board[piece_location].color,
+                king_color,
                 break_early=True,
                 before_move=True
             )
             checking_spaces = (
                 x for x in checking_spaces if x != absolute_location
             )
+            king_location = current_board.get_king(king_color)
             if checking_own or king_location == piece_location:
                 checking_spaces = []
             for space in checking_spaces:

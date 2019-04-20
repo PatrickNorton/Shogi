@@ -22,7 +22,7 @@ class Move:
     :ivar is_capture: if the move is a capture
     :ivar captured_piece: the captured piece
     :ivar is_promote: if the moved piece was promoted
-    :ivar is_check: if the move checked the king
+    :ivar is_checking: if the move checked the king
     :ivar is_mate: if the move checkmated
     :ivar tuple: (start, end) tuple
     :ivar string: the move in Shogi move notation
@@ -35,7 +35,7 @@ class Move:
             is_capture: bool = False,
             captured_piece: Piece = NoPiece(),
             is_promote: Optional[bool] = None,
-            is_check: bool = False,
+            is_checking: bool = False,
             is_mate: bool = False,
     ):
         """Initialise instance of Moves.
@@ -46,7 +46,7 @@ class Move:
         :param is_capture: if the move was a capture
         :param captured_piece: the captured piece
         :param is_promote: if the move involved promotion
-        :param is_check: if the move caused check
+        :param is_checking: if the move caused check
         :param is_mate: if the move caused checkmate
         """
         self.start = move[0]
@@ -63,9 +63,9 @@ class Move:
         self.is_promote = is_promote
         if self.is_promote and not self.piece.prom:
             raise ValueError
-        self.is_check = is_check
+        self.is_checking = is_checking
         self.is_mate = is_mate
-        if not self.is_check and self.is_mate:
+        if not self.is_checking and self.is_mate:
             raise ValueError
         self.tuple = move
         self.string = self.to_string(current_board)
@@ -102,7 +102,7 @@ class Move:
             notation += f"{dash}{self.end}"
             if self.is_promote is not None:
                 notation += '^' if self.is_promote else '='
-        if self.is_check:
+        if self.is_checking:
             notation += '#' if self.is_mate else '+'
         return notation
 

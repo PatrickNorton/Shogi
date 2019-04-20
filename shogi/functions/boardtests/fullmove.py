@@ -27,7 +27,7 @@ def check_move(
     can_move = is_movable(current_board, coordinates)
     if not can_move:
         return False
-    king_location, checking_own = is_check(
+    checking_own = is_check(
         current_board,
         coordinates,
         current_board.current_player,
@@ -37,6 +37,7 @@ def check_move(
     if checking_own:
         return False
     for space in checking_spaces:
+        king_location = current_board.get_king(current_board.current_player)
         can_move = is_movable(
             current_board,
             (space, king_location),
