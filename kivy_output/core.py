@@ -127,7 +127,7 @@ class AppCore(Widget):
         is_a_capture = bool(captured_piece)
         if self.to_promote:
             self.board.promote(to)
-        king_location, is_in_check = shogi.is_check(
+        is_in_check = shogi.is_check(
             self.board,
             move,
             self.board.other_player,
@@ -136,7 +136,7 @@ class AppCore(Widget):
         if is_in_check:
             mate = shogi.mate_check(
                 self.board,
-                king_location,
+                self.board.other_player,
                 is_in_check
             )
             if mate:

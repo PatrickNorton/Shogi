@@ -23,7 +23,6 @@ def is_legal_drop(
     if current_board[move_location]:
         return False
     player_int = int(current_board.current_player)
-    king_location = current_board.get_king(current_board.other_player)
     must_promote = current_board.auto_promote(move_location, piece)
     if must_promote:
         return False
@@ -42,7 +41,7 @@ def is_legal_drop(
                 # FIXME: Add before_move attribute to mate
                 is_mate = mate_check(
                     current_board,
-                    king_location,
+                    current_board.other_player,
                     is_in_check
                 )
                 if is_mate:

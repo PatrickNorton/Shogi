@@ -6,6 +6,4 @@ submodule.
 
 
 from . import boardtests
-from . import inputs
 from .boardtests import *
-from .inputs import *
