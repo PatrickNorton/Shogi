@@ -87,6 +87,6 @@ def piece_can_move(
         return [x for x in pieces if is_movable(
                     current_board,
                     (x, to),
-                    ignore_location=to
+                    ignore_locations=to
                 )]
     return []

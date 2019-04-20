@@ -127,7 +127,7 @@ class AppCore(Widget):
         is_a_capture = bool(captured_piece)
         if self.to_promote:
             self.board.promote(to)
-        king_location, is_in_check = shogi.check_check(
+        king_location, is_in_check = shogi.is_check(
             self.board,
             move,
             self.board.other_player,
@@ -172,8 +172,8 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        cannot_drop = shogi.drop_check(self.board, self.to_add, space_to)
-        if not cannot_drop:
+        can_drop = shogi.is_droppable(self.board, self.to_add, space_to)
+        if can_drop:
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
@@ -293,8 +293,8 @@ class AppCore(Widget):
             board_spaces = self.board_spaces.items()
             empty_children = {x: y for x, y in board_spaces if not y.text}
             for space, x in empty_children.items():
-                cannot_drop = shogi.drop_check(self.board, piece, space)
-                if not cannot_drop:
+                can_drop = shogi.is_droppable(self.board, piece, space)
+                if can_drop:
                     x.light()
             self.make_move = True
 

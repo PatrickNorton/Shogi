@@ -1,5 +1,5 @@
 from shogi import classes
-from .drop import drop_check
+from .drop import is_droppable
 from .fullmove import check_move
 
 __all__ = [
@@ -20,12 +20,12 @@ def undo_move(
     """
     if move.is_drop:
         current_board.un_drop(move.end)
-        cannot_drop = drop_check(
+        can_drop = is_droppable(
             current_board,
             move.piece,
             move.end
         )
-        if cannot_drop:
+        if not can_drop:
             current_board.put_in_play(move.piece, move.end)
             raise ValueError
     else:

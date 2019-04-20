@@ -5,8 +5,8 @@ from shogi import classes
 
 __all__ = [
     "is_movable",
-    "obstruction_check",
-    "king_check",
+    "path_clear",
+    "king_can_move",
 ]
 
 
@@ -27,7 +27,7 @@ def is_movable(
     :param act_full: location to pretend is full
     :param piece_pretend: piece to pretend is moving
     :param act_full_pretend: piece to pretend is in the act_full loc
-    :param with_king_check: whether or not king_check should be run
+    :param with_king_check: whether or not king_can_move should be run
     :return: error code
     """
 
@@ -59,13 +59,13 @@ def is_movable(
     elif isinstance(move_variable, list):
         pass
     elif piece.has_type('k') and with_king_check:
-        return king_check(
+        return king_can_move(
             current_board, (current, new),
             ignore_locations=ignore_locations,
             act_full=act_full
         )
     else:
-        return obstruction_check(
+        return path_clear(
             current_board,
             current,
             move,
@@ -75,7 +75,7 @@ def is_movable(
     return True
 
 
-def obstruction_check(
+def path_clear(
         current_board: classes.Board,
         current_position: classes.AbsoluteCoord,
         move_position: classes.AbsoluteCoord,
@@ -104,7 +104,7 @@ def obstruction_check(
     return True
 
 
-def king_check(
+def king_can_move(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
         ignore_locations: Set[classes.AbsoluteCoord] = frozenset(),

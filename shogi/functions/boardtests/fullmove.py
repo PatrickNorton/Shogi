@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from shogi import classes
-from .check import check_check
+from .check import is_check
 from .move import is_movable
 
 __all__ = [
@@ -27,7 +27,7 @@ def check_move(
     can_move = is_movable(current_board, coordinates)
     if not can_move:
         return False
-    king_location, checking_own = check_check(
+    king_location, checking_own = is_check(
         current_board,
         coordinates,
         current_board.current_player,

@@ -4,12 +4,12 @@ from .mate import mate_check
 from .move import is_movable
 
 __all__ = [
-    "drop_check",
-    "drop_check_check",
+    "is_droppable",
+    "dropping_to_check",
 ]
 
 
-def drop_check(
+def is_droppable(
         current_board: classes.Board,
         piece: classes.Piece,
         move_location: classes.AbsoluteCoord
@@ -21,18 +21,18 @@ def drop_check(
     :param move_location: location to drop piece
     """
     if current_board[move_location]:
-        return 1
+        return False
     player_int = int(current_board.current_player)
     king_location = current_board.get_king(current_board.other_player)
     must_promote = current_board.auto_promote(move_location, piece)
     if must_promote:
-        return 1
+        return False
     if piece.has_type('p'):
         space_row = classes.Row(move_location, 0)
         if any(current_board[x].is_piece('p', player_int) for x in space_row):
-            return 1
+            return False
         else:
-            is_in_check = drop_check_check(
+            is_in_check = dropping_to_check(
                 current_board,
                 piece,
                 move_location,
@@ -46,10 +46,11 @@ def drop_check(
                     is_in_check
                 )
                 if is_mate:
-                    return 1
+                    return False
+    return True
 
 
-def drop_check_check(
+def dropping_to_check(
         current_board: classes.Board,
         piece_to_drop: classes.Piece,
         new_location: classes.AbsoluteCoord,

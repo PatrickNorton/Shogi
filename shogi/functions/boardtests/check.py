@@ -1,14 +1,14 @@
 from shogi import classes
-from .drop import drop_check_check
+from .drop import dropping_to_check
 from .move import is_movable
 
 __all__ = [
-    "check_check",
-    "check_check_2",
+    "is_check",
+    "unmoved_can_check",
 ]
 
 
-def check_check(
+def is_check(
         current_board: classes.Board,
         coordinates: classes.OptCoordTuple,
         king_color: classes.Color,
@@ -32,7 +32,7 @@ def check_check(
     king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
 
     if dropped_piece is not None:
-        checking_spaces = drop_check_check(
+        checking_spaces = dropping_to_check(
             current_board,
             dropped_piece,
             new_location,
@@ -46,7 +46,7 @@ def check_check(
             can_move = is_movable(
                 current_board,
                 (new_location, king_location),
-                ignore_location=old_location,
+                ignore_locations=old_location,
                 act_full=new_location
             )
         else:
@@ -60,7 +60,7 @@ def check_check(
         places_attacking.add(new_location)
         if break_early:
             return king_location, places_attacking
-    places_attacking = check_check_2(
+    places_attacking = unmoved_can_check(
         current_board,
         (old_location, new_location),
         king_location,
@@ -71,7 +71,7 @@ def check_check(
     return king_location, places_attacking
 
 
-def check_check_2(
+def unmoved_can_check(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
         king_location: classes.AbsoluteCoord,
