@@ -216,7 +216,7 @@ class Moves(collections.abc.Sequence):
         if isinstance(magic_var, int) and not isinstance(magic_var, bool):
             return dist == magic_var and abs_location.is_linear()
         elif isinstance(magic_var, list):
-            return list(dist) == magic_var
+            return list(abs_location) == magic_var
         elif isinstance(magic_var, bool):
             return magic_var and abs_location.is_linear()
         return False
