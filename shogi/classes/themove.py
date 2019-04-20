@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from shogi.functions.boardtests.move import move_check_2
+from shogi.functions.boardtests.move import is_movable
 from .aliases import OptCoordTuple
 from .boards import Board
 from .locations import AbsoluteCoord
@@ -129,12 +129,7 @@ def _piece_can_move(
         )
         valid_spaces = []
         for location in pieces:
-            cannot_move = move_check_2(
-                current_board,
-                (location, to),
-                ignore_location=to
-            )
-            if not cannot_move:
+            if is_movable(current_board, (location, to), ignore_location=to):
                 valid_spaces.append(location)
         return valid_spaces
     return []

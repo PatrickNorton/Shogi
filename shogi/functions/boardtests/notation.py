@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from shogi import classes
-from .move import move_check_2
+from .move import is_movable
 
 __all__ = [
     "to_notation",
@@ -41,7 +41,6 @@ def to_notation(
         piece_notation = str(piece)[0].lower()
     else:
         piece_notation = str(piece)[0]
-    dash = 'x' if is_capture else '-'
     if is_drop:
         if dropped_piece:
             dropped_notation = str(dropped_piece)[0]
@@ -55,13 +54,12 @@ def to_notation(
         notation = piece_notation
         if other_pieces:
             if all(x.x == old_location.x for x in other_pieces):
-                notation += f"{old_location.y_str}{dash}{new_location}"
+                notation += f"{old_location.y_str}"
             elif all(x.y == old_location.y for x in other_pieces):
-                notation += f"{old_location.x_str}{dash}{new_location}"
+                notation += f"{old_location.x_str}"
             else:
-                notation += f"{old_location}{dash}{new_location}"
-        else:
-            notation += f"{dash}{new_location}"
+                notation += f"{old_location}"
+        notation += f"{'x' if is_capture else '-'}{new_location}"
         if is_promote is not None:
             notation += '^' if is_promote else '='
     if is_check:
@@ -86,14 +84,9 @@ def piece_can_move(
         pieces = (
             x for x, y in current_board.pieces.items() if y == piece
         )
-        valid_spaces = []
-        for location in pieces:
-            cannot_move = move_check_2(
-                current_board,
-                (location, to),
-                ignore_location=to
-            )
-            if not cannot_move:
-                valid_spaces.append(location)
-        return valid_spaces
+        return [x for x in pieces if is_movable(
+                    current_board,
+                    (x, to),
+                    ignore_location=to
+                )]
     return []

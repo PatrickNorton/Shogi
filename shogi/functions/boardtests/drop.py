@@ -1,7 +1,7 @@
 from shogi import classes
 
 from .mate import mate_check
-from .move import move_check_2
+from .move import is_movable
 
 __all__ = [
     "drop_check",
@@ -64,12 +64,9 @@ def drop_check_check(
     """
     king_location = current_board.get_king(king_color)
     places_attacking = set()
-    cannot_move = move_check_2(
-        current_board,
-        (new_location, king_location),
-        act_full=new_location,
-        piece_pretend=piece_to_drop
-    )
-    if not cannot_move:
+    if is_movable(current_board,
+                  (new_location, king_location),
+                  act_full=new_location,
+                  piece_pretend=piece_to_drop):
         places_attacking.add(new_location)
     return places_attacking

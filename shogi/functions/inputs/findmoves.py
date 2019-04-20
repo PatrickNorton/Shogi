@@ -35,11 +35,11 @@ def test_spaces(
             continue
         if isinstance(absolute_location, classes.RelativeCoord):
             continue
-        cannot_move = boardtests.move_check_2(
+        can_move = boardtests.is_movable(
             current_board,
             (piece_location, absolute_location)
         )
-        if not cannot_move:
+        if can_move:
             king_location, checking_own = boardtests.check_check(
                 current_board,
                 (piece_location, absolute_location),
@@ -53,13 +53,11 @@ def test_spaces(
             if checking_own or king_location == piece_location:
                 checking_spaces = []
             for space in checking_spaces:
-                cannot_move = boardtests.move_check_2(
-                    current_board,
-                    (space, king_location),
-                    ignore_location=piece_location,
-                    act_full=absolute_location
-                )
-                if not cannot_move:
+                if boardtests.is_movable(
+                        current_board,
+                        (space, king_location),
+                        ignore_location=piece_location,
+                        act_full=absolute_location):
                     break
             else:
                 to_return.add(absolute_location)

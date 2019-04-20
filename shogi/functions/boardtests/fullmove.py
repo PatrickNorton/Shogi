@@ -2,7 +2,7 @@ from typing import Iterable
 
 from shogi import classes
 from .check import check_check
-from .move import move_check_2
+from .move import is_movable
 
 __all__ = [
     "check_move",
@@ -24,9 +24,9 @@ def check_move(
     current, to = coordinates
     if checking_spaces is None:
         checking_spaces = ()
-    cannot_move = move_check_2(current_board, coordinates)
-    if cannot_move:
-        return cannot_move
+    can_move = is_movable(current_board, coordinates)
+    if not can_move:
+        return False
     king_location, checking_own = check_check(
         current_board,
         coordinates,
@@ -37,12 +37,12 @@ def check_move(
     if checking_own:
         return 6
     for space in checking_spaces:
-        cannot_move = move_check_2(
+        can_move = is_movable(
             current_board,
             (space, king_location),
             ignore_location=current,
             act_full=to
         )
-        if not cannot_move:
+        if can_move:
             return 6
     return 0

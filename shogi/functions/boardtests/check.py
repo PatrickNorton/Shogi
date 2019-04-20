@@ -1,6 +1,6 @@
 from shogi import classes
 from .drop import drop_check_check
-from .move import move_check_2
+from .move import is_movable
 
 __all__ = [
     "check_check",
@@ -43,20 +43,20 @@ def check_check(
     if before_move:
         kings_enemy = not current_board[old_location].is_color(king_color)
         if kings_enemy:
-            cannot_move = move_check_2(
+            can_move = is_movable(
                 current_board,
                 (new_location, king_location),
                 ignore_location=old_location,
                 act_full=new_location
             )
         else:
-            cannot_move = 4
+            can_move = False
     else:
-        cannot_move = move_check_2(
+        can_move = is_movable(
             current_board,
             (new_location, king_location)
         )
-    if not cannot_move:
+    if can_move:
         places_attacking.add(new_location)
         if break_early:
             return king_location, places_attacking
@@ -101,18 +101,12 @@ def check_check_2(
     pieces = (x for x in direction_of_attack
               if current_board[x].is_color(attacking_color))
     for x in pieces:
-        if before_move:
-            cannot_move = move_check_2(
-                current_board,
-                (x, king_location),
-                ignore_location=old_location,
-                act_full=new_location
-            )
-        else:
-            cannot_move = move_check_2(current_board, (x, king_location))
-        if cannot_move:
-            continue
-        else:
+        if is_movable(
+            current_board,
+            (x, king_location),
+            ignore_location=old_location if before_move else None,
+            act_full=new_location if before_move else None
+        ):
             places_attacking.add(x)
             if break_early:
                 return places_attacking
