@@ -24,7 +24,7 @@ def is_check(
     :param break_early: break after first finding of check
     :param before_move: whether or not the move has been made
     :param dropped_piece: piece to be dropped
-    :return: location of king, list of coordinates attacking king
+    :return: set of coordinates attacking king
     """
 
     old_location, new_location = coordinates
@@ -32,13 +32,12 @@ def is_check(
     king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
 
     if dropped_piece is not None:
-        checking_spaces = dropping_to_check(
+        return dropping_to_check(
             current_board,
             dropped_piece,
             new_location,
             king_color
         )
-        return checking_spaces
 
     if before_move:
         kings_enemy = not current_board[old_location].is_color(king_color)
@@ -60,7 +59,7 @@ def is_check(
         places_attacking.add(new_location)
         if break_early:
             return places_attacking
-    places_attacking = unmoved_can_check(
+    return unmoved_can_check(
         current_board,
         (old_location, new_location),
         king_location,
@@ -68,7 +67,6 @@ def is_check(
         break_early=break_early,
         before_move=before_move
     )
-    return places_attacking
 
 
 def unmoved_can_check(

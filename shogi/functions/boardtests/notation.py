@@ -85,8 +85,7 @@ def piece_can_move(
             x for x, y in current_board.pieces.items() if y == piece
         )
         return [x for x in pieces if is_movable(
-                    current_board,
-                    (x, to),
+                    current_board, (x, to),
                     ignore_locations=to
                 )]
     return []

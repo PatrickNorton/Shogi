@@ -172,7 +172,7 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        can_drop = shogi.is_droppable(self.board, self.to_add, space_to)
+        can_drop = shogi.is_legal_drop(self.board, self.to_add, space_to)
         if can_drop:
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
@@ -293,7 +293,7 @@ class AppCore(Widget):
             board_spaces = self.board_spaces.items()
             empty_children = {x: y for x, y in board_spaces if not y.text}
             for space, x in empty_children.items():
-                can_drop = shogi.is_droppable(self.board, piece, space)
+                can_drop = shogi.is_legal_drop(self.board, piece, space)
                 if can_drop:
                     x.light()
             self.make_move = True

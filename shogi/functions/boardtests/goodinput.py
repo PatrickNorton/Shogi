@@ -14,7 +14,6 @@ def input_piece(entered_text: str) -> classes.AbsoluteCoord:
     """
 
     try:
-        piece_location: classes.AbsoluteCoord = classes.AbsoluteCoord(entered_text)
-        return piece_location
+        return classes.AbsoluteCoord(entered_text)
     except (ValueError, IndexError):
         raise classes.OtherInput(entered_text)

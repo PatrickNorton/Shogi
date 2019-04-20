@@ -23,8 +23,9 @@ def mate_check(
 
     for king_move_tested in classes.Direction.valid():
         try:
-            new_location = king_move_tested + king_location
-            new_location = classes.AbsoluteCoord(new_location)
+            new_location = classes.AbsoluteCoord(
+                king_move_tested + king_location
+            )
         except ValueError:
             continue
         if is_movable(current_board, (king_location, new_location)):

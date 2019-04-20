@@ -13,8 +13,8 @@ __all__ = [
 def is_movable(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
-        ignore_locations: Set[classes.AbsoluteCoord] = frozenset(),
-        act_full: Set[classes.AbsoluteCoord] = frozenset(),
+        ignore_locations: classes.CoordOrSet = frozenset(),
+        act_full: classes.CoordOrSet = frozenset(),
         piece_pretend: classes.Piece = None,
         act_full_pretend: classes.Piece = None,
         with_king_check: bool = True,

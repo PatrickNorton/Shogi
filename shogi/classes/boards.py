@@ -237,6 +237,30 @@ class Board(collections.abc.Sequence):
         """Flip the turn from one player to the other."""
         self.current_player = self.other_player
 
+    def row(self, row_num: int) -> Generator:
+        """The pieces at each space in a row of the board."""
+        for y in range(9):
+            yield self[AbsoluteCoord((row_num, y))]
+
+    def filled_row(self, row_num: int) -> Generator:
+        """The occupied pieces from each space in a row."""
+        for y in range(9):
+            space = AbsoluteCoord((row_num, y))
+            if self[space]:
+                yield self[space]
+
+    def column(self, col_num: int) -> Generator:
+        """The pieces at each space in a column of the board."""
+        for x in range(9):
+            yield self[AbsoluteCoord((x, col_num))]
+
+    def filled_column(self, col_num: int) -> Generator:
+        """The occupied pieces from each space in a column."""
+        for x in range(9):
+            space = AbsoluteCoord((x, col_num))
+            if self[space]:
+                yield self[space]
+
     @property
     def current_pieces(self) -> Generator:
         """dict: Pieces of the current player."""

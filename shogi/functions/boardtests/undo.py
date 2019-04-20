@@ -1,5 +1,5 @@
 from shogi import classes
-from .drop import is_droppable
+from .drop import is_legal_drop
 from .fullmove import check_move
 
 __all__ = [
@@ -20,7 +20,7 @@ def undo_move(
     """
     if move.is_drop:
         current_board.un_drop(move.end)
-        can_drop = is_droppable(
+        can_drop = is_legal_drop(
             current_board,
             move.piece,
             move.end

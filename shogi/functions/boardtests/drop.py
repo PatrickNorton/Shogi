@@ -4,12 +4,12 @@ from .mate import mate_check
 from .move import is_movable
 
 __all__ = [
-    "is_droppable",
+    "is_legal_drop",
     "dropping_to_check",
 ]
 
 
-def is_droppable(
+def is_legal_drop(
         current_board: classes.Board,
         piece: classes.Piece,
         move_location: classes.AbsoluteCoord
@@ -28,8 +28,8 @@ def is_droppable(
     if must_promote:
         return False
     if piece.has_type('p'):
-        space_row = classes.Row(move_location, 0)
-        if any(current_board[x].is_piece('p', player_int) for x in space_row):
+        if any(x.is_piece('p', player_int)
+               for x in current_board.column(move_location.y)):
             return False
         else:
             is_in_check = dropping_to_check(
