@@ -129,7 +129,7 @@ def _piece_can_move(
         )
         valid_spaces = []
         for location in pieces:
-            if is_movable(current_board, (location, to), ignore_location=to):
+            if is_movable(current_board, (location, to), ignore_locations=to):
                 valid_spaces.append(location)
         return valid_spaces
     return []

@@ -34,7 +34,7 @@ def undo_move(
         current_board.move(move.end, move.start)
         if move.is_capture:
             current_board.put_in_play(move.captured_piece, move.end)
-        cannot_drop = check_move(current_board, (move.start, move.end))
-        if cannot_drop:
+        can_drop = check_move(current_board, (move.start, move.end))
+        if not can_drop:
             current_board.move(move.start, move.end)
             raise ValueError

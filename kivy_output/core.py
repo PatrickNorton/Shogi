@@ -71,12 +71,12 @@ class AppCore(Widget):
         checking_spaces = (
             x for x in self.in_check[self.board.current_player] if x != to
         )
-        cannot_move = shogi.check_move(
+        can_move = shogi.check_move(
             self.board,
             move,
             checking_spaces=checking_spaces
         )
-        if cannot_move:
+        if not can_move:
             return
         captured_piece = self.board[to]
         self.board.move(*move)

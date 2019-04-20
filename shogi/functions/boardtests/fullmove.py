@@ -35,14 +35,14 @@ def check_move(
         before_move=True
     )
     if checking_own:
-        return 6
+        return False
     for space in checking_spaces:
         can_move = is_movable(
             current_board,
             (space, king_location),
-            ignore_location=current,
+            ignore_locations=current,
             act_full=to
         )
         if can_move:
-            return 6
-    return 0
+            return False
+    return True

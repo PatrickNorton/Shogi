@@ -37,6 +37,8 @@ class Piece:
         :param clr: 1-letter color of piece
         """
 
+        if promoted is None:
+            promoted = False
         self.type: PieceType = PieceType(typ, promoted=promoted)
         self.moves: Moves = Moves(self.type, Color(clr), promoted=promoted)
         self.color: Color = Color(clr)

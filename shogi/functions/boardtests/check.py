@@ -104,7 +104,7 @@ def check_check_2(
         if is_movable(
             current_board,
             (x, king_location),
-            ignore_location=old_location if before_move else None,
+            ignore_locations=old_location if before_move else None,
             act_full=new_location if before_move else None
         ):
             places_attacking.add(x)

@@ -56,7 +56,7 @@ def test_spaces(
                 if boardtests.is_movable(
                         current_board,
                         (space, king_location),
-                        ignore_location=piece_location,
+                        ignore_locations=piece_location,
                         act_full=absolute_location):
                     break
             else:
