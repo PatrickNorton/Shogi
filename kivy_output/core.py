@@ -212,8 +212,9 @@ class AppCore(Widget):
             self.cleanup(
                 earlier_move.tuple,
                 captured_piece=earlier_move.captured_piece,
-                dropped_piece=(
-                    earlier_move.piece if earlier_move.is_drop else None),
+                dropped_piece=(earlier_move.piece
+                               if earlier_move.is_drop
+                               else None),
                 clear_undone=False,
                 update_game_log=False
             )
@@ -250,7 +251,7 @@ class AppCore(Widget):
         pressed_piece: shogi.Piece = self.board[coordinate]
         do_highlight: bool = not pressed_square.is_highlighted
         players_piece: bool = (
-                pressed_piece.color == self.board.current_player
+            pressed_piece.color == self.board.current_player
         )
         self.un_light_all()
         if do_highlight and players_piece:
@@ -374,10 +375,10 @@ class AppCore(Widget):
         :param coordinate: where board was clicked
         """
         if self.make_move and coordinate != self.move_from:
-            if self.move_from:
-                self.make_moves(self.move_from, coordinate)
-            else:
+            if self.to_add:
                 self.drop_piece(coordinate)
+            else:
+                self.make_moves(self.move_from, coordinate)
         else:
             self.light_moves(coordinate)
 
