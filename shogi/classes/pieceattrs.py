@@ -212,16 +212,13 @@ class Moves(collections.abc.Sequence):
         vec = Direction(relative_location)
         abs_location = abs(relative_location)
         dist = max(abs_location)
-        minimum = min(abs_location)
         magic_var = self[vec]
-        if magic_var == '-':
-            return False
-        elif magic_var == '1':
-            return dist == 1
-        elif magic_var == '+':
-            return abs_location.x == abs_location.y or not minimum
-        elif magic_var == 'T':
-            return abs_location == (1, 2)
+        if isinstance(magic_var, int) and not isinstance(magic_var, bool):
+            return dist == magic_var and abs_location.is_linear()
+        elif isinstance(magic_var, list):
+            return list(dist) == magic_var
+        elif isinstance(magic_var, bool):
+            return magic_var and abs_location.is_linear()
         return False
 
     def prom(self) -> 'Moves':

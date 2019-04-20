@@ -120,18 +120,19 @@ class Piece:
 
         magic_var = self.moves[direct]
         valid = []
-        if magic_var == '-':
+        if magic_var == 0:
             return []
-        elif magic_var == '1':
-            valid.append(RelativeCoord(direct))
-        elif magic_var == 'T':
-            xy = (direct.x, 2 * direct.y)
+        elif isinstance(magic_var, int) and not isinstance(magic_var, bool):
+            valid.append(RelativeCoord(direct) * magic_var)
+        elif isinstance(magic_var, list):
+            xy = (magic_var[0] * direct.x, magic_var[1] * direct.y)
             valid.append(RelativeCoord(xy))
-        elif magic_var == '+':
-            for x in RelativeCoord.positive_xy():
-                relative_location = RelativeCoord(x * direct)
-                if self.can_move(relative_location):
-                    valid.append(relative_location)
+        elif isinstance(magic_var, bool):
+            if magic_var:
+                for x in RelativeCoord.positive_xy():
+                    relative_location = RelativeCoord(x * direct)
+                    if self.can_move(relative_location):
+                        valid.append(relative_location)
         return valid
 
     def same_color(self, other: 'Piece') -> bool:

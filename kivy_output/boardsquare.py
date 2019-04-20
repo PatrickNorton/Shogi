@@ -76,8 +76,7 @@ class BoardSquare(Button):
         """
         current_piece = current_board[self.board_position]
         valid_spaces = set()
-        for dir_number in range(8):
-            direction = shogi.Direction(dir_number)
+        for direction in shogi.Direction.valid():
             direction_spaces = current_piece.valid_spaces(direction)
             direction_spaces = shogi.test_spaces(
                 current_board,

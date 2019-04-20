@@ -73,6 +73,9 @@ class BaseCoord(collections.abc.Sequence):
     def _mul(self, other: 'BaseCoord') -> Tuple[int, int]:
         return self.x * other.x, self.y * other.y
 
+    def is_linear(self) -> bool:
+        return abs(self.x) == abs(self.y) or self.x == 0 or self.y == 0
+
 
 class RelativeCoord(BaseCoord):
     """The class for relative coordinates on the board.
