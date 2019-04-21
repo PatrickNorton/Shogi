@@ -1,5 +1,4 @@
 import collections
-from math import sin, cos, pi
 from typing import Sequence, Tuple, Union
 
 from .exceptions import NullCoordError
@@ -251,12 +250,10 @@ class Direction(RelativeCoord):
     :cvar inverse_directions: inverse of direction_set
     """
 
-    direction_set = {
-        (round(sin(pi * x / 4)), -round(cos(pi * x / 4))): x for x in range(8)
-    }
-    inverse_directions = [
-        (round(sin(pi * x / 4)), -round(cos(pi * x / 4))) for x in range(8)
-    ]
+    direction_set = {(0, -1): 0, (1, -1): 1, (1, 0): 2, (1, 1): 3,
+                     (0, 1): 4, (-1, 1): 5, (-1, 0): 6, (-1, -1): 7}
+    inverse_directions = [(0, -1), (1, -1), (1, 0), (1, 1),
+                          (0, 1), (-1, 1), (-1, 0), (-1, -1)]
 
     def __init__(self, direction: CoordLike):
         self.direction: int
