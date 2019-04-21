@@ -237,7 +237,7 @@ class Moves(collections.abc.Sequence):
         """Demote self.
 
         :raises DemotedException: already demoted
-        :return: demoted exception of self
+        :return: demoted version of self
         """
 
         if not self.is_promoted:

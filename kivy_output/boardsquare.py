@@ -74,6 +74,7 @@ class BoardSquare(Button):
         :param checking_spaces: spaces checking king
         :return: set of valid spaces
         """
+        # TODO? Make this into a generator
         current_piece = current_board[self.board_position]
         valid_spaces = set()
         for direction in shogi.Direction.valid():

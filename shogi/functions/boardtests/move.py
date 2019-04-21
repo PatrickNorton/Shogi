@@ -89,7 +89,7 @@ def path_clear(
     :param move_position: location to move piece to
     :param ignore_locations: locations to ignore in check
     :param act_full: locations to pretend are full
-    :raises classes.IllegalMove: obstruction found
+    :return: whether or not hte path is clear
     """
 
     move_direction = classes.Direction(move_position)
