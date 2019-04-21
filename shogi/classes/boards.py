@@ -1,4 +1,5 @@
 import collections
+from itertools import product
 from typing import Dict, Generator, List, Optional, Sequence
 
 from .aliases import CoordTuple, PieceDict
@@ -7,7 +8,6 @@ from .information import info
 from .locations import AbsoluteCoord, NullCoord
 from .pieceattrs import Color, ColorLike
 from .pieces import Piece, NoPiece
-from .rows import Row
 
 __all__ = [
     "Board",
@@ -55,6 +55,8 @@ class Board(collections.abc.Sequence):
         self.last_move: CoordTuple = (NullCoord(), NullCoord())
         self.next_move: CoordTuple = (NullCoord(), NullCoord())
         self.kings: Dict[Color, AbsoluteCoord] = {}
+        self.x_size: int = 9
+        self.y_size: int = 9
         for x, y in self.pieces.items():
             if y.has_type('k'):
                 self.kings[y.color] = x
@@ -72,7 +74,8 @@ class Board(collections.abc.Sequence):
         return to_return
 
     def __iter__(self) -> Generator:
-        yield from ([self[x, y] for x in range(9)] for y in range(9))
+        for x, y in product(range(self.x_size), range(self.y_size)):
+            yield self[x, y]
 
     def __getitem__(self, index: Sequence) -> Piece:
         coordinates = AbsoluteCoord(index)
@@ -82,11 +85,10 @@ class Board(collections.abc.Sequence):
 
     def __repr__(self): return f"Board(pieces={self.pieces})"
 
-    @staticmethod
-    def iterate() -> Generator:
+    def iterate(self) -> Generator:
         """Yield from all possible board positions."""
 
-        yield from ((x, y) for y in range(9) for x in range(9))
+        yield from product(range(self.x_size), range(self.y_size))
 
     @property
     def occupied(self) -> Generator:
@@ -157,7 +159,7 @@ class Board(collections.abc.Sequence):
         :return: if piece must promote
         """
 
-        if piece == NoPiece():
+        if isinstance(piece, NoPiece):
             piece = self[space]
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         player_int = int(self.current_player)
@@ -205,12 +207,7 @@ class Board(collections.abc.Sequence):
         if player is None:
             player = self.current_player
         if not isinstance(self[moved_to], NoPiece):
-            return 8
-        if piece.has_type('p'):
-            row_to_test = Row(moved_to, 0)
-            for loc in row_to_test.not_original:
-                if self[loc].is_piece('p', player):
-                    return 9
+            raise ValueError
         self.captured[player].remove(piece)
         if flip_sides:
             piece = piece.flip_sides()
@@ -238,24 +235,24 @@ class Board(collections.abc.Sequence):
 
     def row(self, row_num: int) -> Generator:
         """The pieces at each space in a row of the board."""
-        for y in range(9):
+        for y in range(self.y_size):
             yield self[AbsoluteCoord((row_num, y))]
 
     def filled_row(self, row_num: int) -> Generator:
         """The occupied pieces from each space in a row."""
-        for y in range(9):
+        for y in range(self.y_size):
             space = AbsoluteCoord((row_num, y))
             if self[space]:
                 yield self[space]
 
     def column(self, col_num: int) -> Generator:
         """The pieces at each space in a column of the board."""
-        for x in range(9):
+        for x in range(self.x_size):
             yield self[AbsoluteCoord((x, col_num))]
 
     def filled_column(self, col_num: int) -> Generator:
         """The occupied pieces from each space in a column."""
-        for x in range(9):
+        for x in range(self.x_size):
             space = AbsoluteCoord((x, col_num))
             if self[space]:
                 yield self[space]

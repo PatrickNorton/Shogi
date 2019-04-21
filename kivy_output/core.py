@@ -282,7 +282,7 @@ class AppCore(Widget):
         """Un-light entire board."""
         self.main_board.un_light_all()
 
-    def in_play_light(self, piece: shogi.Piece):
+    def drop_light(self, piece: shogi.Piece):
         """Light all squares where a piece could be dropped.
 
         :param piece: piece to be drop-tested
@@ -290,10 +290,7 @@ class AppCore(Widget):
         if piece.is_color(self.board.current_player):
             self.un_light_all()
             for space, x in self.board_spaces.items():
-                if x.text:
-                    continue
-                can_drop = shogi.is_legal_drop(self.board, piece, space)
-                if can_drop:
+                if shogi.is_legal_drop(self.board, piece, space):
                     x.light()
             self.make_move = True
 
@@ -360,7 +357,7 @@ class AppCore(Widget):
             if is_highlighted:
                 raise RuntimeError("make_move should not be false & space lit")
             else:
-                self.in_play_light(piece)
+                self.drop_light(piece)
                 self.to_add = piece
                 square.light()
         else:

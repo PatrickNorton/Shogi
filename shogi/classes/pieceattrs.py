@@ -78,7 +78,8 @@ class Color:
 
     @staticmethod
     def valid() -> Generator['Color', None, None]:
-        yield from _valid_colors
+        yield Color(0)
+        yield Color(1)
 
     @property
     def other(self) -> 'Color':
