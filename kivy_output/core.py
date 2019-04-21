@@ -289,9 +289,9 @@ class AppCore(Widget):
         """
         if piece.is_color(self.board.current_player):
             self.un_light_all()
-            board_spaces = self.board_spaces.items()
-            empty_children = {x: y for x, y in board_spaces if not y.text}
-            for space, x in empty_children.items():
+            for space, x in self.board_spaces.items():
+                if x.text:
+                    continue
                 can_drop = shogi.is_legal_drop(self.board, piece, space)
                 if can_drop:
                     x.light()

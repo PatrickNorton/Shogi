@@ -37,11 +37,10 @@ class CapturedGrid(GridLayout):
         :param current_board: current board
         :param color: color of grid layout
         """
-        children = self.ordered_children
         captured_pieces = current_board.captured[color]
-        for space in children:
+        for space in self.ordered_children:
             space.remove_piece()
-        for space, occupant in zip(children, captured_pieces):
+        for space, occupant in zip(self.ordered_children, captured_pieces):
             space.give_piece(occupant)
 
     def space_pressed(self, position: int):

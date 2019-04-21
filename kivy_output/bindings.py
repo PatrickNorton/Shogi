@@ -53,9 +53,11 @@ class Keybindings:
 
         self.any_screen = create_dict(self.bindings['any_screen'])
         self.main_screen = {
-            **create_dict(self.bindings['main_screen']), **self.any_screen}
+            **create_dict(self.bindings['main_screen']), **self.any_screen
+        }
         self.help_screen = {
-            **create_dict(self.bindings['help_screen']), **self.any_screen}
+            **create_dict(self.bindings['help_screen']), **self.any_screen
+        }
 
     def get_key(
             self,
@@ -86,7 +88,7 @@ class Keybindings:
             raise ValueError
         key = CodeTuple(
             code_point if code_point is not None else key,
-            frozenset(modifiers)
+            frozenset(modifiers),
         )
         try:
             action = bindings[key]

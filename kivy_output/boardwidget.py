@@ -71,11 +71,9 @@ class ChessBoard(GridLayout):
     def un_light_all(self):
         """Un-highlight all squares."""
         self.parent.un_light_captured()
-        highlighted_spaces = {
-            x: y for x, y in self.children_dict.items() if y.is_highlighted
-        }
-        for space in highlighted_spaces.values():
-            space.un_light()
+        for space in self.children_dict.values():
+            if space.is_highlighted:
+                space.un_light()
 
     @property
     def board(self):
