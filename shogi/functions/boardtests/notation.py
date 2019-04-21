@@ -54,11 +54,11 @@ def to_notation(
         notation = piece_notation
         if other_pieces:
             if all(x.x == old_location.x for x in other_pieces):
-                notation += f"{old_location.y_str}"
+                notation += old_location.y_str
             elif all(x.y == old_location.y for x in other_pieces):
-                notation += f"{old_location.x_str}"
+                notation += old_location.x_str
             else:
-                notation += f"{old_location}"
+                notation += str(old_location)
         notation += f"{'x' if is_capture else '-'}{new_location}"
         if is_promote is not None:
             notation += '^' if is_promote else '='

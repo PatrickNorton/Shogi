@@ -39,11 +39,7 @@ def is_legal_drop(
             )
             if is_in_check:
                 # FIXME: Add before_move attribute to mate
-                is_mate = mate_check(
-                    current_board,
-                    is_in_check
-                )
-                if is_mate:
+                if mate_check(current_board, is_in_check):
                     return False
     return True
 
@@ -63,9 +59,11 @@ def dropping_to_check(
     """
     king_location = current_board.get_king(king_color)
     places_attacking = set()
-    if is_movable(current_board,
-                  (new_location, king_location),
-                  act_full=new_location,
-                  piece_pretend=piece_to_drop):
+    if is_movable(
+            current_board,
+            (new_location, king_location),
+            act_full=new_location,
+            piece_pretend=piece_to_drop
+    ):
         places_attacking.add(new_location)
     return places_attacking

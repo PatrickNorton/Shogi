@@ -26,14 +26,13 @@ def check_move(
         checking_spaces = ()
     if not is_movable(current_board, coordinates):
         return False
-    checking_own = is_check(
-        current_board,
-        coordinates,
-        current_board.current_player,
-        break_early=True,
-        before_move=True
-    )
-    if checking_own:
+    if is_check(
+            current_board,
+            coordinates,
+            current_board.current_player,
+            break_early=True,
+            before_move=True
+    ):
         return False
     for space in checking_spaces:
         king_location = current_board.get_king(current_board.current_player)

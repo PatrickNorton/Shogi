@@ -131,14 +131,12 @@ def king_can_move(
             if current_board[current_test].same_color(old_occupant):
                 break
             if current_board[current_test]:
-                if is_movable(current_board,
-                              (current_test, new_location),
-                              ignore_locations={
-                                  *ignore_locations, old_location
-                              },
-                              act_full={
-                                  *act_full, new_location
-                              }):
+                if is_movable(
+                        current_board,
+                        (current_test, new_location),
+                        ignore_locations={*ignore_locations, old_location},
+                        act_full={*act_full, new_location}
+                ):
                     return False
                 else:
                     break
@@ -156,37 +154,7 @@ def king_can_move(
                 current_board,
                 (absolute_position, new_location),
                 ignore_locations=set(old_location),
-                act_full=set(new_location)):
+                act_full=set(new_location)
+        ):
             return False
     return True
-
-
-def into_check_check(
-        current_board: classes.Board,
-        coordinates: classes.AbsoluteCoord,
-        king_color: classes.Color
-) -> classes.CoordAndSet:
-    old_location, new_location = coordinates
-    places_attacking: classes.CoordSet = set()
-    king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
-    kings_enemy = not current_board[old_location].is_color(king_color)
-    if kings_enemy:
-        if is_movable(current_board, (new_location, king_location),
-                      ignore_locations=old_location,
-                      act_full=new_location):
-            places_attacking.add(new_location)
-            return king_location, places_attacking
-    relative_move = classes.RelativeCoord(king_location - old_location)
-    absolute_move: classes.RelativeCoord = abs(relative_move)
-    if not absolute_move.is_linear():
-        return king_location, places_attacking
-    king_direction = classes.Direction(relative_move)
-    direction_of_attack = classes.Row(old_location, king_direction)
-    attacking_color: classes.Color = current_board[king_location].color.other
-    pieces = (x for x in direction_of_attack if x.is_color(attacking_color))
-    for x in pieces:
-        if is_movable(current_board, (x, king_location),
-                      ignore_locations=old_location,
-                      act_full=new_location):
-            places_attacking.add(x)
-            return king_location, places_attacking

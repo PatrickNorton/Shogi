@@ -24,7 +24,7 @@ def test_spaces(
     """
 
     if checking_spaces is None:
-        checking_spaces = []
+        checking_spaces = ()
     to_return: classes.CoordSet = set()
     for relative_location in space_list:
         try:
@@ -53,7 +53,7 @@ def test_spaces(
             )
             king_location = current_board.get_king(king_color)
             if checking_own or king_location == piece_location:
-                checking_spaces = []
+                checking_spaces = ()
             for space in checking_spaces:
                 if boardtests.is_movable(
                         current_board,

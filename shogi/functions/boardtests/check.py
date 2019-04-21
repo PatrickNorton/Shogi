@@ -90,8 +90,7 @@ def unmoved_can_check(
 
     old_location, new_location = coordinates
     relative_move = classes.RelativeCoord(king_location - old_location)
-    absolute_move: classes.RelativeCoord = abs(relative_move)
-    if absolute_move.x != absolute_move.y and min(absolute_move):
+    if relative_move.is_linear():
         return places_attacking
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
@@ -102,8 +101,8 @@ def unmoved_can_check(
         if is_movable(
             current_board,
             (x, king_location),
-            ignore_locations=old_location if before_move else None,
-            act_full=new_location if before_move else None
+            ignore_locations=old_location if before_move else set(),
+            act_full=new_location if before_move else set()
         ):
             places_attacking.add(x)
             if break_early:

@@ -62,7 +62,7 @@ class BaseCoord(collections.abc.Sequence):
 
     def __len__(self): return len(self.tup)
 
-    def __repr__(self): return f"BaseCoord({self})"
+    def __repr__(self): return f"{self.__class__.__name__}({self})"
 
     def _add(self, other: 'BaseCoord') -> Tuple[int, int]:
         return self.x + other.x, self.y + other.y
@@ -133,9 +133,6 @@ class RelativeCoord(BaseCoord):
     def __abs__(self):
         return RelativeCoord(super().__abs__())
 
-    def __repr__(self):
-        return f"RelativeCoord({self})"
-
     @staticmethod
     def same_xy():
         yield from _same_xy_rel
@@ -174,7 +171,7 @@ class AbsoluteCoord(BaseCoord):
         if isinstance(xy, str):
             coordinate_tuple = (
                 '123456789'.index(xy[1]),
-                8-'abcdefghi'.index(xy[0])
+                8 - 'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
         elif isinstance(xy, int) and xy in range(9):
@@ -224,7 +221,7 @@ class AbsoluteCoord(BaseCoord):
         return AbsoluteCoord(super().__abs__())
 
     def __repr__(self):
-        return f"AbsoluteCoord('{self}')"
+        return f"{self.__class__.__name__}('{self}')"
 
     @staticmethod
     def same_xy():
@@ -276,9 +273,6 @@ class Direction(RelativeCoord):
         else:
             self.tup = (0, 0)
         super().__init__(self.tup)
-
-    def __repr__(self):
-        return f"Direction({self.direction})"
 
     def __abs__(self):
         return Direction(abs(self.direction))
@@ -343,7 +337,7 @@ class NullCoord(Direction):
 
     def __hash__(self): return hash(self.tup)
 
-    def __repr__(self): return "NullCoord()"
+    def __repr__(self): return f"{self.__class__.__name__}()"
 
     @staticmethod
     def valid():

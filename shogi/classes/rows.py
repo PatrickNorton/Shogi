@@ -48,7 +48,8 @@ class Row(collections.abc.Iterable):
     def __eq__(self, other: 'Row') -> bool:
         if isinstance(other, Row):
             if other.first_space in self:
-                return abs(self.vector) == abs(other.vector)
+                return (self.vector == other.vector
+                        or self.vector == -1*other.vector)
             else:
                 return False
         else:

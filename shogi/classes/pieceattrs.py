@@ -214,11 +214,11 @@ class Moves(collections.abc.Sequence):
         dist = max(abs_location)
         magic_var = self[vec]
         if isinstance(magic_var, int) and not isinstance(magic_var, bool):
-            return dist == magic_var and abs_location.is_linear()
+            return dist == magic_var and relative_location.is_linear()
         elif isinstance(magic_var, list):
             return list(abs_location) == magic_var
         elif isinstance(magic_var, bool):
-            return magic_var and abs_location.is_linear()
+            return magic_var and relative_location.is_linear()
         return False
 
     def prom(self) -> 'Moves':

@@ -76,8 +76,7 @@ class Board(collections.abc.Sequence):
 
     def __getitem__(self, index: Sequence) -> Piece:
         coordinates = AbsoluteCoord(index)
-        to_return = self.pieces.get(coordinates, NoPiece())
-        return to_return
+        return self.pieces.get(coordinates, NoPiece())
 
     def __len__(self) -> int: return len(tuple(self))
 
