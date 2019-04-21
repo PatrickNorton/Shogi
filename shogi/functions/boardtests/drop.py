@@ -41,7 +41,6 @@ def is_legal_drop(
                 # FIXME: Add before_move attribute to mate
                 is_mate = mate_check(
                     current_board,
-                    current_board.other_player,
                     is_in_check
                 )
                 if is_mate:

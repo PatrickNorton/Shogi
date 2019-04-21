@@ -10,8 +10,8 @@ __all__ = [
 
 def mate_check(
         current_board: classes.Board,
-        king_color: classes.Color,
-        places_attacking: classes.CoordSet
+        places_attacking: classes.CoordSet,
+        king_color: classes.Color = None,
 ) -> bool:
     """Test if king is in checkmate.
 
@@ -21,6 +21,10 @@ def mate_check(
     :return: if king is in checkmate
     """
 
+    if not places_attacking:
+        return False
+    if king_color is None:
+        king_color = next(iter(places_attacking)).color
     king_location = current_board.get_king(king_color)
     for king_move_tested in classes.Direction.valid():
         try:

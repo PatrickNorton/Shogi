@@ -136,7 +136,6 @@ class AppCore(Widget):
         if is_in_check:
             mate = shogi.mate_check(
                 self.board,
-                self.board.other_player,
                 is_in_check
             )
             if mate:
