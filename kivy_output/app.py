@@ -41,7 +41,11 @@ class ShogiBoard(App):
         :param kwargs: Kivy keyword arguments
         """
         super().__init__(**kwargs)
+        # Register all the classes with Kivy, so it knows where
+        # everything is
         register_classes()
+        # Setup all those pesky variables that can't exist until after
+        # initialisation
         Clock.schedule_once(self._keyboard_setup)
 
     @staticmethod
