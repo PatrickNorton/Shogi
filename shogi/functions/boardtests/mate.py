@@ -24,7 +24,7 @@ def mate_check(
     if not places_attacking:
         return False
     if king_color is None:
-        king_color = next(iter(places_attacking)).color
+        king_color = current_board[next(iter(places_attacking))].color
     king_location = current_board.get_king(king_color)
     for king_move_tested in classes.Direction.valid():
         try:
