@@ -134,15 +134,18 @@ class RelativeCoord(BaseCoord):
 
     @staticmethod
     def same_xy():
-        yield from _same_xy_rel
+        for x in range(-8, 9):
+            yield RelativeCoord(x)
 
     @staticmethod
     def positive_xy():
-        yield from _pos_xy_rel
+        for x in range(9):
+            yield RelativeCoord(x)
 
     @staticmethod
     def negative_xy():
-        return _neg_xy_rel
+        for x in range(0, -9, -1):
+            yield RelativeCoord(x)
 
 
 class AbsoluteCoord(BaseCoord):
@@ -224,7 +227,8 @@ class AbsoluteCoord(BaseCoord):
 
     @staticmethod
     def same_xy():
-        yield from _same_xy_abs
+        for x in range(-8, 9):
+            yield RelativeCoord(x)
 
 
 def _sign(x): return int(x > 0) - int(x < 0)
@@ -279,7 +283,8 @@ class Direction(RelativeCoord):
 
     @staticmethod
     def valid():
-        yield from _valid_dir
+        for x in range(8):
+            yield Direction(x)
 
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.
@@ -338,15 +343,4 @@ class NullCoord(Direction):
 
     @staticmethod
     def valid():
-        yield from _valid_nul
-
-
-_same_xy_rel = tuple(RelativeCoord(x) for x in range(-8, 9))
-_pos_xy_rel = tuple(RelativeCoord(x) for x in range(9))
-_neg_xy_rel = tuple(RelativeCoord(x) for x in range(0, -9, -1))
-
-_same_xy_abs = tuple(AbsoluteCoord(x) for x in range(9))
-
-_valid_dir = tuple(Direction(x) for x in range(8))
-
-_valid_nul = (NullCoord(),)
+        yield NullCoord()
