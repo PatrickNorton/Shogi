@@ -74,7 +74,7 @@ class Board(collections.abc.Sequence):
         return to_return
 
     def __iter__(self) -> Generator:
-        for x, y in product(range(self.x_size), range(self.y_size)):
+        for y, x in product(range(self.y_size), range(self.x_size)):
             yield self[x, y]
 
     def __getitem__(self, index: Sequence) -> Piece:
@@ -88,7 +88,8 @@ class Board(collections.abc.Sequence):
     def iterate(self) -> Generator:
         """Yield from all possible board positions."""
 
-        yield from product(range(self.x_size), range(self.y_size))
+        for y, x in product(range(self.y_size), range(self.x_size)):
+            yield AbsoluteCoord((x, y))
 
     @property
     def occupied(self) -> Generator:
