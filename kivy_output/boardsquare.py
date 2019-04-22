@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Generator
 
 from kivy.uix.button import Button
 
@@ -27,9 +27,12 @@ class BoardSquare(Button):
         :param position: location of square on board
         :param kwargs: standard kwargs for kivy.Button
         """
+        # The position of the space within the board at large
         self.board_position: shogi.AbsoluteCoord = position
+        # Whether or not the space is highlighted
         self.is_highlighted: bool = False
         super().__init__(**kwargs)
+        # The text on the space, telling who occupies it
         self.text = str(initial_occupant) if initial_occupant else ''
 
     def light(self):
@@ -63,7 +66,7 @@ class BoardSquare(Button):
             self,
             current_board: shogi.Board,
             checking_spaces: Iterable[shogi.AbsoluteCoord]
-    ) -> shogi.CoordSet:
+    ) -> Generator:
         """Get valid moves for square, given current board.
 
         This function takes an iterable of spaces checking the king
@@ -74,15 +77,12 @@ class BoardSquare(Button):
         :param checking_spaces: spaces checking king
         :return: set of valid spaces
         """
-        # TODO? Make this into a generator
         current_piece = current_board[self.board_position]
-        valid_spaces = set()
         for direction in shogi.Direction.valid():
-            direction_spaces = shogi.test_spaces(
+            # Get the valid spaces in each direction and yield each
+            yield from shogi.test_spaces(
                 current_board,
                 self.board_position,
                 current_piece.valid_spaces(direction),
                 checking_spaces=checking_spaces
             )
-            valid_spaces.update(direction_spaces)
-        return valid_spaces

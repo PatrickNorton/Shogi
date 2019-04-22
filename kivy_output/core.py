@@ -298,14 +298,12 @@ class AppCore(Widget):
         # If the pressed square is not highlighted, and it belongs to
         # the player, do the highlighting
         if do_highlight and players_piece:
-            valid_moves = pressed_square.valid_moves(
+            # Light up every square it's possible to move to
+            for space in pressed_square.valid_moves(
                 self.board,
                 self.in_check[pressed_piece.color]
-            )
-            valid_spaces = (self.board_spaces[x] for x in valid_moves)
-            # Light up every square it's possible to move to
-            for space in valid_spaces:
-                space.light()
+            ):
+                self.board_spaces[space].light()
             # Light the pressed square
             pressed_square.light()
             # Set game-state variables to reflect the current state
