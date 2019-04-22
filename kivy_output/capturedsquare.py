@@ -32,8 +32,6 @@ class CapturedSquare(Button):
     def give_piece(self, piece: shogi.Piece):
         """Add an occupying piece to the square.
 
-        TODO? Use property for this instead
-
         :param piece: piece to be added
         """
         self.background_color = 1, 1, 1, 1

@@ -6,8 +6,6 @@ __all__ = [
     "undo_move",
 ]
 
-# TODO: More descriptive ValueErrors
-
 
 def undo_move(
         current_board: classes.Board,
@@ -29,13 +27,13 @@ def undo_move(
             move.end
         ):
             current_board.put_in_play(move.piece, move.end)
-            raise ValueError
+            raise ValueError("Undone drop must be legal")
     else:
         # If the move is not a drop, but a move, move it back to
         # whence it came, and then test to see if the reverse was a
         # legal move. If it wasn't, put it back and raise an error
         if current_board[move.start]:
-            raise ValueError
+            raise ValueError("Undone move must be legal")
         current_board.move(move.end, move.start)
         # If the move ended in promotion, un-promote the piece
         # If the move was a capture, put the captured piece back on
@@ -45,4 +43,4 @@ def undo_move(
         can_move = check_move(current_board, (move.start, move.end))
         if not can_move:
             current_board.move(move.start, move.end)
-            raise ValueError
+            raise ValueError("Undone move must be legal")

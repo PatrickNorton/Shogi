@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Set, Iterable
+from typing import Iterable
 
 from shogi import classes
 
