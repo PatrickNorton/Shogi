@@ -95,14 +95,10 @@ class RelativeCoord(BaseCoord):
 
         :param xy: the coordinates of the RelativeCoord
         """
-        if isinstance(xy, str):
-            coordinate_tuple = (
-                '987654321'.index(xy[1]),
-                8-'abcdefghi'.index(xy[0])
-            )
-            super().__init__(coordinate_tuple)
-        elif isinstance(xy, int) and xy in range(-8, 9):
+        # Turn an integer input into a coordinate
+        if isinstance(xy, int) and xy in range(-8, 9):
             super().__init__((xy, xy))
+        # Otherwise, use the iterable to turn it into a RelCoord
         elif all(x in range(-8, 9) for x in xy):
             super().__init__(tuple(xy))
         else:
@@ -111,20 +107,17 @@ class RelativeCoord(BaseCoord):
     def __add__(self, other: CoordLike):
         if not isinstance(other, BaseCoord):
             other = RelativeCoord(other)
-        coordinates = self._add(other)
-        return RelativeCoord(coordinates)
+        return RelativeCoord(self._add(other))
 
     def __sub__(self, other: CoordLike):
         if not isinstance(other, BaseCoord):
             other = RelativeCoord(other)
-        coordinates = self._sub(other)
-        return RelativeCoord(coordinates)
+        return RelativeCoord(self._sub(other))
 
     def __mul__(self, other: CoordLike):
         if not isinstance(other, BaseCoord):
             other = RelativeCoord(other)
-        coordinates = self._mul(other)
-        return RelativeCoord(coordinates)
+        return RelativeCoord(self._mul(other))
 
     def __hash__(self):
         return hash(self.tup)
@@ -170,14 +163,17 @@ class AbsoluteCoord(BaseCoord):
         :param xy: the coordinates of the AbsoluteCoord
         """
 
+        # Handle string inputs
         if isinstance(xy, str):
             coordinate_tuple = (
                 '123456789'.index(xy[1]),
                 8 - 'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
+        # Handle integer inputs
         elif isinstance(xy, int) and xy in range(9):
             super().__init__((xy, xy))
+        # Handle iterable inputs
         elif all(x in range(9) for x in xy):
             xy = (int(xy[0]), int(xy[1]))
             super().__init__(xy)
@@ -261,10 +257,13 @@ class Direction(RelativeCoord):
 
     def __init__(self, direction: CoordLike):
         self.direction: int
+        # If the null direction ins entered:
         if direction == (0, 0):
             self.direction = 8
+        # If direction is a coordinate pair, -> self.tup
         elif isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
+        # If it's an int, then direction -> self.direction
         elif isinstance(direction, int):
             self.direction = direction
         else:
