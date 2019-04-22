@@ -1,7 +1,6 @@
 import collections
-from typing import Sequence
+from typing import Generator, Sequence
 
-from .aliases import CoordSet
 from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
 
 __all__ = [
@@ -30,18 +29,19 @@ class Row(collections.abc.Iterable):
         self.vector: Direction = vector
         self.spaces = set()
         for x in RelativeCoord.positive_xy():
+            # Add to the spaces the values in the direction of the
+            # row, for as long as they are still in the board
             try:
                 self.spaces.add(AbsoluteCoord(location + x * vector))
             except ValueError:
                 break
         for x in RelativeCoord.negative_xy():
+            # Do the same for all the values in the opposite direction
+            # as what was entered, while still in the board
             try:
                 self.spaces.add(AbsoluteCoord(location + x * vector))
             except ValueError:
                 break
-        self._not_original: CoordSet = set(
-            x for x in self if x != self.first_space
-        )
 
     def __iter__(self): yield from self.spaces
 
@@ -57,11 +57,12 @@ class Row(collections.abc.Iterable):
 
     def __repr__(self): return f"Row({self.first_space}, {self.vector})"
 
-    @property
-    def not_original(self) -> set:
+    def not_original(self) -> Generator:
         """Get all non-original spaces in row.
 
         :return: set of spaces
         """
 
-        return self._not_original
+        for space in self.spaces:
+            if space != self.first_space:
+                yield space
