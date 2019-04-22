@@ -466,4 +466,5 @@ class AppCore(Widget):
             shogi.Color(1): self.parent.ids['1']
         }
         self.main_board = self.parent.ids['board']
+        self.main_board.set_up_squares()
         self.board_spaces = self.main_board.children_dict

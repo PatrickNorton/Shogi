@@ -1,5 +1,4 @@
 from typing import Dict, Optional
-
 from kivy.uix.gridlayout import GridLayout
 
 import shogi
@@ -25,16 +24,15 @@ class ChessBoard(GridLayout):
 
         :param kwargs: keyword arguments to pass
         """
+        # Temporary board passed at setup time.
         board = shogi.Board()
-        super().__init__(cols=9, rows=9, **kwargs)
-        # self.board: shogi.Board = shogi.Board()
-        for x, y in board.iterate():
-            coordinate = shogi.AbsoluteCoord((x, y))
-            square = BoardSquare(coordinate, board[coordinate])
-            self.add_widget(square)
-        self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
-            x.board_position: x for x in self.children
-        }
+        super().__init__(cols=board.y_size, rows=board.x_size, **kwargs)
+        # Map of coordinates to screen squares
+        self.children_dict = {}
+        # IMPORTANT: self.set_up_squares should be called by AppCore
+        # sometime during setup.
+        # If something is going wrong during setup, try looking at
+        # that, if you can't find the error
 
     def space_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Light or make move when a specific space is pressed.
@@ -55,9 +53,11 @@ class ChessBoard(GridLayout):
         :param to_update: list of squares to update
         """
         for coordinate in to_update:
+            # For e.g. dropping moves, when move_from is None
             if coordinate is None:
                 continue
             space = self.children_dict[coordinate]
+            # Set the string of each updated space to the occupant
             space.text = space.set_string(self.board[coordinate])
 
     def get_pieces(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
@@ -78,3 +78,21 @@ class ChessBoard(GridLayout):
     @property
     def board(self):
         return self.parent.board
+
+    def set_up_squares(self, *_):
+        """By the accursed gods of Kivy, if I want to not create
+        multiple shogi.Board instances to set this stuff up, I need
+        to create this function to do it for me.
+        Call this when you need to actually set up the widget, but
+        ***ONLY CALL IT ONCE***
+        It will break miserably otherwise.
+
+        :param _: Whatever variables kivy passes to this thing
+        """
+        # Add a space for each square of the board, with occupant
+        for x, y in self.parent.board.iterate():
+            coordinate = shogi.AbsoluteCoord((x, y))
+            self.add_widget(BoardSquare(coordinate, self.parent.board[x, y]))
+        self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
+            x.board_position: x for x in self.children
+        }
