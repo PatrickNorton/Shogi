@@ -26,6 +26,7 @@ class MoveBox(FloatLayout):
         :param kwargs: keyword arguments for kivy
         """
         super().__init__(**kwargs)
+        # Set the height to what it needs to be
         Clock.schedule_once(
             lambda _: self.layout_content.bind(
                 minimum_height=self.layout_content.setter('height')
@@ -65,21 +66,25 @@ class MoveGrid(GridLayout):
 
         :param move: string of move to be added
         """
+        # If the bottom box is full, add a new row
         if not self.boxes or self.boxes[-1].text:
             self.add_box()
             self.add_box()
             self.boxes[-2].text = str(move)
             return
+        # Add to the first empty box in the list
         for box in self.boxes:
             if not box.text:
                 box.text = str(move)
                 break
 
     def remove_last(self):
+        # If the last row is empty, remove the boxes
         if not self.boxes[-1].text:
             self.boxes[-2].text = ''
             self.remove_last_box()
             self.remove_last_box()
+        # Otherwise, just clear the last box
         else:
             self.boxes[-1].text = ''
 

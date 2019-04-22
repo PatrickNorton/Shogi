@@ -61,14 +61,20 @@ class HelpScreen(Screen):
 
         :param text: text entered
         """
+        # Unless the text is already a screen:
         if text not in self.manager.screen_names:
+            # Try to add a help-file widget corresponding to the
+            # entered text
+            # If that fails, say "File not found" and exit
             try:
                 self.manager.add_widget(HelpScreen(help_file=text, name=text))
             except FileNotFoundError:
                 self.ids['input'].text = 'File not found'
                 # TODO: Interactive visual menu support
+            # Otherwise, go to the newly-entered screen
             else:
                 self.manager.current = text
+        # If the text is the name of a screen, go to it
         else:
             self.manager.current = text
 
