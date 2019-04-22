@@ -6,6 +6,7 @@ from .move import is_movable
 __all__ = [
     "to_notation",
     "piece_can_move",
+    "notation_str",
 ]
 
 
@@ -57,7 +58,7 @@ def to_notation(
             notation += str(old_location)
     # After that comes the dash, and then the new location
     notation += '*' if is_drop else 'x' if is_capture else '-'
-    notation += new_location
+    notation += str(new_location)
     # If the piece was promotable, add char based on promotion
     if is_promote is not None:
         notation += '^' if is_promote else '='
@@ -65,6 +66,24 @@ def to_notation(
     if is_checking:
         notation += '#' if is_mate else '+'
     return notation
+
+
+def notation_str(
+        current_board: classes.Board,
+        move: classes.Move,
+        before_move: bool = False,
+):
+    return to_notation(
+        current_board,
+        move.tuple,
+        is_drop=move.is_drop,
+        is_capture=move.is_capture,
+        is_promote=move.is_promote,
+        dropped_piece=move.piece if move.is_drop else None,
+        is_checking=move.is_checking,
+        is_mate=move.is_mate,
+        before_move=before_move,
+    )
 
 
 def piece_can_move(

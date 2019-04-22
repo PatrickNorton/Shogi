@@ -1,9 +1,7 @@
-from typing import Optional, List
+from typing import Optional
 
-from shogi.functions.boardtests.move import is_movable
 from .aliases import OptCoordTuple
 from .boards import Board
-from .locations import AbsoluteCoord
 from .pieces import Piece, NoPiece
 
 __all__ = [
@@ -25,7 +23,6 @@ class Move:
     :ivar is_checking: if the move checked the king
     :ivar is_mate: if the move checkmated
     :ivar tuple: (start, end) tuple
-    :ivar string: the move in Shogi move notation
     """
     def __init__(
             self,
@@ -68,68 +65,5 @@ class Move:
         if not self.is_checking and self.is_mate:
             raise ValueError
         self.tuple = move
-        self.string = self.to_string(current_board)
-
-    def __str__(self): return self.string
 
     def __iter__(self): yield from self.tuple
-
-    def to_string(self, current_board: Board) -> str:
-        """Create notation string out of the move.
-
-        :param current_board: current board state
-        :return: notation string
-        """
-        if self.is_promote:
-            piece_notation = str(self.piece)[0].lower()
-        else:
-            piece_notation = str(self.piece)[0]
-        dash = 'x' if self.is_capture else '-'
-        if self.is_drop:
-            if isinstance(self.piece, NoPiece):
-                raise ValueError
-            notation = f"{piece_notation}*{self.end}"
-        else:
-            other_pieces = _piece_can_move(current_board, self.piece, self.end)
-            notation = piece_notation
-            if other_pieces:
-                if all(x.x == self.start.x for x in other_pieces):
-                    notation += self.start.y_str
-                elif all(x.y == self.start.y for x in other_pieces):
-                    notation += self.start.x_str
-                else:
-                    notation += str(self.start)
-            notation += f"{dash}{self.end}"
-            if self.is_promote is not None:
-                notation += '^' if self.is_promote else '='
-        if self.is_checking:
-            notation += '#' if self.is_mate else '+'
-        return notation
-
-
-def _piece_can_move(
-        current_board: Board,
-        piece: Piece,
-        to: AbsoluteCoord
-) -> List[AbsoluteCoord]:
-    """Check if any pieces can move to a location.
-
-    This is a mirror of the function in shogi.functions.
-    It exists in order to prevent circular imports.
-    Please change with caution.
-
-    :param current_board: current board state
-    :param piece: piece to check for move
-    :param to: space piece is moved to
-    :return: list of possible spaces that can move there
-    """
-    if piece in current_board.pieces.values():
-        pieces = (
-            x for x, y in current_board.pieces.items() if y == piece
-        )
-        valid_spaces = []
-        for location in pieces:
-            if is_movable(current_board, (location, to), ignore_locations=to):
-                valid_spaces.append(location)
-        return valid_spaces
-    return []

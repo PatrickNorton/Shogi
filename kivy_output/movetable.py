@@ -70,12 +70,18 @@ class MoveGrid(GridLayout):
         if not self.boxes or self.boxes[-1].text:
             self.add_box()
             self.add_box()
-            self.boxes[-2].text = str(move)
+            self.boxes[-2].text = shogi.notation_str(
+                self.parent.parent.parent.parent.board,  # Sigh
+                move
+            )
             return
         # Add to the first empty box in the list
         for box in self.boxes:
             if not box.text:
-                box.text = str(move)
+                box.text = shogi.notation_str(
+                    self.parent.parent.parent.parent.board,  # Sigh
+                    move
+                )
                 break
 
     def remove_last(self):
