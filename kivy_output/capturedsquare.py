@@ -15,8 +15,11 @@ class CapturedSquare(Button):
     :ivar position: position within grid
     """
 
+    # Space's position in the grid of spaces
     position = NumericProperty(None)
+    # Whether or not the space is highlighted
     is_highlighted = BooleanProperty(False)
+    # The occupant of the space
     occupant = ObjectProperty(shogi.NoPiece())
 
     def __init__(self, position: int, **kwargs):
@@ -24,9 +27,6 @@ class CapturedSquare(Button):
 
         :param kwargs: keyword arguments to be sent
         """
-        # self.occupant: shogi.Piece = shogi.NoPiece()
-        # self.position: int = position
-        # self.is_highlighted = False
         super().__init__(position=position, is_highlighted=False, **kwargs)
 
     def give_piece(self, piece: shogi.Piece):
