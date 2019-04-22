@@ -2,10 +2,10 @@ import collections
 from itertools import product
 from typing import Dict, Generator, List, Optional, Sequence
 
-from .aliases import CoordTuple, PieceDict
+from .aliases import PieceDict
 from .exceptions import DemotedException
 from .information import info
-from .locations import AbsoluteCoord, NullCoord
+from .locations import AbsoluteCoord
 from .pieceattrs import Color, ColorLike
 from .pieces import Piece, NoPiece
 
@@ -30,8 +30,6 @@ class Board(collections.abc.Sequence):
     :ivar pieces: Each coordinate and corresponding piece
     :ivar captured: List of captured pieces for each color
     :ivar current_player: Active player
-    :ivar last_move: Previous move performed
-    :ivar next_move: PieceMove about to be performed
     """
 
     def __init__(self, pieces: Optional[dict] = None):
@@ -40,40 +38,49 @@ class Board(collections.abc.Sequence):
         :param pieces: for custom board setups
         """
 
+        # Use the standard setup if nothing is given
         if pieces is None:
-            self.pieces: PieceDict = {
-                AbsoluteCoord(x): Piece(*y) for x, y in info.board_info.items()
-            }
-        else:
-            self.pieces: PieceDict = {
-                AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
-            }
+            pieces = info.board_info
+        # Dict mapping locations to occupants
+        self.pieces: PieceDict = {
+            AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
+        }
+        # Captured pieces for each color
         self.captured: Dict[Color, List[Piece]] = {
             x: [] for x in Color.valid()
         }
+        # Color of whomever's turn it is
         self.current_player: Color = Color(0)
-        self.last_move: CoordTuple = (NullCoord(), NullCoord())
-        self.next_move: CoordTuple = (NullCoord(), NullCoord())
+        # Dict mapping kings to their locations
         self.kings: Dict[Color, AbsoluteCoord] = {}
+        # Number of spaces wide the board is
         self.x_size: int = 9
+        # Ditto, but for height
         self.y_size: int = 9
+        # Setup self.kings
         for x, y in self.pieces.items():
             if y.has_type('k'):
                 self.kings[y.color] = x
 
     def __str__(self):
         to_return = ""
-        captured_string = [str(x) for x in self.captured[Color(1)]]
+        # Black's captured pieces
+        captured_string = (str(x) for x in self.captured[Color(1)])
         to_return += f"Black pieces: {' '.join(captured_string)}\n\n"
+        # Column numbers
         to_return += f"  {'  '.join('123456789')}\n"
+        # Each row of the board
         for x, var in enumerate(self):
             to_return += f"{'abcdefghi'[::-1][x]} "
             to_return += f"{' '.join(str(k) for k in var)}\n"
-        captured_string = [str(x) for x in self.captured[Color(0)]]
+        # White's captured pieces
+        captured_string = (str(x) for x in self.captured[Color(0)])
         to_return += f"White pieces: {' '.join(captured_string)}\n"
         return to_return
 
     def __iter__(self) -> Generator:
+        # y and x reversed so that board doesn't come out sideways
+        # Thanks, itertools
         for y, x in product(range(self.y_size), range(self.x_size)):
             yield self[x, y]
 
@@ -104,9 +111,12 @@ class Board(collections.abc.Sequence):
         :param new: location to move piece to
         """
 
+        # If there's a piece in the way, capture it
         if not isinstance(self[new], NoPiece):
             self.capture(new)
+        # Get the piece to be moved
         self.pieces[AbsoluteCoord(new)] = self.pieces.pop(current)
+        # If the piece is a king, update self.kings accordingly
         if self.pieces[new].has_type('k'):
             self.kings[self.pieces[new].color] = new
 
@@ -117,6 +127,7 @@ class Board(collections.abc.Sequence):
         :return: location of piece
         """
 
+        # Search through the pieces until the king is found
         for x, y in self.pieces.items():
             if y.is_piece('k', king_color):
                 return x
@@ -130,12 +141,16 @@ class Board(collections.abc.Sequence):
         piece = self[new]
         if piece.has_type('k'):
             raise ValueError("Kings may not be captured. You win.")
+        # If the captured piece is promoted, demote it
         try:
             piece = piece.demote()
         except DemotedException:
             pass
+        # Flip the side of the piece, so it belongs to the captors
         new_piece = piece.flip_sides()
+        # Add it to the captured pieces
         self.captured[self.current_player].append(new_piece)
+        # Remove the piece from where it was
         del self.pieces[new]
 
     def can_promote(self, space: AbsoluteCoord) -> bool:
@@ -145,6 +160,8 @@ class Board(collections.abc.Sequence):
         :return: if piece is promotable
         """
 
+        # Return whether or not the piece is far enough along the
+        # board to promote
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         return space.y in promotion_zones[int(self.current_player)]
 
@@ -160,14 +177,22 @@ class Board(collections.abc.Sequence):
         :return: if piece must promote
         """
 
+        # If the piece is not supplied, get it from the space
         if isinstance(piece, NoPiece):
             piece = self[space]
+        # See if the piece can promote, and get how far it is from the
+        # edge of the board
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         player_int = int(self.current_player)
         try:
             index = promotion_zones[player_int].index(space.y)
+        # If the piece can't promote (it is not in the promotion_zones
+        # list, then it can;t be promoted, and so will not
+        # automatically promote
         except ValueError:
             return False
+        # If the piece is able to promote, check how far it is from
+        # the edge, and compare that to where it is forced to promote
         else:
             return index < piece.auto_promote
 
@@ -205,10 +230,13 @@ class Board(collections.abc.Sequence):
         :param flip_sides: if the piece should flip sides
         """
 
+        # Figure out the color of the piece to put in play
         if player is None:
             player = self.current_player
+        # If there's already a piece at the moved-to spot, error
         if not isinstance(self[moved_to], NoPiece):
             raise ValueError
+        # Move the piece to where it needs to go
         self.captured[player].remove(piece)
         if flip_sides:
             piece = piece.flip_sides()
@@ -224,6 +252,7 @@ class Board(collections.abc.Sequence):
         :param location: location of piece to un-drop
         """
         un_dropped = self.pieces.pop(location)
+        # Demote the piece, if it is not already demoted
         try:
             un_dropped = un_dropped.demote()
         except DemotedException:
