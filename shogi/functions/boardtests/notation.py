@@ -20,48 +20,48 @@ def to_notation(
         is_checking: bool = False,
         is_mate: bool = False,
 ) -> str:
-    """Take a move and convert it into shogi notation.
-
-    For information on notation, see notation help.
-
-    :param current_board: current board state
-    :param move: tuple of space from, space to
-    :param is_drop: if the move was a drop
-    :param is_capture: if the move was a capture
-    :param is_promote: if the moved piece was promoted
-    :param dropped_piece: piece dropped, if applicable
-    :param before_move: if this is before the move
-    :param is_checking: if the move put the king in check
-    :param is_mate: if the move put the king in checkmate
-    :return: string representing the move
-    """
     old_location, new_location = move
     piece = current_board[new_location if not before_move else old_location]
-    if is_promote:
+    # piece_notation: representing the type of piece
+    if is_promote and not before_move:
+        # If the moved piece was promoted, demote the piece for the
+        # move notation, unless it's before the move, in which case it
+        # should already be demoted
         piece_notation = str(piece)[0].lower()
+    elif is_drop and dropped_piece:
+        # If the piece was dropped, and a dropped piece was specified,
+        # the piece notation should be that of the dropped piece
+        piece_notation = str(dropped_piece)[0]
     else:
         piece_notation = str(piece)[0]
-    if is_drop:
-        if dropped_piece:
-            dropped_notation = str(dropped_piece)[0]
-            notation = f"{dropped_notation}*{new_location}"
+    # If the piece notation happens to be '-', something has gone
+    # badly wrong. Error accordingly
+    if piece_notation == '-':
+        raise ValueError
+    # Other pieces that could move to the new location, were it
+    # to be empty
+    # TODO: ignore_location & act_full for piece_can_move
+    other_pieces = (
+            not is_drop and piece_can_move(current_board, piece, new_location)
+    )
+    # First bit of notation is the notation for the piece
+    notation = piece_notation
+    # After comes notation differentiating it from all the other
+    # pieces that could possibly be moved to the same location
+    if other_pieces:
+        if all(x.x == old_location.x for x in other_pieces):
+            notation += old_location.y_str
+        elif all(x.y == old_location.y for x in other_pieces):
+            notation += old_location.x_str
         else:
-            if isinstance(piece, classes.NoPiece):
-                raise ValueError
-            notation = f"{piece_notation}*{new_location}"
-    else:
-        other_pieces = piece_can_move(current_board, piece, new_location)
-        notation = piece_notation
-        if other_pieces:
-            if all(x.x == old_location.x for x in other_pieces):
-                notation += old_location.y_str
-            elif all(x.y == old_location.y for x in other_pieces):
-                notation += old_location.x_str
-            else:
-                notation += str(old_location)
-        notation += f"{'x' if is_capture else '-'}{new_location}"
-        if is_promote is not None:
-            notation += '^' if is_promote else '='
+            notation += str(old_location)
+    # After that comes the dash, and then the new location
+    notation += '*' if is_drop else 'x' if is_capture else '-'
+    notation += new_location
+    # If the piece was promotable, add char based on promotion
+    if is_promote is not None:
+        notation += '^' if is_promote else '='
+    # If there was check or checkmate, add respective character
     if is_checking:
         notation += '#' if is_mate else '+'
     return notation
