@@ -7,6 +7,7 @@ from kivy.uix.widget import Widget
 import shogi
 from .boardsquare import BoardSquare
 from .capturedsquare import CapturedSquare
+from .gamestate import GameState
 from .inputs import MateWindow, PromotionWindow
 
 __all__ = [
@@ -38,24 +39,11 @@ class AppCore(Widget):
         # Kivy widgets for the captured squares
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
         # Kivy widget representing the main board
-        self.main_board = None
+        self.main_board: shogi.Board = None
         # Dict of coords to each space on the board
-        self.board_spaces = None
+        self.board_spaces: Dict[shogi.AbsoluteCoord, BoardSquare] = None
         # Vars representing current in-move state:
-        # Current state: whether next click highlights or moves
-        self.make_move: bool = False
-        # Space where a player would move from
-        self.move_from: shogi.AbsoluteCoord = shogi.NullCoord()
-        # Pieces checking each king, arranged by color
-        self.in_check: Dict[shogi.Color, shogi.CoordSet] = {
-            shogi.Color(0): set(),
-            shogi.Color(1): set()
-        }
-        # Piece to be dropped
-        self.to_add: shogi.Piece = shogi.NoPiece()
-        # Whether or not to promote the piece
-        self.to_promote: Optional[bool] = None
-
+        self.game_state = GameState()
         # Log of previous moves
         self.game_log: List[List[shogi.Move]] = []
         # Undone moves log
@@ -85,7 +73,7 @@ class AppCore(Widget):
         """
         move = (current, to)
         checking_spaces = (
-            x for x in self.in_check[self.board.current_player] if x != to
+            x for x in self.game_state.in_check[self.board.current_player] if x != to
         )
         if not shogi.check_move(  # Is the move actually legal?
             self.board,
@@ -108,7 +96,7 @@ class AppCore(Widget):
         # Handle promotion and call cleanup function
         if can_promote and not self.board[to].prom:
             if self.board.auto_promote(to):
-                self.to_promote = True
+                self.game_state.to_promote = True
                 std_cleanup()
             else:
                 pops = PromotionWindow(caller=self)
@@ -143,7 +131,7 @@ class AppCore(Widget):
         self.popup_open = False
         current, to = move
         is_a_capture = bool(captured_piece)
-        if self.to_promote:
+        if self.game_state.to_promote:
             self.board.promote(to)
         is_in_check = shogi.is_check(
             self.board,
@@ -164,7 +152,7 @@ class AppCore(Widget):
         else:
             mate = False
         # Update the spaces attacking the king
-        self.in_check[self.board.other_player] = is_in_check
+        self.game_state.in_check[self.board.other_player] = is_in_check
         # Update the game log, but only if permitted
         # Not called when undoing a move, for example
         if update_game_log:
@@ -172,7 +160,7 @@ class AppCore(Widget):
                 move,
                 is_a_capture=is_a_capture,
                 captured_piece=captured_piece,
-                is_a_promote=self.to_promote,
+                is_a_promote=self.game_state.to_promote,
                 is_a_drop=(dropped_piece is not None),
                 is_mate=(mate if is_in_check else None)
             )
@@ -184,10 +172,7 @@ class AppCore(Widget):
         # Reset all of the game-state variables back to their pre-
         # move states, ready for the next turn
         self.board.flip_turn()
-        self.make_move = False
-        self.move_from = shogi.NullCoord()
-        self.to_add = None
-        self.to_promote = None
+        self.game_state.post_turn()
         self.un_light_all()
         # Update the display so the player can see all the hard work
         # this computer has done
@@ -200,11 +185,11 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        if shogi.is_legal_drop(self.board, self.to_add, space_to):
-            self.board.put_in_play(self.to_add, space_to)
+        if shogi.is_legal_drop(self.board, self.game_state.to_add, space_to):
+            self.board.put_in_play(self.game_state.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
-            self.cleanup((None, space_to), dropped_piece=self.to_add)
+            self.cleanup((None, space_to), dropped_piece=self.game_state.to_add)
 
     def undo_last_move(self):
         """Undo the last move made."""
@@ -271,7 +256,7 @@ class AppCore(Widget):
             return
         if last_move.is_drop:
             # Drop the piece, if it was a drop
-            self.to_add = last_move.piece
+            self.game_state.to_add = last_move.piece
             self.drop_piece(last_move.end)
         else:
             # Otherwise, make the move from and to
@@ -301,18 +286,18 @@ class AppCore(Widget):
             # Light up every square it's possible to move to
             for space in pressed_square.valid_moves(
                 self.board,
-                self.in_check[pressed_piece.color]
+                self.game_state.in_check[pressed_piece.color]
             ):
                 self.board_spaces[space].light()
             # Light the pressed square
             pressed_square.light()
             # Set game-state variables to reflect the current state
-            self.make_move = True
-            self.move_from = coordinate
+            self.game_state.make_move = True
+            self.game_state.move_from = coordinate
         # Otherwise, un-light all the squares (already done), and shut
         # everything down
         else:
-            self.make_move = False
+            self.game_state.make_move = False
 
     def un_light_all(self):
         """Un-light all squares."""
@@ -342,7 +327,7 @@ class AppCore(Widget):
                 if shogi.is_legal_drop(self.board, piece, space):
                     x.light()
             # Set game-state variables to reflect the new developments
-            self.make_move = True
+            self.game_state.make_move = True
 
     # Updating methods
     def update_captured(self, current_board: shogi.Board):
@@ -406,7 +391,7 @@ class AppCore(Widget):
         if not square.occupant.is_color(self.board.current_player):
             return
         # If this click is not the second in a move-set:
-        if not self.make_move:
+        if not self.game_state.make_move:
             # If the square is already highlighted, something has gone
             # badly wrong. Fail accordingly.
             if square.is_highlighted:
@@ -415,14 +400,14 @@ class AppCore(Widget):
             else:
                 # Highlight and set move-state variables
                 self.drop_light(square.occupant)
-                self.to_add = square.occupant
+                self.game_state.to_add = square.occupant
                 square.light()
         else:
             # If the square is highlighted, un-light everything
             # Otherwise, do nothing
             if square.is_highlighted:
                 self.un_light_all()
-                self.make_move = False
+                self.game_state.make_move = False
 
     def board_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Board was clicked.
@@ -430,13 +415,13 @@ class AppCore(Widget):
         :param coordinate: where board was clicked
         """
         # If this is the click marking where to move:
-        if self.make_move and coordinate != self.move_from:
+        if self.game_state.make_move and coordinate != self.game_state.move_from:
             # If there is a piece to drop, drop it
-            if self.to_add:
+            if self.game_state.to_add:
                 self.drop_piece(coordinate)
             # Otherwise, move the piece where it needs to go
             else:
-                self.make_moves(self.move_from, coordinate)
+                self.make_moves(self.game_state.move_from, coordinate)
         # Otherwise, light the possible move options
         else:
             self.light_moves(coordinate)
