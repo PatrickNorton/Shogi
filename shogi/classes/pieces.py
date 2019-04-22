@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple, Set
 
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException
@@ -113,7 +113,7 @@ class Piece:
 
         return self.moves.can_move(relative_location)
 
-    def valid_spaces(self, direct: Direction) -> List[RelativeCoord]:
+    def valid_spaces(self, direct: Direction) -> Set[RelativeCoord]:
         """Get spaces piece could move in a direction
 
         :param direct: direction to be checked
@@ -121,20 +121,28 @@ class Piece:
         """
 
         magic_var = self.moves[direct]
-        valid = []
-        if magic_var == 0:
-            return []
-        elif isinstance(magic_var, int) and not isinstance(magic_var, bool):
-            valid.append(RelativeCoord(direct) * magic_var)
-        elif isinstance(magic_var, list):
-            xy = (magic_var[0] * direct.x, magic_var[1] * direct.y)
-            valid.append(RelativeCoord(xy))
+        valid = set()
+        if not magic_var:
+            return set()
         elif isinstance(magic_var, bool):
-            if magic_var:
-                for x in RelativeCoord.positive_xy():
-                    relative_location = RelativeCoord(x * direct)
-                    if self.can_move(relative_location):
-                        valid.append(relative_location)
+            # If the move type is a boolean, then it either
+            # represents a range of motion, or no motion at all.
+            # If it represents a range, add that range to valid.
+            # False should already have been caught, so we can ignore
+            # that case
+            for x in RelativeCoord.positive_xy():
+                valid.add(RelativeCoord(x * direct))
+        elif isinstance(magic_var, int):
+            # If the move type is an integer, then the only valid
+            # move is n spaces in the direction, so add that to the
+            # valid moves
+            valid.add(RelativeCoord(direct) * magic_var)
+        elif isinstance(magic_var, list):
+            # If the move type is a list, that represents a move that
+            # is different in the x and y directions, so the valid
+            # move should be that, in the direction of the move
+            xy = (magic_var[0] * direct.x, magic_var[1] * direct.y)
+            valid.add(RelativeCoord(xy))
         return valid
 
     def same_color(self, other: 'Piece') -> bool:
@@ -160,7 +168,7 @@ class Piece:
 
         This can take either a color, an int, or a str object. It
         should be used as a replacement for "instance.color ==
-        Color('x'), as that is more verbose than necessary
+        Color('x'), as that is more verbose than necessary.
 
         :param clr:
         :return:
@@ -196,7 +204,7 @@ class Piece:
             typ: PieceTypeLike,
             clr: ColorLike
     ) -> bool:
-        """Check if the piece is of a certain color and type/
+        """Check if the piece is of a certain color and type
 
         :param typ: type to check
         :param clr: color to check

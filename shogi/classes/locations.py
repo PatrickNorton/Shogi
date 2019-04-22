@@ -132,7 +132,7 @@ class RelativeCoord(BaseCoord):
 
     @staticmethod
     def positive_xy():
-        for x in range(9):
+        for x in range(1, 9):
             yield RelativeCoord(x)
 
     @staticmethod
