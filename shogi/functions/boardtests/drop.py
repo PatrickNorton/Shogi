@@ -20,27 +20,33 @@ def is_legal_drop(
     :param piece: piece to drop
     :param move_location: location to drop piece
     """
+    # If there's a piece at the drop location, it's not valid
     if current_board[move_location]:
         return False
     player_int = int(current_board.current_player)
     must_promote = current_board.auto_promote(move_location, piece)
+    # If the piece is dropped in a must-promote zone, it's not valid
     if must_promote:
         return False
+    # Special pawn rules:
     if piece.has_type('p'):
+        # No two pawns in the same column for the same player
         if any(x.is_piece('p', player_int)
                for x in current_board.column(move_location.y)):
             return False
-        else:
-            is_in_check = dropping_to_check(
-                current_board,
-                piece,
-                move_location,
-                current_board.current_player.other
-            )
-            if is_in_check:
-                # FIXME: Add before_move attribute to mate
-                if mate_check(current_board, is_in_check):
-                    return False
+
+        is_in_check = dropping_to_check(
+            current_board,
+            piece,
+            move_location,
+            current_board.current_player.other
+        )
+        # If the pawn is dropping to cause checkmate, not legal
+        if is_in_check:
+            # FIXME: Add before_move attribute to mate
+            if mate_check(current_board, is_in_check):
+                return False
+    # Otherwise, yeah, it's fine
     return True
 
 
@@ -59,6 +65,9 @@ def dropping_to_check(
     """
     king_location = current_board.get_king(king_color)
     places_attacking = set()
+    # If the piece can attack the king, it's check.
+    # Otherwise, no other pieces have had a path to the king
+    # magically opened up, so there's no check
     if is_movable(
             current_board,
             (new_location, king_location),
