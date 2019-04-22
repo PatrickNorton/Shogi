@@ -43,7 +43,6 @@ def is_legal_drop(
         )
         # If the pawn is dropping to cause checkmate, not legal
         if is_in_check:
-            # FIXME: Add before_move attribute to mate
             if mate_check(current_board, is_in_check):
                 return False
     # Otherwise, yeah, it's fine

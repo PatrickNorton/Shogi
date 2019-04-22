@@ -1,7 +1,7 @@
 from typing import List, Iterable
 
 from shogi import classes
-from shogi.functions import boardtests
+from .fullmove import check_move
 
 __all__ = [
     "test_spaces",
@@ -23,44 +23,25 @@ def test_spaces(
     :return: list of valid spaces
     """
 
+    # Set defaults from None to their proper defaults
     if checking_spaces is None:
         checking_spaces = ()
     to_return: classes.CoordSet = set()
+    # Test each location in the given list
     for relative_location in space_list:
+        # If the new location isn't in the board, it isn't valid,
+        # so continue on
         try:
             absolute_location = classes.AbsoluteCoord(
                 piece_location + relative_location
             )
         except ValueError:
             continue
-        if isinstance(absolute_location, classes.RelativeCoord):
-            continue
-        can_move = boardtests.is_movable(
+        # If the move is valid, add it to the valid-moves list
+        if check_move(
             current_board,
-            (piece_location, absolute_location)
-        )
-        if can_move:
-            king_color = current_board[piece_location].color
-            checking_own = boardtests.is_check(
-                current_board,
-                (piece_location, absolute_location),
-                king_color,
-                break_early=True,
-                before_move=True
-            )
-            checking_spaces = (
-                x for x in checking_spaces if x != absolute_location
-            )
-            king_location = current_board.get_king(king_color)
-            if checking_own or king_location == piece_location:
-                checking_spaces = ()
-            for space in checking_spaces:
-                if boardtests.is_movable(
-                        current_board,
-                        (space, king_location),
-                        ignore_locations=piece_location,
-                        act_full=absolute_location):
-                    break
-            else:
-                to_return.add(absolute_location)
+            (piece_location, absolute_location),
+            checking_spaces,
+        ):
+            to_return.add(absolute_location)
     return to_return

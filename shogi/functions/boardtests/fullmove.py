@@ -13,7 +13,7 @@ def check_move(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
         checking_spaces: Iterable[classes.AbsoluteCoord] = None
-):
+) -> bool:
     """A more complete check for if the move is legal.
 
     :param current_board: current game board
@@ -24,8 +24,12 @@ def check_move(
     current, to = coordinates
     if checking_spaces is None:
         checking_spaces = ()
+    # If the piece can't move according to the basic check, it can't
+    # according to the more complete one, either
     if not is_movable(current_board, coordinates):
         return False
+    # If the piece's move puts the king itself into check, then it's
+    # not valid, either
     if is_check(
             current_board,
             coordinates,
@@ -34,8 +38,10 @@ def check_move(
             before_move=True
     ):
         return False
+    # If any of the already-checking spaces can still attack the king,
+    # then the move isn't valid
+    king_location = current_board.get_king(current_board.current_player)
     for space in checking_spaces:
-        king_location = current_board.get_king(current_board.current_player)
         if is_movable(
             current_board,
             (space, king_location),
