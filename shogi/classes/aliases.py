@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Set, Tuple, Union
+from typing import Dict, Iterable, Optional, Set, Tuple, Union
 
 from .locations import AbsoluteCoord
 from .pieces import Piece
@@ -10,6 +10,7 @@ __all__ = [
     "CoordSet",
     "CoordAndSet",
     "CoordOrSet",
+    "CoordOrIter",
 ]
 
 PieceDict = Dict[AbsoluteCoord, Piece]
@@ -18,3 +19,4 @@ OptCoordTuple = Tuple[Optional[AbsoluteCoord], AbsoluteCoord]
 CoordSet = Set[AbsoluteCoord]
 CoordAndSet = Tuple[AbsoluteCoord, CoordSet]
 CoordOrSet = Union[AbsoluteCoord, Set[AbsoluteCoord]]
+CoordOrIter = Union[AbsoluteCoord, Iterable[AbsoluteCoord]]

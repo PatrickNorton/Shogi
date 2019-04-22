@@ -47,6 +47,10 @@ class Row(collections.abc.Iterable):
 
     def __eq__(self, other: 'Row') -> bool:
         if isinstance(other, Row):
+            # If the first space of the other piece is in this row,
+            # then make sure that their are pointing in the same
+            # direction.
+            # Otherwise, they aren't the same row
             if other.first_space in self:
                 return (self.vector == other.vector
                         or self.vector == -1*other.vector)

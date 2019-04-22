@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Set
+from typing import Set, Iterable
 
 from shogi import classes
 
@@ -13,8 +13,8 @@ __all__ = [
 def is_movable(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
-        ignore_locations: classes.CoordOrSet = frozenset(),
-        act_full: classes.CoordOrSet = frozenset(),
+        ignore_locations: classes.CoordOrIter = (),
+        act_full: classes.CoordOrIter = (),
         piece_pretend: classes.Piece = None,
         act_full_pretend: classes.Piece = None,
         with_king_check: bool = True,
@@ -102,8 +102,8 @@ def path_clear(
         current_board: classes.Board,
         current_position: classes.AbsoluteCoord,
         move_position: classes.AbsoluteCoord,
-        ignore_locations: Set[classes.AbsoluteCoord] = frozenset(),
-        act_full: Set[classes.AbsoluteCoord] = frozenset(),
+        ignore_locations: Iterable[classes.AbsoluteCoord] = (),
+        act_full: Iterable[classes.AbsoluteCoord] = (),
 ) -> bool:
     """Check if piece is obstructing move.
 
@@ -142,8 +142,8 @@ def path_clear(
 def king_can_move(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
-        ignore_locations: Set[classes.AbsoluteCoord] = frozenset(),
-        act_full: Set[classes.AbsoluteCoord] = frozenset()
+        ignore_locations: Iterable[classes.AbsoluteCoord] = frozenset(),
+        act_full: Iterable[classes.AbsoluteCoord] = frozenset()
 ) -> bool:
     """Check if king is moving into check.
 

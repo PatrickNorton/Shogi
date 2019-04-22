@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Generator, Iterable, Optional
 
 from shogi import classes
 from .move import is_movable
@@ -41,10 +41,13 @@ def to_notation(
         raise ValueError
     # Other pieces that could move to the new location, were it
     # to be empty
-    # TODO: ignore_location & act_full for piece_can_move
-    other_pieces = (
-            not is_drop and piece_can_move(current_board, piece, new_location)
-    )
+    if is_drop:
+        other_pieces = ()
+    else:
+        other_pieces = piece_can_move(
+            current_board, piece, new_location,
+            ignore_locations=new_location
+        )
     # First bit of notation is the notation for the piece
     notation = piece_notation
     # After comes notation differentiating it from all the other
@@ -89,22 +92,28 @@ def notation_str(
 def piece_can_move(
         current_board: classes.Board,
         piece: classes.Piece,
-        to: classes.AbsoluteCoord
-) -> List[classes.AbsoluteCoord]:
+        to: classes.AbsoluteCoord,
+        ignore_locations: Iterable[classes.AbsoluteCoord] = (),
+        act_full: Iterable[classes.AbsoluteCoord] = (),
+) -> Generator[classes.AbsoluteCoord, None, None]:
     """Get list of pieces of the same type which can move
     to a certain location.
 
     :param current_board: current board state
     :param piece: piece to check for
     :param to: space to test for move to
+    :param ignore_locations: locations to pretend are empty
+    :param act_full: locations to pretend are full
     :return: list of possible spaces
     """
     if piece in current_board.pieces.items():
         pieces = (
             x for x, y in current_board.pieces.items() if y == piece
         )
-        return [x for x in pieces if is_movable(
+        for x in pieces:
+            if is_movable(
                     current_board, (x, to),
-                    ignore_locations=to
-                )]
-    return []
+                    ignore_locations={to, *ignore_locations},
+                    act_full=set(act_full),
+            ):
+                yield x
