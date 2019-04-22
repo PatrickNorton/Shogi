@@ -1,4 +1,4 @@
-from typing import Generator, Iterable, Optional
+from typing import Iterable, Optional, Set
 
 from shogi import classes
 from .move import is_movable
@@ -95,7 +95,7 @@ def piece_can_move(
         to: classes.AbsoluteCoord,
         ignore_locations: Iterable[classes.AbsoluteCoord] = (),
         act_full: Iterable[classes.AbsoluteCoord] = (),
-) -> Generator[classes.AbsoluteCoord, None, None]:
+) -> Set[classes.AbsoluteCoord]:
     """Get list of pieces of the same type which can move
     to a certain location.
 
@@ -107,13 +107,11 @@ def piece_can_move(
     :return: list of possible spaces
     """
     if piece in current_board.pieces.items():
-        pieces = (
-            x for x, y in current_board.pieces.items() if y == piece
-        )
-        for x in pieces:
-            if is_movable(
-                    current_board, (x, to),
-                    ignore_locations={to, *ignore_locations},
-                    act_full=set(act_full),
-            ):
-                yield x
+        return {x for x, y in current_board.pieces.items()
+                if y == piece
+                and is_movable(
+                        current_board, (x, to),
+                        ignore_locations={to, *ignore_locations},
+                        act_full=set(act_full),
+                )}
+    return set()
