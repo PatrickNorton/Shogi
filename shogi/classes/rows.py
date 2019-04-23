@@ -32,14 +32,14 @@ class Row(collections.abc.Iterable):
             # Add to the spaces the values in the direction of the
             # row, for as long as they are still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + x * vector))
+                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
             except ValueError:
                 break
         for x in RelativeCoord.negative_xy():
             # Do the same for all the values in the opposite direction
             # as what was entered, while still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + x * vector))
+                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
             except ValueError:
                 break
 

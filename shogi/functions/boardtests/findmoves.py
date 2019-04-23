@@ -32,9 +32,7 @@ def test_spaces(
         # If the new location isn't in the board, it isn't valid,
         # so continue on
         try:
-            absolute_location = classes.AbsoluteCoord(
-                piece_location + relative_location
-            )
+            absolute_location = piece_location + relative_location
         except ValueError:
             continue
         # If the move is valid, add it to the valid-moves list

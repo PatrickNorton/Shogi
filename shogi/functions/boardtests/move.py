@@ -58,7 +58,7 @@ def is_movable(
     # Otherwise, it's what the piece at the new space actually is
     else:
         new_loc_piece = current_board[new]
-    move = new - current
+    move = current.distance_to(new)
     move_direction = classes.Direction(move)
     # If the move is a null move, it's not valid
     if move_direction == classes.Direction(8):
@@ -76,7 +76,7 @@ def is_movable(
     # If the piece is moving different different amounts in the x and
     # y directions, then it's un-block-able, and we shouldn't test to
     # see if a piece is in the way (for example, knights)
-    elif not (new - current).is_linear():
+    elif not move.is_linear():
         pass
     # If the piece is a king, and we are running king_check, check
     # whether or not the king can move
@@ -123,7 +123,7 @@ def path_clear(
         # The relative move amount is the direction of the move
         # times the number of squares from the start that is being
         # tested this time
-        relative_position = classes.RelativeCoord(x) * move_direction
+        relative_position = move_direction.scale(x)
         test_position = current_position + relative_position
         # If there's a piece at the test position, and we're not
         # ignoring it, then there's a piece in the way and the path
@@ -163,9 +163,7 @@ def king_can_move(
             # If we've moved off the board, stop testing in this
             # direction
             try:
-                current_test = classes.AbsoluteCoord(
-                    new_location + direction * distance
-                )
+                current_test = new_location + direction.scale(distance)
             except (ValueError, IndexError):
                 break
             # If there's a piece on the path, and it has the same

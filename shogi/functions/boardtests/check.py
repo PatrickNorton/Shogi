@@ -106,7 +106,7 @@ def unmoved_can_check(
     # now, it could already.
 
     old_location, new_location = coordinates
-    relative_move = classes.RelativeCoord(king_location - old_location)
+    relative_move = old_location.distance_to(king_location)
     # If there is not a linear move from the old location to the
     # king's location, then the no pieces can go through that newly-
     # freed spot to attack the king, therefore the piece didn't unblock

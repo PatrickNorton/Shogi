@@ -131,22 +131,17 @@ class Piece:
             # If it represents a range, add that range to valid.
             # False should already have been caught, so we can ignore
             # that case
-            return {
-                RelativeCoord(x * direct)
-                for x in RelativeCoord.positive_xy()
-            }
+            return {direct.scale(x) for x in RelativeCoord.positive_xy()}
         elif isinstance(magic_var, int):
             # If the move rank is an integer, then the only valid
             # move is n spaces in the direction, so add that to the
             # valid moves
-            return {RelativeCoord(direct) * magic_var}
+            return {direct.scale(magic_var)}
         elif isinstance(magic_var, list):
             # If the move rank is a list, that represents a move that
             # is different in the x and y directions, so the valid
             # move should be that, in the direction of the move
-            return {RelativeCoord(
-                (magic_var[0] * direct.x, magic_var[1] * direct.y)
-            )}
+            return {direct.scale(magic_var)}
 
     def same_color(self, other: 'Piece') -> bool:
         """Check if piece has the same color as another piece.

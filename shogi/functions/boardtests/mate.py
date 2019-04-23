@@ -62,7 +62,7 @@ def mate_check(
     # Since there's only one location in pieces_attacking, we can
     # just get it and use it directly
     check_location = places_attacking.pop()
-    relative_position = classes.RelativeCoord(king_location - check_location)
+    relative_position = check_location.distance_to(king_location)
     # Test whether a drop is legal first
     # If the player has no pieces to drop, they can't drop to block
     has_pieces = current_board.captured[current_board.current_player]
@@ -94,7 +94,7 @@ def mate_check(
         # The location the piece is moving from, plus
         # z times the move direction, e.g. z spaces away from
         # the check location in the direction of the move
-        new_location = check_location + move_direction * z
+        new_location = (check_location + move_direction.scale(z))
         # If you can move there and block, no checkmate
         if is_movable(current_board, (pos, new_location)):
             return False

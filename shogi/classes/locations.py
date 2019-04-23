@@ -50,14 +50,29 @@ class BaseCoord(collections.abc.Sequence):
 
     def __getitem__(self, index): return self.tup[index]
 
-    def __add__(self, other: 'BaseCoord'):
-        return BaseCoord(self._add(other))
+    def __add__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x + other.x, self.y + other.y))
 
-    def __sub__(self, other: 'BaseCoord'):
-        return BaseCoord(self._sub(other))
+    def __sub__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x - other.x, self.y - other.y))
 
-    def __mul__(self, other: 'BaseCoord'):
-        return BaseCoord(self._mul(other))
+    def __mul__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x * other.x, self.y * other.y))
 
     def __hash__(self): return hash(self.tup)
 
@@ -68,15 +83,6 @@ class BaseCoord(collections.abc.Sequence):
     def __len__(self): return len(self.tup)
 
     def __repr__(self): return f"{self.__class__.__name__}({self})"
-
-    def _add(self, other: 'BaseCoord') -> Tuple[int, int]:
-        return self.x + other.x, self.y + other.y
-
-    def _sub(self, other: 'BaseCoord') -> Tuple[int, int]:
-        return self.x - other.x, self.y - other.y
-
-    def _mul(self, other: 'BaseCoord') -> Tuple[int, int]:
-        return self.x * other.x, self.y * other.y
 
     def is_linear(self) -> bool:
         return abs(self.x) == abs(self.y) or self.x == 0 or self.y == 0
@@ -109,21 +115,6 @@ class RelativeCoord(BaseCoord):
             super().__init__(tuple(xy))
         else:
             raise ValueError(f"{xy} not in correct range")
-
-    def __add__(self, other: CoordLike):
-        if not isinstance(other, BaseCoord):
-            other = RelativeCoord(other)
-        return RelativeCoord(self._add(other))
-
-    def __sub__(self, other: CoordLike):
-        if not isinstance(other, BaseCoord):
-            other = RelativeCoord(other)
-        return RelativeCoord(self._sub(other))
-
-    def __mul__(self, other: CoordLike):
-        if not isinstance(other, BaseCoord):
-            other = RelativeCoord(other)
-        return RelativeCoord(self._mul(other))
 
     def __hash__(self):
         return hash(self.tup)
@@ -191,33 +182,6 @@ class AbsoluteCoord(BaseCoord):
     def __str__(self):
         return self.y_str + self.x_str
 
-    def __add__(self, other):
-        if not isinstance(other, BaseCoord):
-            other = AbsoluteCoord(other)
-        coordinates = self._add(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
-    def __sub__(self, other):
-        if not isinstance(other, BaseCoord):
-            other = AbsoluteCoord(other)
-        coordinates = self._sub(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
-    def __mul__(self, other):
-        if not isinstance(other, BaseCoord):
-            other = AbsoluteCoord(other)
-        coordinates = self._mul(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
     def __hash__(self):
         return hash(self.tup)
 
@@ -231,6 +195,21 @@ class AbsoluteCoord(BaseCoord):
     def same_xy():
         for x in range(-8, 9):
             yield RelativeCoord(x)
+
+    def distance_to(self, other: 'AbsoluteCoord') -> RelativeCoord:
+        """Get the distance to the other coordinate.
+
+        This was created in response to the removal of automatic
+        type conversion to RelativeCoord when subtracting and adding
+        AbsoluteCoords formerly.
+        This finds the number of spaces needed to move in each
+        direction _from_ self _to_ other, for example,
+            (0, 0).distance_to((1, 0)) => (1, 0)
+
+        :param other: The coordinate whose distance we are finding
+        :return: The distance to the other coordinate
+        """
+        return RelativeCoord((other.x - self.x, other.y - self.y))
 
 
 def _sign(x): return int(x > 0) - int(x < 0)
@@ -290,6 +269,24 @@ class Direction(RelativeCoord):
     def valid():
         for x in range(8):
             yield Direction(x)
+
+    def scale(self, scalar: CoordLike) -> RelativeCoord:
+        """Scale a coordinate in a direction.
+
+        This is to be used for things like moving a certain number of
+        spaces in one direction or another, where writing out
+            RelativeCoord(x) * direction_of_movement
+        can get pretty tedious pretty quickly, as well as quite long.
+
+        :param scalar: coordinate to scale
+        :return: the scaled coordinate
+        """
+        if not isinstance(scalar, BaseCoord):
+            try:
+                scalar = RelativeCoord(scalar)
+            except TypeError:
+                raise TypeError
+        return RelativeCoord((self.x * scalar.x, self.y * scalar.y))
 
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.
