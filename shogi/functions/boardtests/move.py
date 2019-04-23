@@ -80,7 +80,7 @@ def is_movable(
         pass
     # If the piece is a king, and we are running king_check, check
     # whether or not the king can move
-    elif piece.has_type('k') and with_king_check:
+    elif piece.is_rank('k') and with_king_check:
         return king_can_move(
             current_board, (current, new),
             ignore_locations=ignore_locations,

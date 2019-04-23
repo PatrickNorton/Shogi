@@ -59,7 +59,7 @@ class Board(collections.abc.Sequence):
         self.y_size: int = 9
         # Setup self.kings
         for x, y in self.pieces.items():
-            if y.has_type('k'):
+            if y.is_rank('k'):
                 self.kings[y.color] = x
 
     def __str__(self):
@@ -117,13 +117,13 @@ class Board(collections.abc.Sequence):
         # Get the piece to be moved
         self.pieces[AbsoluteCoord(new)] = self.pieces.pop(current)
         # If the piece is a king, update self.kings accordingly
-        if self.pieces[new].has_type('k'):
+        if self.pieces[new].is_rank('k'):
             self.kings[self.pieces[new].color] = new
 
     def get_king(self, king_color: ColorLike) -> AbsoluteCoord:
-        """Return a location based on piece type.
+        """Return the location of a color's king.
 
-        :param king_color: piece type to check
+        :param king_color: color of king to check
         :return: location of piece
         """
 
@@ -139,7 +139,7 @@ class Board(collections.abc.Sequence):
         """
 
         piece = self[new]
-        if piece.has_type('k'):
+        if piece.is_rank('k'):
             raise ValueError("Kings may not be captured. You win.")
         # If the captured piece is promoted, demote it
         try:

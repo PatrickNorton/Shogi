@@ -23,7 +23,7 @@ def to_notation(
 ) -> str:
     old_location, new_location = move
     piece = current_board[new_location if not before_move else old_location]
-    # piece_notation: representing the type of piece
+    # piece_notation: representing the rank of piece
     if is_promote and not before_move:
         # If the moved piece was promoted, demote the piece for the
         # move notation, unless it's before the move, in which case it
@@ -96,7 +96,7 @@ def piece_can_move(
         ignore_locations: Iterable[classes.AbsoluteCoord] = (),
         act_full: Iterable[classes.AbsoluteCoord] = (),
 ) -> Set[classes.AbsoluteCoord]:
-    """Get list of pieces of the same type which can move
+    """Get list of pieces of the same rank which can move
     to a certain location.
 
     :param current_board: current board state

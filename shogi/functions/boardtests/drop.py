@@ -29,7 +29,7 @@ def is_legal_drop(
     if must_promote:
         return False
     # Special pawn rules:
-    if piece.has_type('p'):
+    if piece.is_rank('p'):
         # No two pawns in the same column for the same player
         for x in current_board.column(move_location.y):
             if x.is_piece('p', player_int):

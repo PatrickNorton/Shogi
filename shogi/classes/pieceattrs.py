@@ -9,17 +9,17 @@ from .locations import Direction, RelativeCoord
 
 __all__ = [
     "Color",
-    "PieceType",
+    "Rank",
     "Moves",
     "PieceMove",
     "ColorLike",
-    "PieceTypeLike",
+    "RankLike",
     "MoveFnLike",
 ]
 
 
 ColorLike = Union[int, str, 'Color']
-PieceTypeLike = Union[str, 'PieceType']
+RankLike = Union[str, 'Rank']
 MoveFnLike = Callable[[RelativeCoord], bool]
 
 
@@ -43,7 +43,7 @@ class Color:
         """Initialise instance of Color.
 
         :param turn_num: piece's color (w/b or 0/1)
-        :raises TypeError: invalid type
+        :raises TypeError: invalid rank
         """
 
         self.int: int
@@ -88,49 +88,49 @@ class Color:
         return Color(self.other_color)
 
 
-class PieceType:
-    """The class for the type of the piece.
+class Rank:
+    """The class for the rank of the piece.
 
-    This class is what determines which type the piece is (e.g. king,
+    This class is what determines which rank the piece is (e.g. king,
     rook, knight, etc.). It should be used for comparisons between
     two piece's types.
 
-    :ivar type: the short name of the piece -- see "help names"
+    :ivar rank: the short name of the piece -- see "help names"
     :ivar name: the full name of the piece
     """
 
-    def __init__(self, typ: PieceTypeLike, promoted: bool = False):
-        """Initialise instance of PieceType.
+    def __init__(self, rank: RankLike, promoted: bool = False):
+        """Initialise instance of Rank.
 
-        :param typ: type of piece ('n', 'b', etc.)
+        :param rank: rank of piece ('n', 'b', etc.)
         :param promoted: if piece is promoted
         """
 
-        typ = str(typ)
-        self.type: str
+        rank = str(rank)
+        self.rank: str
         self.name: str
         if promoted:
-            self.type = typ.upper()
-            self.name = f"+{info.name_info[self.type.lower()]}"
+            self.rank = rank.upper()
+            self.name = f"+{info.name_info[self.rank.lower()]}"
         else:
-            self.type = typ.lower()
-            self.name = info.name_info[self.type]
+            self.rank = rank.lower()
+            self.name = info.name_info[self.rank]
 
-    def __str__(self): return self.type
+    def __str__(self): return self.rank
 
     def __repr__(self): return self.name
 
     def __eq__(self, other): return repr(self) == repr(other)
 
-    def __hash__(self): return hash((self.type, self.name))
+    def __hash__(self): return hash((self.rank, self.name))
 
-    def prom(self) -> 'PieceType':
+    def prom(self) -> 'Rank':
         """Promote the piece."""
-        return PieceType(self, promoted=True)
+        return Rank(self, promoted=True)
 
-    def dem(self) -> 'PieceType':
+    def dem(self) -> 'Rank':
         """Demote the piece."""
-        return PieceType(self, promoted=False)
+        return Rank(self, promoted=False)
 
 
 class Moves(collections.abc.Sequence):
@@ -151,27 +151,27 @@ class Moves(collections.abc.Sequence):
 
     def __init__(
             self,
-            piece_name: PieceTypeLike,
-            clr: Color,
+            piece_name: RankLike,
+            color: Color,
             promoted: bool = False
     ):
         """Initialise instance of moves.
 
         :param piece_name: 1-letter name of piece
-        :param clr: color of piece
+        :param color: color of piece
         :param promoted: if piece is promoted
         :raises NotPromotableException: if un-promotable is promoted
         """
 
         piece_name = str(piece_name).lower()
         move_list = list(info.move_info[piece_name])
-        if clr == Color(1):
+        if color == Color(1):
             for y, var in enumerate(move_list):
                 if var is not None:
                     move_list[y] = var[4:] + var[:4]
         move_demoted = move_list[0]
         self.name: str = piece_name
-        self.color: Color = clr
+        self.color: Color = color
         self.demoted: Dict[Direction, str] = {
             d: move_demoted[x] for x, d in enumerate(Direction.valid())
         }
@@ -246,7 +246,7 @@ class Moves(collections.abc.Sequence):
 
 
 class PieceMove:
-    """The class representing a move type for a piece.
+    """The class representing a move rank for a piece.
 
     This class is used for the representation of all possible moves
     for the piece.

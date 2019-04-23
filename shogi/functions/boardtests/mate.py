@@ -67,7 +67,7 @@ def mate_check(
     # If the player has no pieces to drop, they can't drop to block
     has_pieces = current_board.captured[current_board.current_player]
     # If the piece is a knight, it can't be blocked
-    not_a_knight = not current_board[check_location].has_type('n')
+    not_a_knight = not current_board[check_location].is_rank('n')
     # If the piece is right next to the king, you can't put a piece
     # between it and the king to block it
     has_space = not all(x in {-1, 0, 1} for x in relative_position)
