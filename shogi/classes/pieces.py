@@ -20,7 +20,7 @@ class Piece:
     :ivar moves: legal moves for piece
     :ivar color: color of piece
     :ivar tup: (rank, color)
-    :ivar prom: if piece is promoted
+    :ivar is_promoted: if piece is promoted
     :ivar is_promotable: if piece is promotable
     :ivar auto_promote: where the piece must promote
     """
@@ -37,22 +37,24 @@ class Piece:
         :param color: 1-letter color of piece
         """
 
-        if promoted is None:
+        if promoted is None:  # For piece.promote() sending None
             promoted = False
         self.rank: Rank = Rank(rank, promoted=promoted)
         self.moves: Moves = Moves(self.rank, Color(color), promoted=promoted)
         self.color: Color = Color(color)
         self.tup: Tuple[Rank, Color] = (self.rank, self.color)
-        self.prom: Optional[bool]
+        self.is_promoted: Optional[bool]
         self.is_promotable: bool
+        # self.is_promoted can be None, True, or False.
+        # None is for pieces that cannot be promoted (e.g. a king)
         if self.moves.promoted is None:
-            self.prom = None
+            self.is_promoted = None
             self.is_promotable = False
         else:
-            self.prom = False
+            self.is_promoted = False
             self.is_promotable = True
         if promoted:
-            self.prom = True
+            self.is_promoted = True
         other_attributes: dict = info.piece_info[str(rank).lower()]
         self.auto_promote: int = other_attributes['autopromote']
 
@@ -75,9 +77,9 @@ class Piece:
         :return: promoted piece
         """
 
-        if self.prom is None:
+        if self.is_promoted is None:
             raise NotPromotableException
-        elif self.prom:
+        elif self.is_promoted:
             raise PromotedException
         else:
             return Piece(self.rank, self.color, promoted=True)
@@ -88,7 +90,7 @@ class Piece:
         :raises DemotedException: piece is not promoted
         :return: demoted piece
         """
-        if not self.prom:
+        if not self.is_promoted:
             raise DemotedException
         else:
             return Piece(self.rank, self.color)
@@ -101,7 +103,7 @@ class Piece:
         return Piece(
             str(self.rank),
             self.color.other_color,
-            promoted=self.prom
+            promoted=self.is_promoted
         )
 
     def can_move(self, relative_location: RelativeCoord) -> bool:

@@ -39,11 +39,11 @@ class CapturedGrid(GridLayout):
         captured_pieces = current_board.captured[color]
         # Go through the spaces, and update them if their occupants
         # have changed from their current states.
+        # zip_longest is necessary so that even if the number of
+        # captured pieces decreases, all the squares still update.
         for space, occupant in zip_longest(
-            # zip_longest is necessary so that if the number of
-            # captured pieces decreases, all the squares still update
-            self.ordered_children, captured_pieces,
-            fillvalue=shogi.NoPiece()
+                self.ordered_children, captured_pieces,
+                fillvalue=shogi.NoPiece()
         ):
             # If the space goes from occupied to unoccupied, remove
             # the piece

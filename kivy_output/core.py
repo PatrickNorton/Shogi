@@ -88,7 +88,7 @@ class AppCore(Widget):
         )
 
         # Handle promotion and call cleanup function
-        if can_promote and not self.board[to].prom:
+        if can_promote and not self.board[to].is_promoted:
             if self.board.auto_promote(to):
                 self.game_state.to_promote = True
                 std_cleanup()

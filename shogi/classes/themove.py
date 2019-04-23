@@ -58,7 +58,7 @@ class Move:
         if self.is_capture and isinstance(self.captured_piece, NoPiece):
             raise ValueError
         self.is_promote = is_promote
-        if self.is_promote and not self.piece.prom:
+        if self.is_promote and not self.piece.is_promoted:
             raise ValueError
         self.is_checking = is_checking
         self.is_mate = is_mate
