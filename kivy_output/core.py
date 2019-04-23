@@ -20,11 +20,12 @@ class AppCore(Widget):
 
     :ivar board: master board
     :ivar captured_spaces: index of CapturedGrids for each color
-    :ivar make_move: whether next click makes a move or highlights
-    :ivar move_from: where the piece is moving from
-    :ivar in_check: pieces attacking king for each color
-    :ivar to_add: piece to add to board
+    :ivar main_board: Kivy widget representing the main board
+    :ivar board_spaces: Dict of coords to each Kivy board space
+    :ivar game_state: Object representing the state of the game
     :ivar game_log: log of current game
+    :ivar undone_moves: log of moves that have been undone
+    :ivar popup_open: whether or not the promotion popup is open
     """
 
     def __init__(self, **kwargs):
@@ -35,22 +36,14 @@ class AppCore(Widget):
         # Board: current state
         self.board: shogi.Board = shogi.Board()
         super().__init__(**kwargs)
-        # Vars set in _set_id_based:
-        # Kivy widgets for the captured squares
-        self.captured_spaces: Dict[shogi.Color, Widget] = {}
-        # Kivy widget representing the main board
-        self.main_board: shogi.Board = None
-        # Dict of coords to each space on the board
-        self.board_spaces: Dict[shogi.AbsoluteCoord, BoardSquare] = None
-        # Vars representing current in-move state:
         self.game_state = GameState()
-        # Log of previous moves
         self.game_log: List[List[shogi.Move]] = []
-        # Undone moves log
         self.undone_moves: Deque[shogi.Move] = deque()
-        # Whether or not promotion popup window is open
         self.popup_open: bool = False
-        # Set all of those not-yet-set variables
+        # Vars set in _set_id_based:
+        self.captured_spaces: Dict[shogi.Color, Widget] = {}
+        self.main_board: shogi.Board = None
+        self.board_spaces: Dict[shogi.AbsoluteCoord, BoardSquare] = {}
         Clock.schedule_once(self._set_id_based, 0)
 
     def make_moves(
@@ -73,7 +66,8 @@ class AppCore(Widget):
         """
         move = (current, to)
         checking_spaces = (
-            x for x in self.game_state.in_check[self.board.current_player] if x != to
+            x for x in self.game_state.in_check[self.board.current_player]
+            if x != to
         )
         if not shogi.check_move(  # Is the move actually legal?
             self.board,
