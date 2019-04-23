@@ -31,9 +31,9 @@ def is_legal_drop(
     # Special pawn rules:
     if piece.has_type('p'):
         # No two pawns in the same column for the same player
-        if any(x.is_piece('p', player_int)
-               for x in current_board.column(move_location.y)):
-            return False
+        for x in current_board.column(move_location.y):
+            if x.is_piece('p', player_int):
+                return False
 
         is_in_check = dropping_to_check(
             current_board,
