@@ -38,7 +38,13 @@ class BaseCoord(collections.abc.Sequence):
 
     def __str__(self): return str(self.tup)
 
-    def __eq__(self, other): return hash(self) == hash(other)
+    def __eq__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.x == other.x and self.y == other.y
 
     def __iter__(self): yield from self.tup
 
