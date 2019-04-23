@@ -29,6 +29,7 @@ class ChessBoard(GridLayout):
         super().__init__(cols=board.y_size, rows=board.x_size, **kwargs)
         # Map of coordinates to screen squares
         self.children_dict = {}
+        self.set_up = False
         # IMPORTANT: self.set_up_squares should be called by AppCore
         # sometime during setup.
         # If something is going wrong during setup, try looking at
@@ -85,10 +86,13 @@ class ChessBoard(GridLayout):
         to create this function to do it for me.
         Call this when you need to actually set up the widget, but
         ***ONLY CALL IT ONCE***
-        It will break miserably otherwise.
+        It will raise a RuntimeError otherwise.
 
         :param _: Whatever variables kivy passes to this thing
         """
+        if self.set_up:
+            raise RuntimeError("set_up_squares should not be run twice")
+        self.set_up = True
         # Add a space for each square of the board, with occupant
         for x, y in self.parent.board.iterate():
             coordinate = shogi.AbsoluteCoord((x, y))
