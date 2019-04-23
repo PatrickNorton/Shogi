@@ -19,13 +19,13 @@ class AppCore(Widget):
     """Core of app. Contains all necessary functions for the game.
 
     :ivar board: master board
-    :ivar captured_spaces: index of CapturedGrids for each color
-    :ivar main_board: Kivy widget representing the main board
-    :ivar board_spaces: Dict of coords to each Kivy board space
     :ivar game_state: Object representing the state of the game
     :ivar game_log: log of current game
     :ivar undone_moves: log of moves that have been undone
     :ivar popup_open: whether or not the promotion popup is open
+    :ivar captured_spaces: index of CapturedGrids for each color
+    :ivar main_board: Kivy widget representing the main board
+    :ivar board_spaces: Dict of coords to each Kivy board space
     """
 
     def __init__(self, **kwargs):
