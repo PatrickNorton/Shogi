@@ -183,7 +183,10 @@ class AppCore(Widget):
             self.board.put_in_play(self.game_state.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
-            self.cleanup((None, space_to), dropped_piece=self.game_state.to_add)
+            self.cleanup(
+                (None, space_to),
+                dropped_piece=self.game_state.to_add
+            )
 
     def undo_last_move(self):
         """Undo the last move made."""
@@ -409,7 +412,8 @@ class AppCore(Widget):
         :param coordinate: where board was clicked
         """
         # If this is the click marking where to move:
-        if self.game_state.make_move and coordinate != self.game_state.move_from:
+        if (self.game_state.make_move
+                and coordinate != self.game_state.move_from):
             # If there is a piece to drop, drop it
             if self.game_state.to_add:
                 self.drop_piece(coordinate)

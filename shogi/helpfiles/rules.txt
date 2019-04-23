@@ -12,7 +12,8 @@ Promotion:
 A piece may be promoted when it reaches the furthest three rows from it.
 These are rows a-c for white, and rows g-i for black.
 When a piece is eligible to be promoted, a prompt appears after the move.
-If you wish to promote the piece, type 'y' and press Return. Otherwise, type 'n'.
+If you wish to promote the piece, type 'y' and press Return.
+Otherwise, type 'n'.
 A piece may only be promoted on a turn in which it is moved.
 If a piece reaches a position in the board from which it cannot further move
 unless it is promoted, it must promote, and is automatically promoted.
