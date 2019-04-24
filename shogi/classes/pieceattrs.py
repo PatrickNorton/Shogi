@@ -11,7 +11,6 @@ __all__ = [
     "Color",
     "Rank",
     "Moves",
-    "PieceMove",
     "ColorLike",
     "RankLike",
     "MoveFnLike",
@@ -267,54 +266,3 @@ class Moves(collections.abc.Sequence):
         if not self.is_promoted:
             raise DemotedException
         return Moves(self.name, self.color, False)
-
-
-class PieceMove:
-    """The class representing a move rank for a piece.
-
-    This class is used for the representation of all possible moves
-    for the piece.
-
-    :ivar move_function: function for move
-    """
-
-    def __init__(self, move_var: str):
-        """Initialise instance of PieceMove.
-
-        :param move_var: string detailing the move
-        """
-        self.move_function: MoveFnLike = _move_functions[move_var]
-
-    def try_move(self, move: RelativeCoord) -> bool:
-        return self.move_function(move)
-
-
-def _hyphen(_move: RelativeCoord) -> bool:
-    return False
-
-
-def _one(move: RelativeCoord) -> bool:
-    return max(abs(move)) == 1
-
-
-def _plus(move: RelativeCoord) -> bool:
-    if move.x == move.y:
-        return True
-    elif any(move) and not all(move):
-        return True
-    else:
-        return False
-
-
-def _t_move(move: RelativeCoord) -> bool:
-    return abs(move.x) == 1 and abs(move.y) == 2
-
-
-_move_functions: Dict[str, Callable] = {
-    '-': _hyphen,
-    '1': _one,
-    '+': _plus,
-    'T': _t_move,
-}
-
-_valid_colors = tuple(Color(x) for x in range(2))

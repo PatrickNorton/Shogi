@@ -105,7 +105,7 @@ class Board(collections.abc.Sequence):
         yield from self.pieces
 
     def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
-        """PieceMove a piece between locations.
+        """Move a piece between locations.
 
         :param current: location of piece
         :param new: location to move piece to
