@@ -34,7 +34,7 @@ class BaseCoord(collections.abc.Sequence):
         :param xy: the the coordinates of the AbsoluteCoord.
         """
         if not (isinstance(xy, tuple) and all(isinstance(i, int) for i in xy)):
-            raise TypeError
+            raise TypeError(f"Expected type tuple, got {type(xy)}.")
         self.x: int = xy[0]
         self.y: int = xy[1]
         self.tup: Tuple[int, int] = xy
@@ -77,9 +77,9 @@ class BaseCoord(collections.abc.Sequence):
                 return NotImplemented
         return self.__class__((self.x * other.x, self.y * other.y))
 
-    def __hash__(self): return hash(self.tup)
+    def __abs__(self): return self.__class__((abs(self.x), abs(self.y)))
 
-    def __abs__(self): return BaseCoord((abs(self.x), abs(self.y)))
+    def __hash__(self): return hash(self.tup)
 
     def __bool__(self): return not isinstance(self, NullCoord)
 
@@ -111,8 +111,6 @@ class RelativeCoord(BaseCoord):
         :param xy: the coordinates of the RelativeCoord
         """
         # Turn an integer input into a coordinate
-        if not isinstance(xy, (int, Iterable)):
-            raise TypeError
         if isinstance(xy, int):
             if xy in range(-8, 9):
                 super().__init__((xy, xy))
@@ -125,13 +123,7 @@ class RelativeCoord(BaseCoord):
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
-            raise TypeError
-
-    def __hash__(self):
-        return hash(self.tup)
-
-    def __abs__(self):
-        return RelativeCoord(super().__abs__())
+            raise TypeError(f"Expected type (int, Iterable), got {type(xy)}.")
 
     @classmethod
     def same_xy(cls):
@@ -201,18 +193,12 @@ class AbsoluteCoord(BaseCoord):
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
-            raise TypeError
+            raise TypeError(f"Expected (int, str, Iterable), got {type(xy)}")
         self.x_str = '123456789'[self.x]
         self.y_str = 'abcdefghi'[::-1][self.y]
 
     def __str__(self):
         return self.y_str + self.x_str
-
-    def __hash__(self):
-        return hash(self.tup)
-
-    def __abs__(self):
-        return AbsoluteCoord(super().__abs__())
 
     def __repr__(self):
         return f"{self.__class__.__name__}('{self}')"
@@ -278,18 +264,14 @@ class Direction(RelativeCoord):
         elif isinstance(direction, int):
             self.direction = direction
         else:
-            raise TypeError
+            raise TypeError(
+                f"Expected (int, tuple, BaseCoord), got {type(direction)}"
+            )
         if self.direction != 8:
             self.tup = self.inverse_directions[self.direction]
         else:
             self.tup = (0, 0)
         super().__init__(self.tup)
-
-    def __abs__(self):
-        return Direction(abs(self.direction))
-
-    def __hash__(self):
-        return hash(self.tup)
 
     @staticmethod
     def valid():
@@ -364,8 +346,6 @@ class NullCoord(Direction):
     def __mul__(self, other): raise NullCoordError
 
     def __abs__(self): raise NullCoordError
-
-    def __hash__(self): return hash(self.tup)
 
     def __repr__(self): return f"{self.__class__.__name__}()"
 
