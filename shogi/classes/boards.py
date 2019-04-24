@@ -105,7 +105,7 @@ class Board(collections.abc.Sequence):
         yield from self.pieces
 
     def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
-        """PieceMove a piece between locations.
+        """Move a piece between locations.
 
         :param current: location of piece
         :param new: location to move piece to
@@ -153,7 +153,7 @@ class Board(collections.abc.Sequence):
         # Flip the side of the piece, so it belongs to the captors
         new_piece = piece.flip_sides()
         # Add it to the captured pieces
-        self.captured[self.current_player].append(new_piece)
+        self.captured[piece.color].append(new_piece)
         # Remove the piece from where it was
         del self.pieces[new]
 
@@ -167,7 +167,7 @@ class Board(collections.abc.Sequence):
         # Return whether or not the piece is far enough along the
         # board to promote
         promotion_zones = ((0, 1, 2), (8, 7, 6))
-        return space.y in promotion_zones[int(self.current_player)]
+        return space.y in promotion_zones[int(self[space].color)]
 
     def auto_promote(
             self,
@@ -187,9 +187,8 @@ class Board(collections.abc.Sequence):
         # See if the piece can promote, and get how far it is from the
         # edge of the board
         promotion_zones = ((0, 1, 2), (8, 7, 6))
-        player_int = int(self.current_player)
         try:
-            index = promotion_zones[player_int].index(space.y)
+            index = promotion_zones[int(piece.color)].index(space.y)
         # If the piece can't promote (it is not in the promotion_zones
         # list, then it can;t be promoted, and so will not
         # automatically promote
@@ -236,7 +235,7 @@ class Board(collections.abc.Sequence):
 
         # Figure out the color of the piece to put in play
         if player is None:
-            player = self.current_player
+            player = piece.color
         # If there's already a piece at the moved-to spot, error
         if not isinstance(self[moved_to], NoPiece):
             raise ValueError
