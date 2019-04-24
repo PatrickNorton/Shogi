@@ -67,7 +67,8 @@ class Piece:
 
     def __hash__(self): return hash(self.tup)
 
-    def __repr__(self): return f"{self.color !r} {self.rank !r}"
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.color !r}, {self.rank !r})"
 
     def promote(self) -> 'Piece':
         """Promote piece.

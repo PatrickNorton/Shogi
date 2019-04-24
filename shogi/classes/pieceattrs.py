@@ -68,7 +68,8 @@ class Color:
 
     def __str__(self): return self.name
 
-    def __repr__(self): return self.full_name
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.int})"
 
     def __int__(self): return self.int
 
@@ -118,9 +119,12 @@ class Rank:
 
     def __str__(self): return self.rank
 
-    def __repr__(self): return self.name
+    def __repr__(self):
+        # Implicit string concatenation
+        return (f"{self.__class__.__name__}"
+                f"({self.rank !r}, promoted={self.rank.isupper()})")
 
-    def __eq__(self, other): return repr(self) == repr(other)
+    def __eq__(self, other): return self.name == other.name
 
     def __hash__(self): return hash((self.rank, self.name))
 
@@ -200,6 +204,11 @@ class Moves(collections.abc.Sequence):
             raise TypeError
 
     def __iter__(self) -> Generator: yield from self.current.values()
+
+    def __repr__(self):
+        # Using implicit string concatenation here, this is intended
+        return (f"{self.__class__.__name__}"
+                f"({self.name !r}, {self.color !r}, promoted={self.promoted}")
 
     def __len__(self) -> int: return len(self.current)
 
