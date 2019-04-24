@@ -1,7 +1,7 @@
 from .privates import _InfoClass
 
 __all__ = [
-    "info"
+    "info",
 ]
 
 info: _InfoClass = _InfoClass()

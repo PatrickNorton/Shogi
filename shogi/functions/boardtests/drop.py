@@ -1,17 +1,15 @@
-from typing import Set
-
 from shogi import classes
 
 from .mate import mate_check
-from .move import move_check_2
+from .move import is_movable
 
 __all__ = [
-    "drop_check",
-    "drop_check_check",
+    "is_legal_drop",
+    "dropping_to_check",
 ]
 
 
-def drop_check(
+def is_legal_drop(
         current_board: classes.Board,
         piece: classes.Piece,
         move_location: classes.AbsoluteCoord
@@ -22,47 +20,41 @@ def drop_check(
     :param piece: piece to drop
     :param move_location: location to drop piece
     """
+    # If there's a piece at the drop location, it's not valid
     if current_board[move_location]:
-        return 1
-    promotion_zones = ((0, 1, 2), (8, 7, 6))
+        return False
     player_int = int(current_board.current_player)
-    enemy_king = classes.Piece('k', current_board.current_player.other)
-    king_location = current_board.get_piece(enemy_king)
-    try:
-        index = promotion_zones[player_int].index(move_location.y)
-    except ValueError:
-        pass
-    else:
-        if index < piece.auto_promote:
-            return 1
-    if piece.has_type('p'):
-        space_row = classes.Row(move_location, 0)
-        if any(current_board[x].is_piece('p', player_int) for x in space_row):
-            return 1
-        else:
-            is_in_check = drop_check_check(
-                current_board,
-                piece,
-                move_location,
-                current_board.current_player.other
-            )
-            if is_in_check:
-                # FIXME: Add before_move attribute to mate
-                is_mate = mate_check(
-                    current_board,
-                    king_location,
-                    is_in_check
-                )
-                if is_mate:
-                    return 1
+    must_promote = current_board.auto_promote(move_location, piece)
+    # If the piece is dropped in a must-promote zone, it's not valid
+    if must_promote:
+        return False
+    # Special pawn rules:
+    if piece.is_rank('p'):
+        # No two pawns in the same column for the same player
+        for x in current_board.column(move_location.y):
+            if x.is_piece('p', player_int):
+                return False
+
+        is_in_check = dropping_to_check(
+            current_board,
+            piece,
+            move_location,
+            current_board.current_player.other
+        )
+        # If the pawn is dropping to cause checkmate, not legal
+        if is_in_check:
+            if mate_check(current_board, is_in_check):
+                return False
+    # Otherwise, yeah, it's fine
+    return True
 
 
-def drop_check_check(
+def dropping_to_check(
         current_board: classes.Board,
         piece_to_drop: classes.Piece,
         new_location: classes.AbsoluteCoord,
         king_color: classes.Color
-) -> Set[classes.AbsoluteCoord]:
+) -> classes.CoordSet:
     """Test if dropped piece is checking king.
 
     :param current_board: current board state
@@ -70,14 +62,16 @@ def drop_check_check(
     :param new_location: location to drop piece at
     :param king_color: color of king to attack
     """
-    king_location = current_board.get_piece(classes.Piece('k', king_color))
+    king_location = current_board.get_king(king_color)
     places_attacking = set()
-    cannot_move = move_check_2(
-        current_board,
-        (new_location, king_location),
-        act_full=new_location,
-        piece_pretend=piece_to_drop
-    )
-    if not cannot_move:
+    # If the piece can attack the king, it's check.
+    # Otherwise, no other pieces have had a path to the king
+    # magically opened up, so there's no check
+    if is_movable(
+            current_board,
+            (new_location, king_location),
+            act_full=new_location,
+            piece_pretend=piece_to_drop
+    ):
         places_attacking.add(new_location)
     return places_attacking

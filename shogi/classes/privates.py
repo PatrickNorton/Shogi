@@ -1,10 +1,10 @@
 import json
 
-from typing import Dict, List, Union, TextIO
+from typing import Dict, List, TextIO, Union
 
 __all__ = [
     "_InfoClass",
-    "_open_data"
+    "_open_data",
 ]
 
 
@@ -22,8 +22,10 @@ class _InfoClass:
     def __init__(self):
         """Initialise instance of Piece."""
 
+        moves_type = Dict[str, List[List[Union[int, List[str], bool]]]]
+
         with _open_data('moves.json') as f:
-            self.move_info: Dict[str, List[str]] = json.load(f)
+            self.move_info: moves_type = json.load(f)
         with _open_data('names.json') as f:
             self.name_info: Dict[str, str] = json.load(f)
         with _open_data('board.json') as f:

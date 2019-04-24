@@ -1,11 +1,11 @@
-from kivy.uix.button import Button
+from typing import Iterable, Generator
 
-from typing import Iterable, Set
+from kivy.uix.button import Button
 
 import shogi
 
 __all__ = [
-    "BoardSquare"
+    "BoardSquare",
 ]
 
 
@@ -13,7 +13,7 @@ class BoardSquare(Button):
     """The class for a board square.
 
     :ivar board_position: position within board
-    :ivar is_highlighted: whether ot not piece is highlighted
+    :ivar is_highlighted: whether or not piece is highlighted
     """
 
     def __init__(
@@ -27,22 +27,25 @@ class BoardSquare(Button):
         :param position: location of square on board
         :param kwargs: standard kwargs for kivy.Button
         """
+        # The position of the space within the board at large
         self.board_position: shogi.AbsoluteCoord = position
+        # Whether or not the space is highlighted
         self.is_highlighted: bool = False
         super().__init__(**kwargs)
+        # The text on the space, telling who occupies it
         self.text = str(initial_occupant) if initial_occupant else ''
 
     def light(self):
         """Highlight self."""
-        self.background_normal = "./images/Highlighted space.jpg"
-        self.background_down = "./images/Highlighted space.jpg"
+        self.background_normal = "Highlighted space.jpg"
+        self.background_down = "Highlighted space.jpg"
         self.color = 0, 0, 0, 1
         self.is_highlighted = True
 
     def un_light(self):
         """Un-highlight self."""
-        self.background_normal = "./images/Light square.jpg"
-        self.background_down = "./images/Light square.jpg"
+        self.background_normal = "Light square.jpg"
+        self.background_down = "Light square.jpg"
         self.color = 1, 1, 1, 1
         self.is_highlighted = False
 
@@ -51,6 +54,8 @@ class BoardSquare(Button):
         """Get string of a piece.
 
         Mostly a placeholder for now for images later.
+        This will be used for the setting of images when I get around
+        to it.
 
         :param piece: piece to get string of.
         :return: string of piece
@@ -61,23 +66,22 @@ class BoardSquare(Button):
             self,
             current_board: shogi.Board,
             checking_spaces: Iterable[shogi.AbsoluteCoord]
-    ) -> Set[shogi.AbsoluteCoord]:
+    ) -> Generator:
         """Get valid moves for square, given current board.
+
+        This function takes an iterable of spaces checking the king
+        and the current board state in order to produce the set of
+        spaces to which it may travel.
 
         :param current_board: current board position
         :param checking_spaces: spaces checking king
-        :return: list of valid spaces
+        :return: set of valid spaces
         """
         current_piece = current_board[self.board_position]
-        valid_spaces = set()
-        for dir_number in range(8):
-            direction = shogi.Direction(dir_number)
-            direction_spaces = current_piece.valid_spaces(direction)
-            direction_spaces = shogi.test_spaces(
-                current_board,
-                self.board_position,
-                direction_spaces,
-                checking_spaces=checking_spaces
-            )
-            valid_spaces.update(direction_spaces)
-        return valid_spaces
+        # Test each of the spaces the piece could possibly move to
+        yield from shogi.test_spaces(
+            current_board,
+            self.board_position,
+            current_piece.valid_spaces(),
+            checking_spaces=checking_spaces
+        )

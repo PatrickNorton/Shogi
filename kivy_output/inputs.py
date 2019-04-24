@@ -1,3 +1,4 @@
+from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.rst import RstDocument
 from kivy.uix.textinput import TextInput
@@ -36,13 +37,14 @@ class PromotionWindow(Popup):
     :ivar caller: object that called the popup window
     """
 
-    def __init__(self, caller=None, **kwargs):
+    caller = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
         """Initialise instance of PromotionWindow.
 
         :param caller: object that called the window
         :param kwargs: Kivy keyword arguments
         """
-        self.caller = caller
         super().__init__(**kwargs)
 
     def child_pressed(self, promote: bool):
@@ -58,8 +60,22 @@ class PromotionWindow(Popup):
 
 
 class MateWindow(Popup):
+    """The window for when checkmate happens."""
     pass
 
 
 class HelpText(TextInput):
     pass
+
+
+class MainText(TextInput):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(focus=self._on_focus_change)
+
+    def _on_focus_change(self, *_):
+        if self.focus:
+            self.background_color = (.25, .25, .25, 1)
+        else:
+            self.background_color = (0, 0, 0, 0)
+            self.text = ''

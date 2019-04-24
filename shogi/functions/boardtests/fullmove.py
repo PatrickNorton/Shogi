@@ -1,9 +1,8 @@
-from typing import List, Tuple
+from typing import Iterable
 
 from shogi import classes
-
-from .check import check_check
-from .move import move_check_2
+from .check import is_check
+from .move import is_movable
 
 __all__ = [
     "check_move",
@@ -12,9 +11,9 @@ __all__ = [
 
 def check_move(
         current_board: classes.Board,
-        coordinates: Tuple[classes.AbsoluteCoord, classes.AbsoluteCoord],
-        checking_spaces: List[classes.AbsoluteCoord] = None
-):
+        coordinates: classes.CoordTuple,
+        checking_spaces: Iterable[classes.AbsoluteCoord] = None
+) -> bool:
     """A more complete check for if the move is legal.
 
     :param current_board: current game board
@@ -24,26 +23,30 @@ def check_move(
     """
     current, to = coordinates
     if checking_spaces is None:
-        checking_spaces = []
-    cannot_move = move_check_2(current_board, coordinates)
-    if cannot_move:
-        return cannot_move
-    king_location, checking_own = check_check(
-        current_board,
-        coordinates,
-        current_board.current_player,
-        break_early=True,
-        before_move=True
-    )
-    if checking_own:
-        return 6
+        checking_spaces = ()
+    # If the piece can't move according to the basic check, it can't
+    # according to the more complete one, either
+    if not is_movable(current_board, coordinates):
+        return False
+    # If the piece's move puts the king itself into check, then it's
+    # not valid, either
+    if is_check(
+            current_board,
+            coordinates,
+            current_board.current_player,
+            break_early=True,
+            before_move=True
+    ):
+        return False
+    # If any of the already-checking spaces can still attack the king,
+    # then the move isn't valid
+    king_location = current_board.get_king(current_board.current_player)
     for space in checking_spaces:
-        cannot_move = move_check_2(
+        if is_movable(
             current_board,
             (space, king_location),
-            ignore_location=current,
+            ignore_locations=current,
             act_full=to
-        )
-        if not cannot_move:
-            return 6
-    return 0
+        ):
+            return False
+    return True

@@ -1,13 +1,11 @@
+from typing import Dict, Optional
 from kivy.uix.gridlayout import GridLayout
 
-from typing import Dict
-
 import shogi
-
 from .boardsquare import BoardSquare
 
 __all__ = [
-    "ChessBoard"
+    "ChessBoard",
 ]
 
 
@@ -26,40 +24,44 @@ class ChessBoard(GridLayout):
 
         :param kwargs: keyword arguments to pass
         """
+        # Temporary board passed at setup time.
         board = shogi.Board()
-        super().__init__(cols=9, rows=9, **kwargs)
-        # self.board: shogi.Board = shogi.Board()
-        for x, y in board.iterate():
-            coordinate = shogi.AbsoluteCoord((x, y))
-            square = BoardSquare(coordinate, board[coordinate])
-            self.add_widget(square)
-        self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
-            x.board_position: x for x in self.children
-        }
+        super().__init__(cols=board.y_size, rows=board.x_size, **kwargs)
+        # Map of coordinates to screen squares
+        self.children_dict = {}
+        self.set_up = False
+        # IMPORTANT: self.set_up_squares should be called by AppCore
+        # sometime during setup.
+        # If something is going wrong during setup, try looking at
+        # that, if you can't find the error
 
     def space_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Light or make move when a specific space is pressed.
 
+        This is simply a delegate call to the board_pressed method
+        of its parent, and does not do any processing itself.
+
         :param coordinate: location of pressed square
         """
         self.parent.board_pressed(coordinate)
-        """
-        if not self.parent.make_move or self.parent.move_from == coordinate:
-            self.parent.light_moves(coordinate)
-        else:
-            self.parent.make_moves(self.parent.move_from, coordinate)
-        """
 
-    def update_squares(self, *to_update: shogi.AbsoluteCoord):
+    def update_squares(self, *to_update: Optional[shogi.AbsoluteCoord]):
         """Update specific squares.
+
+        This, given an iterable of coordinates, updates their
+        corresponding board positions.
 
         :param to_update: list of squares to update
         """
         for coordinate in to_update:
+            # For e.g. dropping moves, when move_from is None
+            if coordinate is None:
+                continue
             space = self.children_dict[coordinate]
+            # Set the string of each updated space to the occupant
             space.text = space.set_string(self.board[coordinate])
 
-    def get_piece(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
+    def get_pieces(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
         """Get piece at location.
 
         :param position: position to get piece at
@@ -70,31 +72,31 @@ class ChessBoard(GridLayout):
     def un_light_all(self):
         """Un-highlight all squares."""
         self.parent.un_light_captured()
-        highlighted_spaces = {
-            x: y for x, y in self.children_dict.items() if y.is_highlighted
-        }
-        for space in highlighted_spaces.values():
-            space.un_light()
-        self.parent.make_move = False
-
-    def in_play_light(self, piece):
-        self.un_light_all()
-        empty_children = {
-            x: y for x, y in self.children_dict.items() if not y.text
-        }
-        if piece.color == self.board.current_player:
-            for space, x in empty_children.items():
-                promotion_zones = ((0, 1, 2), (8, 7, 6))
-                player_int = int(piece.color)
-                try:
-                    index = promotion_zones[player_int].index(space.y)
-                except ValueError:
-                    x.light()
-                else:
-                    if index >= piece.auto_promote:
-                        x.light()
-            self.parent.make_move = True
+        for space in self.children_dict.values():
+            if space.is_highlighted:
+                space.un_light()
 
     @property
     def board(self):
         return self.parent.board
+
+    def set_up_squares(self, *_):
+        """By the accursed gods of Kivy, if I want to not create
+        multiple shogi.Board instances to set this stuff up, I need
+        to create this function to do it for me.
+        Call this when you need to actually set up the widget, but
+        ***ONLY CALL IT ONCE***
+        It will raise a RuntimeError otherwise.
+
+        :param _: Whatever variables kivy passes to this thing
+        """
+        if self.set_up:
+            raise RuntimeError("set_up_squares should not be run twice")
+        self.set_up = True
+        # Add a space for each square of the board, with occupant
+        for x, y in self.parent.board.iterate():
+            coordinate = shogi.AbsoluteCoord((x, y))
+            self.add_widget(BoardSquare(coordinate, self.parent.board[x, y]))
+        self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {
+            x.board_position: x for x in self.children
+        }

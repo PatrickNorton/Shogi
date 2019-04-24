@@ -6,7 +6,7 @@ __all__ = [
     "PlayerExit",
     "OtherMove",
     "OtherInput",
-    "NullCoordError"
+    "NullCoordError",
 ]
 
 

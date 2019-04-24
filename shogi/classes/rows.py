@@ -1,11 +1,10 @@
 import collections
+from typing import Generator, Sequence
 
-from typing import Sequence, Union, Set
-
-from .locations import AbsoluteCoord, Direction, RelativeCoord
+from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
 
 __all__ = [
-    "Row"
+    "Row",
 ]
 
 
@@ -17,7 +16,7 @@ class Row(collections.abc.Iterable):
     :ivar spaces: set of spaces in row
     """
 
-    def __init__(self, location: Sequence, vector: Union[Sequence, int]):
+    def __init__(self, location: Sequence, vector: CoordLike):
         """Initialise instance of Row.
 
         :param location: location of original space
@@ -30,37 +29,44 @@ class Row(collections.abc.Iterable):
         self.vector: Direction = vector
         self.spaces = set()
         for x in RelativeCoord.positive_xy():
+            # Add to the spaces the values in the direction of the
+            # row, for as long as they are still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + x * vector))
+                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
             except ValueError:
                 break
         for x in RelativeCoord.negative_xy():
+            # Do the same for all the values in the opposite direction
+            # as what was entered, while still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + x * vector))
+                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
             except ValueError:
                 break
-        self._not_original: Set[AbsoluteCoord] = set(
-            x for x in self if x != self.first_space
-        )
 
     def __iter__(self): yield from self.spaces
 
-    def __eq__(self, other: 'Row') -> bool:
+    def __eq__(self, other):
         if isinstance(other, Row):
+            # If the first space of the other piece is in this row,
+            # then make sure that their are pointing in the same
+            # direction.
+            # Otherwise, they aren't the same row
             if other.first_space in self:
-                return abs(self.vector) == abs(other.vector)
+                return (self.vector == other.vector
+                        or self.vector == -1*other.vector)
             else:
                 return False
         else:
-            return False
+            return NotImplemented
 
-    def __repr__(self): return f"Row({self.first_space}, {self.vector})"
+    def __repr__(self): return f"Row({self.first_space !r}, {self.vector !r})"
 
-    @property
-    def not_original(self) -> set:
+    def not_original(self) -> Generator:
         """Get all non-original spaces in row.
 
         :return: set of spaces
         """
 
-        return self._not_original
+        for space in self.spaces:
+            if space != self.first_space:
+                yield space

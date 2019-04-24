@@ -1,4 +1,6 @@
 <MainScreen>:
+    board_size: self.width/2
+    space_size: self.width/18
 
     AppCore:
         id: core
@@ -9,20 +11,39 @@
                 pos: self.pos
                 size: self.size
 
+        NumberLayout:
+            orientation: 'horizontal'
+            size: root.board_size, root.space_size
+            pos: 0, root.height-root.board_size-root.space_size
+
+        NumberLayout:
+            orientation: 'vertical'
+            size: root.space_size, root.board_size
+            pos: root.board_size, root.height-root.board_size
+
+        NumButton:
+            size: root.space_size, root.space_size
+            pos: root.board_size, root.height-root.board_size - root.space_size
+
         ChessBoard:
             id: board
-            size: root.width/2, root.width/2
-            pos: 0, root.height-root.width/2
+            size: root.board_size, root.board_size
+            pos: 0, root.height-root.board_size
 
         CapturedGrid:
             id: 0
             size: root.width*2/9, root.width*1/9
-            pos: 0, root.height-23*root.width/36
+            pos: 0, root.height-23*root.width/36-root.space_size
 
         CapturedGrid:
             id: 1
             size: root.width*2/9, root.width*1/9
-            pos: root.width*5/18, root.height-23*root.width/36
+            pos: root.width*5/18, root.height-23*root.width/36-root.space_size
+
+        MoveBox:
+            id: moves
+            size: root.width*1/5, root.height*3/5
+            pos: root.width*2/3, root.height*1/6
 
         Button:
             size: root.width/25, root.width/25
@@ -32,11 +53,22 @@
                 root.manager.transition.direction = 'left'
                 root.manager.current = 'help'
 
+        MainText:
+            id: input
+            pos: 0, 0
+            size_hint: None, None
+            size: root.width, self.minimum_height
+            background_color: 0, 0, 0, 0
+            foreground_color: 1, 1, 1, 1
+            multiline: False
+            on_text_validate:
+                self.parent.text_entered(self.text)
+                self.focus = False
 
 <BoardSquare>:
     on_press: self.parent.space_pressed(self.board_position)
     background_normal: "Light square.jpg"
-    #background_down: app.get_background_image("Light square.jpg")
+    background_down: "Light square.jpg"
     canvas.before:
         Color:
             rgba: .5, .5, .5, 1
@@ -85,6 +117,7 @@
 
 <MateWindow>:
     title: "Checkmate!"
+    size_hint: None, None
 
 
 <HelpScreen>:
@@ -158,3 +191,23 @@
 
 <RstTable>:
     size_hint: None, None
+
+
+<NumButton>:
+    background_color: 0, 0, 0, 0
+
+
+<MoveBox>:
+    layout_content: layout_content
+    BoxLayout:
+        id: bl
+        pos: self.parent.pos
+        ScrollView:
+            size: self.size
+            MoveGrid:
+                box_amount: self.parent.parent.height/20
+                id: layout_content
+                size_hint_y: None
+                cols: 2
+                row_default_height: '20dp'
+                row_force_default: True

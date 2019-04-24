@@ -1,7 +1,6 @@
 import collections
-
-from numpy import sin, cos, sign, pi
-from typing import Sequence, Union, Tuple
+import itertools
+from typing import Sequence, Tuple, Union, Iterable
 
 from .exceptions import NullCoordError
 
@@ -10,8 +9,12 @@ __all__ = [
     "RelativeCoord",
     "AbsoluteCoord",
     "Direction",
-    "NullCoord"
+    "NullCoord",
+    "CoordLike",
 ]
+
+
+CoordLike = Union[Sequence, int]
 
 
 class BaseCoord(collections.abc.Sequence):
@@ -30,36 +33,62 @@ class BaseCoord(collections.abc.Sequence):
 
         :param xy: the the coordinates of the AbsoluteCoord.
         """
+        if not (isinstance(xy, tuple) and all(isinstance(i, int) for i in xy)):
+            raise TypeError(f"Expected {Tuple[int, int]}, got {type(xy)}.")
         self.x: int = xy[0]
         self.y: int = xy[1]
         self.tup: Tuple[int, int] = xy
 
     def __str__(self): return str(self.tup)
 
-    def __eq__(self, other): return hash(self) == hash(other)
+    def __eq__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.x == other.x and self.y == other.y
 
     def __iter__(self): yield from self.tup
 
     def __getitem__(self, index): return self.tup[index]
 
-    def __add__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x + other.x, self.y + other.y))
+    def __add__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x + other.x, self.y + other.y))
 
-    def __sub__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x - other.x, self.y - other.y))
+    def __sub__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x - other.x, self.y - other.y))
 
-    def __mul__(self, other: 'BaseCoord'):
-        return BaseCoord((self.x * other.x, self.y * other.y))
+    def __mul__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((self.x * other.x, self.y * other.y))
+
+    def __abs__(self): return self.__class__((abs(self.x), abs(self.y)))
 
     def __hash__(self): return hash(self.tup)
-
-    def __abs__(self): return AbsoluteCoord((abs(self.x), abs(self.y)))
 
     def __bool__(self): return not isinstance(self, NullCoord)
 
     def __len__(self): return len(self.tup)
 
-    def __repr__(self): return f"BaseCoord({self})"
+    def __repr__(self): return f"{self.__class__.__name__}({self.tup !r})"
+
+    def is_linear(self) -> bool:
+        return abs(self.x) == abs(self.y) or self.x == 0 or self.y == 0
 
 
 class RelativeCoord(BaseCoord):
@@ -74,58 +103,52 @@ class RelativeCoord(BaseCoord):
     outside of the (-9, 9) range, a ValueError is raised.
     """
 
-    def __init__(self, xy: Union[Sequence, int]):
+    def __init__(self, xy: CoordLike):
         """Initialise instance of RelativeCoord.
 
         If xy is an integer, the coordinate (xy, xy) is created.
 
         :param xy: the coordinates of the RelativeCoord
         """
-        if isinstance(xy, str):
-            coordinate_tuple = (
-                '987654321'.index(xy[1]),
-                'abcdefghi'.index(xy[0])
-            )
-            super().__init__(coordinate_tuple)
-        elif isinstance(xy, int) and xy in range(-8, 9):
-            super().__init__((xy, xy))
-        elif all(x in range(-9, 9) for x in xy):
-            super().__init__(tuple(xy))
+        # Turn an integer input into a coordinate
+        if isinstance(xy, int):
+            if xy in range(-8, 9):
+                super().__init__((xy, xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
+        # Otherwise, use the iterable to turn it into a RelCoord
+        elif isinstance(xy, Iterable):
+            if all(x in range(-8, 9) for x in xy):
+                super().__init__(tuple(xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         else:
-            raise ValueError(xy)
+            raise TypeError(f"Expected {CoordLike}, got {type(xy)}.")
 
-    def __add__(self, other):
-        coordinates = super().__add__(other)
-        return RelativeCoord(coordinates)
+    @classmethod
+    def same_xy(cls):
+        """All pieces with the same x and y coordinate."""
+        for x in range(-8, 9):
+            yield cls(x)
 
-    def __sub__(self, other):
-        coordinates = super().__sub__(other)
-        return RelativeCoord(coordinates)
+    @classmethod
+    def positive_xy(cls):
+        """All pieces within same_xy with a positive coordinate."""
+        for x in range(1, 9):
+            yield cls(x)
 
-    def __mul__(self, other):
-        coordinates = super().__mul__(other)
-        return RelativeCoord(coordinates)
+    @classmethod
+    def negative_xy(cls):
+        """Same as positive_xy, but negative coordinates."""
+        for x in range(-1, -9, -1):
+            yield cls(x)
 
-    def __hash__(self):
-        return hash(self.tup)
-
-    def __abs__(self):
-        return RelativeCoord(super().__abs__())
-
-    def __repr__(self):
-        return f"RelativeCoord({self})"
-
-    @staticmethod
-    def same_xy():
-        yield from _same_xy_rel
-
-    @staticmethod
-    def positive_xy():
-        yield from _pos_xy_rel
-
-    @staticmethod
-    def negative_xy():
-        return _neg_xy_rel
+    @classmethod
+    def one_away(cls):
+        """All the relative locations with a max value of 1. """
+        for x in itertools.product((-1, 0, 1), repeat=2):
+            if x != (0, 0):
+                yield cls(x)
 
 
 class AbsoluteCoord(BaseCoord):
@@ -142,7 +165,7 @@ class AbsoluteCoord(BaseCoord):
     :ivar y_str: the y part of board notation
     """
 
-    def __init__(self, xy: Union[Sequence, int]):
+    def __init__(self, xy: CoordLike):
         """Initialise instance of AbsoluteCoord.
 
         If xy is an integer, the coordinate (xy, xy) is created.
@@ -150,58 +173,58 @@ class AbsoluteCoord(BaseCoord):
         :param xy: the coordinates of the AbsoluteCoord
         """
 
+        # Handle string inputs
         if isinstance(xy, str):
             coordinate_tuple = (
-                '987654321'.index(xy[1]),
-                'abcdefghi'.index(xy[0])
+                '123456789'.index(xy[1]),
+                8 - 'abcdefghi'.index(xy[0])
             )
             super().__init__(coordinate_tuple)
-        elif isinstance(xy, int) and xy in range(9):
-            super().__init__((xy, xy))
-        elif all(x in range(9) for x in xy):
-            xy = (int(xy[0]), int(xy[1]))
-            super().__init__(xy)
+        # Handle integer inputs
+        elif isinstance(xy, int):
+            if xy in range(9):
+                super().__init__((xy, xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
+        # Handle iterable inputs
+        elif isinstance(xy, Iterable):
+            if all(x in range(9) for x in xy):
+                super().__init__(tuple(xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         else:
-            raise ValueError(xy)
-        self.x_str = '987654321'[self.x]
-        self.y_str = 'abcdefghi'[self.y]
+            raise TypeError(f"Expected {CoordLike}, got {type(xy)}")
+        self.x_str = '123456789'[self.x]
+        self.y_str = 'abcdefghi'[::-1][self.y]
 
     def __str__(self):
         return self.y_str + self.x_str
 
-    def __add__(self, other):
-        coordinates = super().__add__(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
-    def __sub__(self, other):
-        coordinates = super().__sub__(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
-    def __mul__(self, other):
-        coordinates = super().__mul__(other)
-        try:
-            return AbsoluteCoord(coordinates)
-        except ValueError:
-            return RelativeCoord(coordinates)
-
-    def __hash__(self):
-        return hash(self.tup)
-
-    def __abs__(self):
-        return AbsoluteCoord(super().__abs__())
-
     def __repr__(self):
-        return f"AbsoluteCoord('{self}')"
+        return f"{self.__class__.__name__}({self.y_str + self.x_str !r})"
 
     @staticmethod
     def same_xy():
-        yield from _same_xy_abs
+        for x in range(-8, 9):
+            yield RelativeCoord(x)
+
+    def distance_to(self, other: 'AbsoluteCoord') -> RelativeCoord:
+        """Get the distance to the other coordinate.
+
+        This was created in response to the removal of automatic
+        type conversion to RelativeCoord when subtracting and adding
+        AbsoluteCoords formerly.
+        This finds the number of spaces needed to move in each
+        direction _from_ self _to_ other, for example,
+            (0, 0).distance_to((1, 0)) => (1, 0)
+
+        :param other: The coordinate whose distance we are finding
+        :return: The distance to the other coordinate
+        """
+        return RelativeCoord((other.x - self.x, other.y - self.y))
+
+
+def _sign(x): return int(x > 0) - int(x < 0)
 
 
 class Direction(RelativeCoord):
@@ -224,43 +247,49 @@ class Direction(RelativeCoord):
     :cvar inverse_directions: inverse of direction_set
     """
 
-    direction_set = {
-        (round(sin(pi * x / 4)), -round(cos(pi * x / 4))): x for x in range(8)
-    }
-    inverse_directions = [
-        (round(sin(pi * x / 4)), -round(cos(pi * x / 4))) for x in range(8)
-    ]
+    direction_set = {(0, -1): 0, (1, -1): 1, (1, 0): 2, (1, 1): 3,
+                     (0, 1): 4, (-1, 1): 5, (-1, 0): 6, (-1, -1): 7,
+                     (0, 0): 8}
+    inverse_directions = [(0, -1), (1, -1), (1, 0), (1, 1),
+                          (0, 1), (-1, 1), (-1, 0), (-1, -1),
+                          (0, 0)]
 
-    def __init__(self, direction: Union[Sequence, int]):
+    def __init__(self, direction: CoordLike):
         self.direction: int
-        if direction == (0, 0):
-            self.direction = 8
-        elif isinstance(direction, AbsoluteCoord):
-            self.direction = self._make(direction.x, direction.y)
-        elif isinstance(direction, (tuple, BaseCoord)):
+        # If direction is a coordinate pair, -> self.tup
+        if isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
+        # If it's an int, then direction -> self.direction
         elif isinstance(direction, int):
             self.direction = direction
         else:
-            raise TypeError
-        if self.direction != 8:
-            self.tup = self.inverse_directions[self.direction]
-        else:
-            self.tup = (0, 0)
-        super().__init__(self.tup)
-
-    def __repr__(self):
-        return f"Direction({self.direction})"
-
-    def __abs__(self):
-        return Direction(abs(self.direction))
-
-    def __hash__(self):
-        return hash(self.tup)
+            raise TypeError(
+                f"Expected {CoordLike}, got {type(direction)}"
+            )
+        super().__init__(self.inverse_directions[self.direction])
 
     @staticmethod
     def valid():
-        yield from _valid_dir
+        for x in range(8):
+            yield Direction(x)
+
+    def scale(self, scalar: CoordLike) -> RelativeCoord:
+        """Scale a coordinate in a direction.
+
+        This is to be used for things like moving a certain number of
+        spaces in one direction or another, where writing out
+            RelativeCoord(x) * direction_of_movement
+        can get pretty tedious pretty quickly, as well as quite long.
+
+        :param scalar: coordinate to scale
+        :return: the scaled coordinate
+        """
+        if not isinstance(scalar, BaseCoord):
+            try:
+                scalar = RelativeCoord(scalar)
+            except TypeError:
+                raise TypeError
+        return RelativeCoord((self.x * scalar.x, self.y * scalar.y))
 
     def _make(self, x_var: int, y_var: int) -> int:
         """Turn (x, y) coordinates into a direction.
@@ -270,9 +299,7 @@ class Direction(RelativeCoord):
         :return: the direction in which (x, y) points
         """
 
-        if not x_var == y_var == 0:
-            return self.direction_set[(int(sign(x_var)), int(sign(y_var)))]
-        return 8
+        return self.direction_set[(_sign(x_var), _sign(y_var))]
 
 
 class NullCoord(Direction):
@@ -313,15 +340,8 @@ class NullCoord(Direction):
 
     def __abs__(self): raise NullCoordError
 
-    def __hash__(self): return hash(self.tup)
+    def __repr__(self): return f"{self.__class__.__name__}()"
 
-    def __repr__(self): return "NullCoord()"
-
-
-_same_xy_rel = tuple(RelativeCoord(x) for x in range(-8, 9))
-_pos_xy_rel = tuple(RelativeCoord(x) for x in range(9))
-_neg_xy_rel = tuple(RelativeCoord(x) for x in range(0, -9, -1))
-
-_same_xy_abs = tuple(AbsoluteCoord(x) for x in range(9))
-
-_valid_dir = tuple(Direction(x) for x in range(8))
+    @classmethod
+    def valid(cls):
+        yield cls()

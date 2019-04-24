@@ -45,6 +45,8 @@ commands
     List of commands for the prompt
 menu
     An interactive menu prompt
+notation
+    Info on the standard notation used
 
 .. _Github: https://www.github.com/PatrickNorton/Shogi
 

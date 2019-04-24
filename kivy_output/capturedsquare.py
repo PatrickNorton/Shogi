@@ -1,9 +1,10 @@
+from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty
 from kivy.uix.button import Button
 
 import shogi
 
 __all__ = [
-    "CapturedSquare"
+    "CapturedSquare",
 ]
 
 
@@ -14,15 +15,19 @@ class CapturedSquare(Button):
     :ivar position: position within grid
     """
 
+    # Space's position in the grid of spaces
+    position = NumericProperty(None)
+    # Whether or not the space is highlighted
+    is_highlighted = BooleanProperty(False)
+    # The occupant of the space
+    occupant = ObjectProperty(shogi.NoPiece())
+
     def __init__(self, position: int, **kwargs):
         """Initialise instance of CapturedSquare.
 
         :param kwargs: keyword arguments to be sent
         """
-        self.occupant: shogi.Piece = shogi.NoPiece()
-        self.position: int = position
-        self.is_highlighted = False
-        super().__init__(**kwargs)
+        super().__init__(position=position, is_highlighted=False, **kwargs)
 
     def give_piece(self, piece: shogi.Piece):
         """Add an occupying piece to the square.
@@ -42,24 +47,18 @@ class CapturedSquare(Button):
     def on_press(self):
         """Captured square was pressed."""
         if self.occupant:
-            if self.is_highlighted:
-                self.un_light()
-                self.parent.parent.un_light_all()
-            elif not self.parent.parent.make_move:
-                self.parent.space_pressed(self.position, self.is_highlighted)
-                if self.parent.parent.make_move:
-                    self.light()
+            self.parent.space_pressed(self.position)
 
     def light(self):
         """Highlight self."""
-        self.background_normal = "./images/Highlighted space.jpg"
-        self.background_down = "./images/Highlighted space.jpg"
+        self.background_normal = "Highlighted space.jpg"
+        self.background_down = "Highlighted space.jpg"
         self.color = 0, 0, 0, 1
         self.is_highlighted = True
 
     def un_light(self):
         """Un-highlight self."""
-        self.background_normal = "./images/Light square.jpg"
-        self.background_down = "./images/Light square.jpg"
+        self.background_normal = "Light square.jpg"
+        self.background_down = "Light square.jpg"
         self.color = 1, 1, 1, 1
         self.is_highlighted = False

@@ -1,0 +1,20 @@
+Shogi Notation:
+
+Basic Notation:
+    Of the form [Piece]-[Location].
+    This is what most moves consist of, however, some are more complex.
+    If two identical pieces could move to the same location, then there is an
+    additional partial coordinate added to the move before the dash, for
+    clarification.
+
+The Dash:
+    The dash between the two halves of the move can change as well.
+    If the dash is replaced by an x, then the move involved capturing a piece.
+    If the dash is replaced by a *, then the move was a drop.
+
+Additional add-ons:
+    If the piece was eligible for promotion, then there is another character.
+    If the piece was promoted, then there is a ^ added.
+    Otherwise, there is an = added.
+    If the move checked the king, a + is added.
+    On checkmate, there is a # added to the end.

@@ -1,6 +1,5 @@
 import collections
-
-from typing import Union, Dict, Optional, Generator, Callable
+from typing import Callable, Dict, Generator, Optional, Union
 
 from .exceptions import (
     PromotedException, NotPromotableException, DemotedException
@@ -10,10 +9,18 @@ from .locations import Direction, RelativeCoord
 
 __all__ = [
     "Color",
-    "PieceType",
+    "Rank",
     "Moves",
-    "Move",
+    "PieceMove",
+    "ColorLike",
+    "RankLike",
+    "MoveFnLike",
 ]
+
+
+ColorLike = Union[int, str, 'Color']
+RankLike = Union[str, 'Rank']
+MoveFnLike = Callable[[RelativeCoord], bool]
 
 
 class Color:
@@ -32,11 +39,11 @@ class Color:
 
     """
 
-    def __init__(self, turn_num: Union[int, str, 'Color']):
+    def __init__(self, turn_num: ColorLike):
         """Initialise instance of Color.
 
         :param turn_num: piece's color (w/b or 0/1)
-        :raises TypeError: invalid type
+        :raises TypeError: invalid rank
         """
 
         self.int: int
@@ -55,23 +62,31 @@ class Color:
             self.int = turn_num.int
             self.name = 'wb'[self.int]
         else:
-            raise TypeError
-        self.other_color = 'bw'[self.int]
-        self.full_name = ['White', 'Black'][self.int]
+            raise TypeError(f"Expected {ColorLike}, got {type(turn_num)}")
+        self.other_color: str = 'bw'[self.int]
+        self.full_name: str = ['White', 'Black'][self.int]
 
     def __str__(self): return self.name
 
-    def __repr__(self): return self.full_name
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.int})"
 
     def __int__(self): return self.int
 
-    def __eq__(self, other: 'Color'): return self.int == other.int
+    def __eq__(self, other):
+        if not isinstance(other, Color):
+            try:
+                other = Color(other)
+            except TypeError:
+                return NotImplemented
+        return self.int == other.int
 
     def __hash__(self): return hash((self.int, self.name))
 
     @staticmethod
     def valid() -> Generator['Color', None, None]:
-        yield from _valid_colors
+        yield Color(0)
+        yield Color(1)
 
     @property
     def other(self) -> 'Color':
@@ -80,53 +95,57 @@ class Color:
         return Color(self.other_color)
 
 
-class PieceType:
-    """The class for the type of the piece.
+class Rank:
+    """The class for the rank of the piece.
 
-    This class is what determines which type the piece is (e.g. king,
+    This class is what determines which rank the piece is (e.g. king,
     rook, knight, etc.). It should be used for comparisons between
     two piece's types.
 
-    :ivar type: the short name of the piece -- see "help names"
+    :ivar rank: the short name of the piece -- see "help names"
     :ivar name: the full name of the piece
     """
 
-    def __init__(self, typ: Union[str, 'PieceType'], promoted: bool = False):
-        """Initialise instance of PieceType.
+    def __init__(self, rank: RankLike, promoted: bool = False):
+        """Initialise instance of Rank.
 
-        :param typ: type of piece ('n', 'b', etc.)
+        :param rank: rank of piece ('n', 'b', etc.)
         :param promoted: if piece is promoted
         """
 
-        typ = str(typ)
-        self.type: str
+        if not isinstance(rank, (str, Rank)):
+            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
+        rank = str(rank)
+        self.rank: str
         self.name: str
         if promoted:
-            self.type = typ.lower()
-            self.name = f"+{info.name_info[self.type]}"
+            self.rank = rank.upper()
+            self.name = f"+{info.name_info[self.rank.lower()]}"
         else:
-            self.type = typ.lower()
-            self.name = info.name_info[self.type]
+            self.rank = rank.lower()
+            self.name = info.name_info[self.rank]
 
-    def __str__(self): return self.type
+    def __str__(self): return self.rank
 
-    def __repr__(self): return self.name
+    def __repr__(self):
+        # Implicit string concatenation
+        return (f"{self.__class__.__name__}"
+                f"({self.rank !r}, promoted={self.rank.isupper()})")
 
-    def __eq__(self, other): return repr(self) == repr(other)
+    def __eq__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return self.name == other.name
 
-    def __hash__(self): return hash((self.type, self.name))
+    def __hash__(self): return hash((self.rank, self.name))
 
-    def prom(self) -> 'PieceType':
+    def prom(self) -> 'Rank':
         """Promote the piece."""
-        self.type = self.type.upper()
-        self.name = '+' + self.name
-        return self
+        return Rank(self, promoted=True)
 
-    def dem(self) -> 'PieceType':
+    def dem(self) -> 'Rank':
         """Demote the piece."""
-        self.type = self.type.lower()
-        self.name = self.name.replace('+', '')
-        return self
+        return Rank(self, promoted=False)
 
 
 class Moves(collections.abc.Sequence):
@@ -146,27 +165,32 @@ class Moves(collections.abc.Sequence):
     """
 
     def __init__(
-            self, piece_name: Union[str, PieceType],
-            clr: Color,
+            self,
+            piece_name: RankLike,
+            color: Color,
             promoted: bool = False
     ):
         """Initialise instance of moves.
 
         :param piece_name: 1-letter name of piece
-        :param clr: color of piece
+        :param color: color of piece
         :param promoted: if piece is promoted
         :raises NotPromotableException: if un-promotable is promoted
         """
 
-        piece_name = str(piece_name)
+        if not isinstance(piece_name, Rank):
+            piece_name = Rank(piece_name)
+        if not isinstance(color, Color):
+            raise TypeError(f"Expected {Color}, got {type(color)}")
+        piece_name = str(piece_name).lower()
         move_list = list(info.move_info[piece_name])
-        if clr == Color(1):
+        if color == Color(1):
             for y, var in enumerate(move_list):
                 if var is not None:
                     move_list[y] = var[4:] + var[:4]
         move_demoted = move_list[0]
         self.name: str = piece_name
-        self.color: Color = clr
+        self.color: Color = color
         self.demoted: Dict[Direction, str] = {
             d: move_demoted[x] for x, d in enumerate(Direction.valid())
         }
@@ -196,6 +220,11 @@ class Moves(collections.abc.Sequence):
 
     def __iter__(self) -> Generator: yield from self.current.values()
 
+    def __repr__(self):
+        # Using implicit string concatenation here, this is intended
+        return (f"{self.__class__.__name__}"
+                f"({self.name !r}, {self.color !r}, promoted={self.promoted}")
+
     def __len__(self) -> int: return len(self.current)
 
     def can_move(self, relative_location: RelativeCoord) -> bool:
@@ -208,16 +237,13 @@ class Moves(collections.abc.Sequence):
         vec = Direction(relative_location)
         abs_location = abs(relative_location)
         dist = max(abs_location)
-        minimum = min(abs_location)
         magic_var = self[vec]
-        if magic_var == '-':
-            return False
-        elif magic_var == '1':
-            return dist == 1
-        elif magic_var == '+':
-            return abs_location.x == abs_location.y or not minimum
-        elif magic_var == 'T':
-            return abs_location == (1, 2)
+        if isinstance(magic_var, int) and not isinstance(magic_var, bool):
+            return dist == magic_var and relative_location.is_linear()
+        elif isinstance(magic_var, list):
+            return list(abs_location) == magic_var
+        elif isinstance(magic_var, bool):
+            return magic_var and relative_location.is_linear()
         return False
 
     def prom(self) -> 'Moves':
@@ -235,7 +261,7 @@ class Moves(collections.abc.Sequence):
         """Demote self.
 
         :raises DemotedException: already demoted
-        :return: demoted exception of self
+        :return: demoted version of self
         """
 
         if not self.is_promoted:
@@ -243,21 +269,21 @@ class Moves(collections.abc.Sequence):
         return Moves(self.name, self.color, False)
 
 
-class Move:
-    """The class representing a single move.
+class PieceMove:
+    """The class representing a move rank for a piece.
 
-    This class is used for the representation of a single move for
-    the piece.
+    This class is used for the representation of all possible moves
+    for the piece.
 
     :ivar move_function: function for move
     """
 
     def __init__(self, move_var: str):
-        """Initialise instance of Move.
+        """Initialise instance of PieceMove.
 
         :param move_var: string detailing the move
         """
-        self.move_function = _move_functions[move_var]
+        self.move_function: MoveFnLike = _move_functions[move_var]
 
     def try_move(self, move: RelativeCoord) -> bool:
         return self.move_function(move)
