@@ -1,4 +1,5 @@
 import collections
+import itertools
 from typing import Sequence, Tuple, Union
 
 from .exceptions import NullCoordError
@@ -122,20 +123,30 @@ class RelativeCoord(BaseCoord):
     def __abs__(self):
         return RelativeCoord(super().__abs__())
 
-    @staticmethod
-    def same_xy():
+    @classmethod
+    def same_xy(cls):
+        """All pieces with the same x and y coordinate."""
         for x in range(-8, 9):
-            yield RelativeCoord(x)
+            yield cls(x)
 
-    @staticmethod
-    def positive_xy():
+    @classmethod
+    def positive_xy(cls):
+        """All pieces within same_xy with a positive coordinate."""
         for x in range(1, 9):
-            yield RelativeCoord(x)
+            yield cls(x)
 
-    @staticmethod
-    def negative_xy():
-        for x in range(0, -9, -1):
-            yield RelativeCoord(x)
+    @classmethod
+    def negative_xy(cls):
+        """Same as positive_xy, but negative coordinates."""
+        for x in range(-1, -9, -1):
+            yield cls(x)
+
+    @classmethod
+    def one_away(cls):
+        """All the relative locations with a max value of 1. """
+        for x in itertools.product((-1, 0, 1), repeat=2):
+            if x != (0, 0):
+                yield cls(x)
 
 
 class AbsoluteCoord(BaseCoord):

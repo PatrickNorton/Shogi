@@ -111,6 +111,10 @@ class Board(collections.abc.Sequence):
         :param new: location to move piece to
         """
 
+        # In case non-AbsoluteCoords are passed
+        if not (isinstance(current, AbsoluteCoord)
+                and isinstance(new, AbsoluteCoord)):
+            raise TypeError
         # If there's a piece in the way, capture it
         if not isinstance(self[new], NoPiece):
             self.capture(new)
