@@ -39,10 +39,9 @@ def mate_check(
         king_color = current_board[next(iter(places_attacking))].color.other
     king_location = current_board.get_king(king_color)
     # Test if the king can move out of check
-    for king_move_tested in classes.RelativeCoord.one_away():
-        # For each space in the valid directions (e.g. the spaces one
-        # space away from a start), test whether or not the king can
-        # actually move there or not
+    for king_move_tested in current_board[king_location].valid_spaces():
+        # For each space in the king's valid moves, test if the king
+        # is able to move there or not
         try:
             new_location = king_location + king_move_tested
         # If the coordinate isn't legal, the piece can't move there,

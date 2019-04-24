@@ -78,11 +78,10 @@ class BoardSquare(Button):
         :return: set of valid spaces
         """
         current_piece = current_board[self.board_position]
-        for direction in shogi.Direction.valid():
-            # Get the valid spaces in each direction and yield each
-            yield from shogi.test_spaces(
-                current_board,
-                self.board_position,
-                current_piece.valid_spaces(direction),
-                checking_spaces=checking_spaces
-            )
+        # Test each of the spaces the piece could possibly move to
+        yield from shogi.test_spaces(
+            current_board,
+            self.board_position,
+            current_piece.valid_spaces(),
+            checking_spaces=checking_spaces
+        )

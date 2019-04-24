@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Set
+from typing import Generator, Optional, Tuple
 
 from .exceptions import (
     NotPromotableException, PromotedException, DemotedException
@@ -115,7 +115,11 @@ class Piece:
 
         return self.moves.can_move(relative_location)
 
-    def valid_spaces(self, direct: Direction) -> Set[RelativeCoord]:
+    def valid_spaces(self):
+        for direction in Direction.valid():
+            yield from self.direction_valid(direction)
+
+    def direction_valid(self, direct: Direction) -> Generator:
         """Get spaces piece could move in a direction
 
         :param direct: direction to be checked
@@ -124,24 +128,25 @@ class Piece:
 
         magic_var = self.moves[direct]
         if not magic_var:
-            return set()
+            pass
         elif isinstance(magic_var, bool):
             # If the move rank is a boolean, then it either
             # represents a range of motion, or no motion at all.
             # If it represents a range, add that range to valid.
             # False should already have been caught, so we can ignore
             # that case
-            return {direct.scale(x) for x in RelativeCoord.positive_xy()}
+            for x in RelativeCoord.positive_xy():
+                yield direct.scale(x)
         elif isinstance(magic_var, int):
             # If the move rank is an integer, then the only valid
             # move is n spaces in the direction, so add that to the
             # valid moves
-            return {direct.scale(magic_var)}
+            yield direct.scale(magic_var)
         elif isinstance(magic_var, list):
             # If the move rank is a list, that represents a move that
             # is different in the x and y directions, so the valid
             # move should be that, in the direction of the move
-            return {direct.scale(magic_var)}
+            yield direct.scale(magic_var)
 
     def same_color(self, other: 'Piece') -> bool:
         """Check if piece has the same color as another piece.
