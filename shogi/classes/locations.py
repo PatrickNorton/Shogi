@@ -1,6 +1,6 @@
 import collections
 import itertools
-from typing import Sequence, Tuple, Union
+from typing import Sequence, Tuple, Union, Iterable
 
 from .exceptions import NullCoordError
 
@@ -33,6 +33,8 @@ class BaseCoord(collections.abc.Sequence):
 
         :param xy: the the coordinates of the AbsoluteCoord.
         """
+        if not (isinstance(xy, tuple) and all(isinstance(i, int) for i in xy)):
+            raise TypeError
         self.x: int = xy[0]
         self.y: int = xy[1]
         self.tup: Tuple[int, int] = xy
@@ -109,13 +111,21 @@ class RelativeCoord(BaseCoord):
         :param xy: the coordinates of the RelativeCoord
         """
         # Turn an integer input into a coordinate
-        if isinstance(xy, int) and xy in range(-8, 9):
-            super().__init__((xy, xy))
+        if not isinstance(xy, (int, Iterable)):
+            raise TypeError
+        if isinstance(xy, int):
+            if xy in range(-8, 9):
+                super().__init__((xy, xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         # Otherwise, use the iterable to turn it into a RelCoord
-        elif all(x in range(-8, 9) for x in xy):
-            super().__init__(tuple(xy))
+        elif isinstance(xy, Iterable):
+            if all(x in range(-8, 9) for x in xy):
+                super().__init__(tuple(xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         else:
-            raise ValueError(f"{xy} not in correct range")
+            raise TypeError
 
     def __hash__(self):
         return hash(self.tup)
@@ -179,14 +189,19 @@ class AbsoluteCoord(BaseCoord):
             )
             super().__init__(coordinate_tuple)
         # Handle integer inputs
-        elif isinstance(xy, int) and xy in range(9):
-            super().__init__((xy, xy))
+        elif isinstance(xy, int):
+            if xy in range(9):
+                super().__init__((xy, xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         # Handle iterable inputs
-        elif all(x in range(9) for x in xy):
-            xy = (int(xy[0]), int(xy[1]))
-            super().__init__(xy)
+        elif isinstance(xy, Iterable):
+            if all(x in range(9) for x in xy):
+                super().__init__(tuple(xy))
+            else:
+                raise ValueError(f"{xy} not in correct range")
         else:
-            raise ValueError(f"{xy} not in correct range")
+            raise TypeError
         self.x_str = '123456789'[self.x]
         self.y_str = 'abcdefghi'[::-1][self.y]
 
@@ -253,12 +268,12 @@ class Direction(RelativeCoord):
 
     def __init__(self, direction: CoordLike):
         self.direction: int
-        # If the null direction ins entered:
-        if direction == (0, 0):
-            self.direction = 8
         # If direction is a coordinate pair, -> self.tup
-        elif isinstance(direction, (tuple, BaseCoord)):
+        if isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
+            # If the null direction ins entered:
+            if direction == (0, 0):
+                self.direction = 8
         # If it's an int, then direction -> self.direction
         elif isinstance(direction, int):
             self.direction = direction
