@@ -29,7 +29,7 @@ class Piece:
             self,
             rank: RankLike,
             color: ColorLike,
-            promoted: bool = False
+            promoted: Optional[bool] = False
     ):
         """Initialise instance of Piece.
 
@@ -55,7 +55,7 @@ class Piece:
             self.is_promotable = True
         if promoted:
             self.is_promoted = True
-        other_attributes: dict = info.piece_info[str(rank).lower()]
+        other_attributes: dict = info.piece_info[str(self.rank).lower()]
         self.auto_promote: int = other_attributes['autopromote']
 
     def __str__(self):

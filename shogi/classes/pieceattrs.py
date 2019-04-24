@@ -62,7 +62,7 @@ class Color:
             self.int = turn_num.int
             self.name = 'wb'[self.int]
         else:
-            raise TypeError
+            raise TypeError(f"Expected {ColorLike}, got {type(turn_num)}")
         self.other_color: str = 'bw'[self.int]
         self.full_name: str = ['White', 'Black'][self.int]
 
@@ -113,6 +113,8 @@ class Rank:
         :param promoted: if piece is promoted
         """
 
+        if not isinstance(rank, (str, Rank)):
+            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
         rank = str(rank)
         self.rank: str
         self.name: str
@@ -176,6 +178,10 @@ class Moves(collections.abc.Sequence):
         :raises NotPromotableException: if un-promotable is promoted
         """
 
+        if not isinstance(piece_name, Rank):
+            piece_name = Rank(piece_name)
+        if not isinstance(color, Color):
+            raise TypeError(f"Expected {Color}, got {type(color)}")
         piece_name = str(piece_name).lower()
         move_list = list(info.move_info[piece_name])
         if color == Color(1):

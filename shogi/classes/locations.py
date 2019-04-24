@@ -34,7 +34,7 @@ class BaseCoord(collections.abc.Sequence):
         :param xy: the the coordinates of the AbsoluteCoord.
         """
         if not (isinstance(xy, tuple) and all(isinstance(i, int) for i in xy)):
-            raise TypeError(f"Expected type tuple, got {type(xy)}.")
+            raise TypeError(f"Expected {Tuple[int, int]}, got {type(xy)}.")
         self.x: int = xy[0]
         self.y: int = xy[1]
         self.tup: Tuple[int, int] = xy
@@ -123,7 +123,7 @@ class RelativeCoord(BaseCoord):
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
-            raise TypeError(f"Expected type (int, Iterable), got {type(xy)}.")
+            raise TypeError(f"Expected {CoordLike}, got {type(xy)}.")
 
     @classmethod
     def same_xy(cls):
@@ -193,7 +193,7 @@ class AbsoluteCoord(BaseCoord):
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
-            raise TypeError(f"Expected (int, str, Iterable), got {type(xy)}")
+            raise TypeError(f"Expected {CoordLike}, got {type(xy)}")
         self.x_str = '123456789'[self.x]
         self.y_str = 'abcdefghi'[::-1][self.y]
 
@@ -264,7 +264,7 @@ class Direction(RelativeCoord):
             self.direction = direction
         else:
             raise TypeError(
-                f"Expected (int, tuple, BaseCoord), got {type(direction)}"
+                f"Expected {CoordLike}, got {type(direction)}"
             )
         super().__init__(self.inverse_directions[self.direction])
 
