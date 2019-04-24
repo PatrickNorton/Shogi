@@ -248,18 +248,17 @@ class Direction(RelativeCoord):
     """
 
     direction_set = {(0, -1): 0, (1, -1): 1, (1, 0): 2, (1, 1): 3,
-                     (0, 1): 4, (-1, 1): 5, (-1, 0): 6, (-1, -1): 7}
+                     (0, 1): 4, (-1, 1): 5, (-1, 0): 6, (-1, -1): 7,
+                     (0, 0): 8}
     inverse_directions = [(0, -1), (1, -1), (1, 0), (1, 1),
-                          (0, 1), (-1, 1), (-1, 0), (-1, -1)]
+                          (0, 1), (-1, 1), (-1, 0), (-1, -1),
+                          (0, 0)]
 
     def __init__(self, direction: CoordLike):
         self.direction: int
         # If direction is a coordinate pair, -> self.tup
         if isinstance(direction, (tuple, BaseCoord)):
             self.direction = self._make(*direction)
-            # If the null direction ins entered:
-            if direction == (0, 0):
-                self.direction = 8
         # If it's an int, then direction -> self.direction
         elif isinstance(direction, int):
             self.direction = direction
@@ -267,11 +266,7 @@ class Direction(RelativeCoord):
             raise TypeError(
                 f"Expected (int, tuple, BaseCoord), got {type(direction)}"
             )
-        if self.direction != 8:
-            self.tup = self.inverse_directions[self.direction]
-        else:
-            self.tup = (0, 0)
-        super().__init__(self.tup)
+        super().__init__(self.inverse_directions[self.direction])
 
     @staticmethod
     def valid():
@@ -304,9 +299,7 @@ class Direction(RelativeCoord):
         :return: the direction in which (x, y) points
         """
 
-        if not x_var == y_var == 0:
-            return self.direction_set[(_sign(x_var), _sign(y_var))]
-        return 8
+        return self.direction_set[(_sign(x_var), _sign(y_var))]
 
 
 class NullCoord(Direction):
