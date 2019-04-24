@@ -1,4 +1,4 @@
-from typing import Iterable, Set
+from typing import Generator, Iterable
 
 from shogi import classes
 from .fullmove import check_move
@@ -11,9 +11,9 @@ __all__ = [
 def test_spaces(
         current_board: classes.Board,
         piece_location: classes.AbsoluteCoord,
-        to_test: Set[classes.RelativeCoord],
+        to_test: Iterable[classes.RelativeCoord],
         checking_spaces: Iterable[classes.AbsoluteCoord] = None
-) -> classes.CoordSet:
+) -> Generator:
     """Test which spaces in a list are valid moves.
 
     :param current_board: current state of the board
@@ -26,7 +26,6 @@ def test_spaces(
     # Set defaults from None to their proper defaults
     if checking_spaces is None:
         checking_spaces = ()
-    to_return: classes.CoordSet = set()
     # Test each location in the given list
     for relative_location in to_test:
         # If the new location isn't in the board, it isn't valid,
@@ -41,5 +40,4 @@ def test_spaces(
             (piece_location, absolute_location),
             checking_spaces,
         ):
-            to_return.add(absolute_location)
-    return to_return
+            yield absolute_location

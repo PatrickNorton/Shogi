@@ -120,15 +120,19 @@ class Piece:
 
         return self.moves.can_move(relative_location)
 
-    def valid_spaces(self):
+    def valid_spaces(self) -> Generator:
+        """Yield all valid spaces in each direction.
+
+        :return: valid spaces to move to, relative to piece
+        """
         for direction in Direction.valid():
             yield from self.direction_valid(direction)
 
     def direction_valid(self, direct: Direction) -> Generator:
-        """Get spaces piece could move in a direction
+        """Get spaces piece could move in a direction.
 
         :param direct: direction to be checked
-        :return: list of valid relative spaces
+        :return: valid relative spaces in that direction
         """
 
         magic_var = self.moves[direct]
