@@ -85,7 +85,7 @@ class BaseCoord(collections.abc.Sequence):
 
     def __len__(self): return len(self.tup)
 
-    def __repr__(self): return f"{self.__class__.__name__}({self})"
+    def __repr__(self): return f"{self.__class__.__name__}({self.tup !r})"
 
     def is_linear(self) -> bool:
         return abs(self.x) == abs(self.y) or self.x == 0 or self.y == 0
@@ -201,7 +201,7 @@ class AbsoluteCoord(BaseCoord):
         return self.y_str + self.x_str
 
     def __repr__(self):
-        return f"{self.__class__.__name__}('{self}')"
+        return f"{self.__class__.__name__}({self.y_str + self.x_str !r})"
 
     @staticmethod
     def same_xy():
@@ -349,6 +349,6 @@ class NullCoord(Direction):
 
     def __repr__(self): return f"{self.__class__.__name__}()"
 
-    @staticmethod
-    def valid():
-        yield NullCoord()
+    @classmethod
+    def valid(cls):
+        yield cls()
