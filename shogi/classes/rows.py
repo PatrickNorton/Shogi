@@ -45,7 +45,7 @@ class Row(collections.abc.Iterable):
 
     def __iter__(self): yield from self.spaces
 
-    def __eq__(self, other: 'Row') -> bool:
+    def __eq__(self, other):
         if isinstance(other, Row):
             # If the first space of the other piece is in this row,
             # then make sure that their are pointing in the same

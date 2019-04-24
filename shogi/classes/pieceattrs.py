@@ -73,7 +73,13 @@ class Color:
 
     def __int__(self): return self.int
 
-    def __eq__(self, other: 'Color'): return self.int == other.int
+    def __eq__(self, other):
+        if not isinstance(other, Color):
+            try:
+                other = Color(other)
+            except TypeError:
+                return NotImplemented
+        return self.int == other.int
 
     def __hash__(self): return hash((self.int, self.name))
 
@@ -124,7 +130,10 @@ class Rank:
         return (f"{self.__class__.__name__}"
                 f"({self.rank !r}, promoted={self.rank.isupper()})")
 
-    def __eq__(self, other): return self.name == other.name
+    def __eq__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return self.name == other.name
 
     def __hash__(self): return hash((self.rank, self.name))
 

@@ -61,7 +61,11 @@ class Piece:
     def __str__(self):
         return str(self.rank) + str(self.color)
 
-    def __eq__(self, other: 'Piece') -> bool: return self.tup == other.tup
+    def __eq__(self, other):
+        if isinstance(other, Piece):
+            return self.tup == other.tup
+        else:
+            return NotImplemented
 
     def __bool__(self): return not isinstance(self, NoPiece)
 
