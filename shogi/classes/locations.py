@@ -1,5 +1,5 @@
 import collections
-import itertools
+from itertools import product
 from typing import Sequence, Tuple, Union, Iterable
 
 from .exceptions import NullCoordError
@@ -146,7 +146,7 @@ class RelativeCoord(BaseCoord):
     @classmethod
     def one_away(cls):
         """All the relative locations with a max value of 1. """
-        for x in itertools.product((-1, 0, 1), repeat=2):
+        for x in product((-1, 0, 1), repeat=2):
             if x != (0, 0):
                 yield cls(x)
 

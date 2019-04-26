@@ -1,4 +1,3 @@
-import collections
 from itertools import product
 from typing import Dict, Generator, List, Optional, Sequence
 
@@ -14,7 +13,7 @@ __all__ = [
 ]
 
 
-class Board(collections.abc.Sequence):
+class Board(Sequence):
     """Class for main board object.
 
 
