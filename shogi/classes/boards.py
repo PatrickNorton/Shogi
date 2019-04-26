@@ -19,17 +19,21 @@ class Board(collections.abc.Sequence):
 
 
     This is the object representing the main game board, and has,
-    additionally, several functions related to play of game. An
-    instance of this should be passed any functions with an input
+    additionally, several functions related to play of game.
+    An instance of this should be passed any functions with an input
     parameter of "current_board", and should represent the current
     state of the game, up to, but not including, the current move,
-    unless the current move has been checked. The move to be checked
-    should be stored in the "next_move" attribute, while the previous
-    move made should be stored in the "last_move" attribute.
+    unless the current move has been checked.
+    The move to be checked should be stored in the "next_move"
+    attribute, while the previous move made should be stored in the
+    "last_move" attribute.
 
     :ivar pieces: Each coordinate and corresponding piece
     :ivar captured: List of captured pieces for each color
-    :ivar current_player: Active player
+    :ivar current_player: Color of whomever's turn it is
+    :ivar kings: dict mapping kings to their locations
+    :ivar x_size: how wide the board is
+    :ivar y_size: how tall the board is
     """
 
     def __init__(self, pieces: Optional[dict] = None):
@@ -41,21 +45,15 @@ class Board(collections.abc.Sequence):
         # Use the standard setup if nothing is given
         if pieces is None:
             pieces = info.board_info
-        # Dict mapping locations to occupants
         self.pieces: PieceDict = {
             AbsoluteCoord(x): Piece(*y) for x, y in pieces.items()
         }
-        # Captured pieces for each color
         self.captured: Dict[Color, List[Piece]] = {
             x: [] for x in Color.valid()
         }
-        # Color of whomever's turn it is
         self.current_player: Color = Color(0)
-        # Dict mapping kings to their locations
         self.kings: Dict[Color, AbsoluteCoord] = {}
-        # Number of spaces wide the board is
         self.x_size: int = 9
-        # Ditto, but for height
         self.y_size: int = 9
         # Setup self.kings
         for x, y in self.pieces.items():
