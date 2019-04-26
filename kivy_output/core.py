@@ -6,6 +6,7 @@ from kivy.uix.widget import Widget
 
 import shogi
 from .boardsquare import BoardSquare
+from .boardwidget import ChessBoard
 from .capturedsquare import CapturedSquare
 from .inputs import MateWindow, PromotionWindow
 
@@ -52,7 +53,7 @@ class AppCore(Widget):
         self.popup_open: bool = False
         # Vars set in _set_id_based:
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
-        self.main_board: shogi.Board = None
+        self.main_board: ChessBoard = None
         self.board_spaces: Dict[shogi.AbsoluteCoord, BoardSquare] = {}
         Clock.schedule_once(self._set_id_based, 0)
 
