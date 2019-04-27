@@ -1,11 +1,17 @@
 {
   "-": "none",
   "p": "pawn",
+  "P": "+pawn",
   "l": "lance",
+  "L": "+lance",
   "n": "knight",
-  "s": "silver general",
-  "g": "gold general",
+  "N": "+knight",
+  "s": "silver",
+  "S": "+silver",
+  "g": "gold",
   "b": "bishop",
+  "B": "+bishop",
   "r": "rook",
+  "R": "+rook",
   "k": "king"
 }

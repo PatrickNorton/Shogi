@@ -33,7 +33,6 @@ class Color:
 
     :ivar int: the integer (white=0, black=1) of the turn
     :ivar name: the character (w, b) of the color
-    :ivar other_color: the character of the other color
     :ivar full_name: the full name of the color
 
     """
@@ -48,21 +47,30 @@ class Color:
         self.int: int
         self.name: str
         if isinstance(turn_num, int):
+            # If the inputted value is an integer, then the integer is
+            # self.int, and self.name comes from the integer
             self.int = turn_num
             self.name = 'wb'[self.int]
         elif isinstance(turn_num, str):
+            # String inputs have an extra possible value: '-', for
+            # the color of an instance of NoPiece
             if turn_num == '-':
                 self.name = turn_num
                 self.int = -1
+            # Otherwise, do exactly what would have been done with the
+            # integer input, but in "reverse"
             else:
                 self.name = turn_num
                 self.int = 'wb'.index(turn_num)
         elif isinstance(turn_num, Color):
+            # If it's a Color input, set this's attributes to the
+            # other's
             self.int = turn_num.int
-            self.name = 'wb'[self.int]
+            self.name = turn_num.name
         else:
+            # If the input isn't what was expected, error out
             raise TypeError(f"Expected {ColorLike}, got {type(turn_num)}")
-        self.other_color: str = 'bw'[self.int]
+        # Set the full name of the color
         self.full_name: str = ['White', 'Black'][self.int]
 
     def __str__(self): return self.name
@@ -82,16 +90,16 @@ class Color:
 
     def __hash__(self): return hash((self.int, self.name))
 
-    @staticmethod
-    def valid() -> Generator['Color', None, None]:
-        yield Color(0)
-        yield Color(1)
+    @classmethod
+    def valid(cls) -> Generator['Color', None, None]:
+        yield cls(0)
+        yield cls(1)
 
     @property
     def other(self) -> 'Color':
         """Color: Opposite color from first"""
 
-        return Color(self.other_color)
+        return Color(1-self.int)
 
 
 class Rank:
@@ -105,24 +113,32 @@ class Rank:
     :ivar name: the full name of the piece
     """
 
-    def __init__(self, rank: RankLike, promoted: bool = False):
+    def __init__(self, rank: RankLike, is_promoted: bool = False):
         """Initialise instance of Rank.
 
         :param rank: rank of piece ('n', 'b', etc.)
-        :param promoted: if piece is promoted
+        :param is_promoted: if piece is promoted
         """
 
-        if not isinstance(rank, (str, Rank)):
-            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
-        rank = str(rank)
-        self.rank: str
-        self.name: str
-        if promoted:
-            self.rank = rank.upper()
-            self.name = f"+{info.name_info[self.rank.lower()]}"
+        if isinstance(rank, Rank):
+            # If rank is a rank, continue along your merry way
+            if is_promoted:
+                self.rank: str = rank.rank.upper()
+            else:
+                self.rank: str = rank.rank.lower()
+        elif isinstance(rank, str):
+            # Otherwise, if the piece is promoted, ensure that
+            # self.rank is uppercase, and get the appropriate name
+            # info
+            if is_promoted:
+                self.rank: str = rank.upper()
+            # Otherwise, just get the info, and ensure self,rank is
+            # lowercase
+            else:
+                self.rank: str = rank.lower()
         else:
-            self.rank = rank.lower()
-            self.name = info.name_info[self.rank]
+            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
+        self.name: str = info.name_info[self.rank]
 
     def __str__(self): return self.rank
 
@@ -141,12 +157,12 @@ class Rank:
     @property
     def promoted(self) -> 'Rank':
         """Promote the piece."""
-        return Rank(self, promoted=True)
+        return Rank(self, is_promoted=True)
 
     @property
     def demoted(self) -> 'Rank':
         """Demote the piece."""
-        return Rank(self, promoted=False)
+        return Rank(self, is_promoted=False)
 
 
 class Moves(collections.abc.Sequence):
@@ -161,14 +177,14 @@ class Moves(collections.abc.Sequence):
     :ivar demoted_moves: direction -> move when not is_promoted
     :ivar promoted_moves: direction -> move when is_promoted
     :ivar moves: (demoted, is_promoted)
-    :ivar promoted_moves: if the piece is promoted
+    :ivar is_promoted: if the piece is promoted
     :ivar current: current set of moves
     """
 
     def __init__(
             self,
             piece_name: RankLike,
-            color: Color,
+            color: ColorLike,
             promoted: bool = False
     ):
         """Initialise instance of moves.
@@ -179,13 +195,16 @@ class Moves(collections.abc.Sequence):
         :raises NotPromotableException: if un-promotable is promoted
         """
 
+        # Coerce all the vars to their respective types
         if not isinstance(piece_name, Rank):
             piece_name = Rank(piece_name)
         if not isinstance(color, Color):
-            raise TypeError(f"Expected {Color}, got {type(color)}")
+            color = Color(color)
         piece_name = str(piece_name).lower()
         move_list = list(info.move_info[piece_name])
-        if color == Color(1):
+        # If the piece is black, rotate the piece moves around by
+        # 180º, so that the moves are proper
+        if color == 'b':
             for y, var in enumerate(move_list):
                 if var is not None:
                     move_list[y] = var[4:] + var[:4]
@@ -198,6 +217,8 @@ class Moves(collections.abc.Sequence):
         self.demoted_moves[Direction(8)] = '-'
         move_promoted = move_list[1]
         self.promoted_moves: Optional[Dict[Direction, str]]
+        # If there is no promoted version of the move, then set
+        # promoted_moves to None
         if move_promoted is None:
             self.promoted_moves = None
         else:
@@ -208,6 +229,9 @@ class Moves(collections.abc.Sequence):
         self.moves: tuple = (self.demoted_moves, self.promoted_moves)
         self.is_promoted: bool = promoted
         self.current: Dict[Direction, str] = self.moves[self.is_promoted]
+        # If the moves of the current promotion is None, then the
+        # piece is not promotable, but was promoted anyways, so
+        # something has gone wrong
         if self.current is None:
             raise NotPromotableException
 

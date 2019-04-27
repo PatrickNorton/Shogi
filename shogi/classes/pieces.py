@@ -39,7 +39,7 @@ class Piece:
 
         if promoted is None:  # For piece.promoted sending None
             promoted = False
-        self.rank: Rank = Rank(rank, promoted=promoted)
+        self.rank: Rank = Rank(rank, is_promoted=promoted)
         self.moves: Moves = Moves(self.rank, Color(color), promoted=promoted)
         self.color: Color = Color(color)
         self.tup: Tuple[Rank, Color] = (self.rank, self.color)
@@ -110,7 +110,7 @@ class Piece:
         """
         return Piece(
             str(self.rank),
-            self.color.other_color,
+            self.color.other,
             promoted=self.is_promoted
         )
 

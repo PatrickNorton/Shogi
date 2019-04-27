@@ -312,7 +312,7 @@ class Board(Sequence):
 
     @property
     def other_player(self) -> Color:
-        return Color(self.current_player.other_color)
+        return self.current_player.other
 
     def player_pieces(self, player: Color) -> Generator:
         """Return generator yielding loc, piece pairs for player.
