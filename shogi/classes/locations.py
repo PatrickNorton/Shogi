@@ -87,6 +87,7 @@ class BaseCoord(collections.abc.Sequence):
 
     def __repr__(self): return f"{self.__class__.__name__}({self.tup !r})"
 
+    @property
     def is_linear(self) -> bool:
         return abs(self.x) == abs(self.y) or self.x == 0 or self.y == 0
 

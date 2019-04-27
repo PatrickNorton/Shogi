@@ -40,7 +40,7 @@ def check_move(
         return False
     # If any of the already-checking spaces can still attack the king,
     # then the move isn't valid
-    king_location = current_board.get_king(current_board.current_player)
+    king_location = current_board.king_loc(current_board.current_player)
     for space in checking_spaces:
         if is_movable(
             current_board,

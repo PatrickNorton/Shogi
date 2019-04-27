@@ -62,7 +62,7 @@ def dropping_to_check(
     :param new_location: location to drop piece at
     :param king_color: color of king to attack
     """
-    king_location = current_board.get_king(king_color)
+    king_location = current_board.king_loc(king_color)
     places_attacking = set()
     # If the piece can attack the king, it's check.
     # Otherwise, no other pieces have had a path to the king

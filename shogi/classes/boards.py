@@ -89,7 +89,8 @@ class Board(Sequence):
 
     def __repr__(self): return f"Board(pieces={self.pieces})"
 
-    def iterate(self) -> Generator:
+    @property
+    def spaces(self) -> Generator:
         """Yield from all possible board positions."""
 
         for y, x in product(range(self.y_size), range(self.x_size)):
@@ -121,7 +122,7 @@ class Board(Sequence):
         if self.pieces[new].is_rank('k'):
             self.kings[self.pieces[new].color] = new
 
-    def get_king(self, king_color: ColorLike) -> AbsoluteCoord:
+    def king_loc(self, king_color: ColorLike) -> AbsoluteCoord:
         """Return the location of a color's king.
 
         :param king_color: color of king to check
@@ -144,11 +145,11 @@ class Board(Sequence):
             raise ValueError("Kings may not be captured. You win.")
         # If the captured piece is promoted, demote it
         try:
-            piece = piece.demote()
+            piece = piece.demoted
         except DemotedException:
             pass
         # Flip the side of the piece, so it belongs to the captors
-        new_piece = piece.flip_sides()
+        new_piece = piece.other_side
         # Add it to the captured pieces
         self.captured[piece.color].append(new_piece)
         # Remove the piece from where it was
@@ -187,7 +188,7 @@ class Board(Sequence):
         try:
             index = promotion_zones[int(piece.color)].index(space.y)
         # If the piece can't promote (it is not in the promotion_zones
-        # list, then it can;t be promoted, and so will not
+        # list, then it can't be promoted, and so will not
         # automatically promote
         except ValueError:
             return False
@@ -203,7 +204,7 @@ class Board(Sequence):
         """
 
         piece = self[space]
-        piece = piece.promote()
+        piece = piece.promoted
         self.pieces[space] = piece
 
     def demote(self, space: AbsoluteCoord):
@@ -212,7 +213,7 @@ class Board(Sequence):
         :param space: space to demote at
         """
         piece = self[space]
-        piece = piece.demote()
+        piece = piece.demoted
         self.pieces[space] = piece
 
     def put_in_play(
@@ -239,7 +240,7 @@ class Board(Sequence):
         # Move the piece to where it needs to go
         self.captured[player].remove(piece)
         if flip_sides:
-            piece = piece.flip_sides()
+            piece = piece.other_side
         self.pieces[moved_to] = piece
 
     def un_drop(self, location: AbsoluteCoord):
@@ -254,7 +255,7 @@ class Board(Sequence):
         un_dropped = self.pieces.pop(location)
         # Demote the piece, if it is not already demoted
         try:
-            un_dropped = un_dropped.demote()
+            un_dropped = un_dropped.demoted
         except DemotedException:
             pass
         self.captured[un_dropped.color].append(un_dropped)

@@ -37,9 +37,9 @@ def mate_check(
         # get an item from a set non-destructively, so this has to be
         # used instead. Sigh.
         king_color = current_board[next(iter(places_attacking))].color.other
-    king_location = current_board.get_king(king_color)
+    king_location = current_board.king_loc(king_color)
     # Test if the king can move out of check
-    for king_move_tested in current_board[king_location].valid_spaces():
+    for king_move_tested in current_board[king_location].valid_spaces:
         # For each space in the king's valid moves, test if the king
         # is able to move there or not
         try:

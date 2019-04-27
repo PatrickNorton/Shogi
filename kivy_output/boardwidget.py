@@ -61,14 +61,6 @@ class ChessBoard(GridLayout):
             # Set the string of each updated space to the occupant
             space.text = space.set_string(self.board[coordinate])
 
-    def get_pieces(self, position: shogi.AbsoluteCoord) -> shogi.Piece:
-        """Get piece at location.
-
-        :param position: position to get piece at
-        :return: piece at location
-        """
-        return self.board[position]
-
     def un_light_all(self):
         """Un-highlight all squares."""
         self.parent.un_light_captured()
@@ -94,7 +86,7 @@ class ChessBoard(GridLayout):
             raise RuntimeError("set_up_squares should not be run twice")
         self.set_up = True
         # Add a space for each square of the board, with occupant
-        for x, y in self.parent.board.iterate():
+        for x, y in self.parent.board.spaces:
             coordinate = shogi.AbsoluteCoord((x, y))
             self.add_widget(BoardSquare(coordinate, self.parent.board[x, y]))
         self.children_dict: Dict[shogi.AbsoluteCoord, BoardSquare] = {

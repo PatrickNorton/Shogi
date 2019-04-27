@@ -70,7 +70,7 @@ class Keybindings:
             **create_dict(self.bindings['help_screen']), **self.any_screen
         }
 
-    def get_key(
+    def key_action(
             self,
             _instance,
             key: int,

@@ -138,11 +138,13 @@ class Rank:
 
     def __hash__(self): return hash((self.rank, self.name))
 
-    def prom(self) -> 'Rank':
+    @property
+    def promoted(self) -> 'Rank':
         """Promote the piece."""
         return Rank(self, promoted=True)
 
-    def dem(self) -> 'Rank':
+    @property
+    def demoted(self) -> 'Rank':
         """Demote the piece."""
         return Rank(self, promoted=False)
 
@@ -156,10 +158,10 @@ class Moves(collections.abc.Sequence):
 
     :ivar name: 1-letter name of piece
     :ivar color: color of piece
-    :ivar demoted: direction -> move when not promoted
-    :ivar promoted: direction -> move when promoted
-    :ivar moves: (demoted, promoted)
-    :ivar is_promoted: if the piece is promoted
+    :ivar demoted_moves: direction -> move when not is_promoted
+    :ivar promoted_moves: direction -> move when is_promoted
+    :ivar moves: (demoted, is_promoted)
+    :ivar promoted_moves: if the piece is promoted
     :ivar current: current set of moves
     """
 
@@ -190,20 +192,20 @@ class Moves(collections.abc.Sequence):
         move_demoted = move_list[0]
         self.name: str = piece_name
         self.color: Color = color
-        self.demoted: Dict[Direction, str] = {
+        self.demoted_moves: Dict[Direction, str] = {
             d: move_demoted[x] for x, d in enumerate(Direction.valid())
         }
-        self.demoted[Direction(8)] = '-'
+        self.demoted_moves[Direction(8)] = '-'
         move_promoted = move_list[1]
-        self.promoted: Optional[Dict[Direction, str]]
+        self.promoted_moves: Optional[Dict[Direction, str]]
         if move_promoted is None:
-            self.promoted = None
+            self.promoted_moves = None
         else:
-            self.promoted = {
+            self.promoted_moves = {
                 d: move_promoted[x] for x, d in enumerate(Direction.valid())
             }
-            self.promoted[Direction(8)] = '-'
-        self.moves: tuple = (self.demoted, self.promoted)
+            self.promoted_moves[Direction(8)] = '-'
+        self.moves: tuple = (self.demoted_moves, self.promoted_moves)
         self.is_promoted: bool = promoted
         self.current: Dict[Direction, str] = self.moves[self.is_promoted]
         if self.current is None:
@@ -222,7 +224,8 @@ class Moves(collections.abc.Sequence):
     def __repr__(self):
         # Using implicit string concatenation here, this is intended
         return (f"{self.__class__.__name__}"
-                f"({self.name !r}, {self.color !r}, promoted={self.promoted}")
+                f"({self.name !r}, {self.color !r}, "
+                f"promoted_moves={self.promoted_moves})")
 
     def __len__(self) -> int: return len(self.current)
 
@@ -238,14 +241,15 @@ class Moves(collections.abc.Sequence):
         dist = max(abs_location)
         magic_var = self[vec]
         if isinstance(magic_var, int) and not isinstance(magic_var, bool):
-            return dist == magic_var and relative_location.is_linear()
+            return dist == magic_var and relative_location.is_linear
         elif isinstance(magic_var, list):
             return list(abs_location) == magic_var
         elif isinstance(magic_var, bool):
-            return magic_var and relative_location.is_linear()
+            return magic_var and relative_location.is_linear
         return False
 
-    def prom(self) -> 'Moves':
+    @property
+    def promoted(self) -> 'Moves':
         """Promote self.
 
         :raises PromotedException: already promoted
@@ -256,7 +260,8 @@ class Moves(collections.abc.Sequence):
             raise PromotedException
         return Moves(self.name, self.color, True)
 
-    def dem(self) -> 'Moves':
+    @property
+    def demoted(self) -> 'Moves':
         """Demote self.
 
         :raises DemotedException: already demoted

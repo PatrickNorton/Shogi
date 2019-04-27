@@ -61,6 +61,7 @@ class Row(collections.abc.Iterable):
 
     def __repr__(self): return f"Row({self.first_space !r}, {self.vector !r})"
 
+    @property
     def not_original(self) -> Generator:
         """Get all non-original spaces in row.
 

@@ -37,7 +37,7 @@ class Piece:
         :param color: 1-letter color of piece
         """
 
-        if promoted is None:  # For piece.promote() sending None
+        if promoted is None:  # For piece.promoted sending None
             promoted = False
         self.rank: Rank = Rank(rank, promoted=promoted)
         self.moves: Moves = Moves(self.rank, Color(color), promoted=promoted)
@@ -47,7 +47,7 @@ class Piece:
         self.is_promotable: bool
         # self.is_promoted can be None, True, or False.
         # None is for pieces that cannot be promoted (e.g. a king)
-        if self.moves.promoted is None:
+        if self.moves.is_promoted is None:
             self.is_promoted = None
             self.is_promotable = False
         else:
@@ -74,7 +74,8 @@ class Piece:
     def __repr__(self):
         return f"{self.__class__.__name__}({self.color !r}, {self.rank !r})"
 
-    def promote(self) -> 'Piece':
+    @property
+    def promoted(self) -> 'Piece':
         """Promote piece.
 
         :raises NotPromotableException: piece is not promotable
@@ -89,7 +90,8 @@ class Piece:
         else:
             return Piece(self.rank, self.color, promoted=True)
 
-    def demote(self) -> 'Piece':
+    @property
+    def demoted(self) -> 'Piece':
         """Demote piece.
 
         :raises DemotedException: piece is not promoted
@@ -98,9 +100,10 @@ class Piece:
         if not self.is_promoted:
             raise DemotedException
         else:
-            return Piece(self.rank, self.color)
+            return Piece(self.rank, self.color, promoted=False)
 
-    def flip_sides(self) -> 'Piece':
+    @property
+    def other_side(self) -> 'Piece':
         """Change sides piece is on.
 
         :return: flipped-color piece
@@ -120,6 +123,7 @@ class Piece:
 
         return self.moves.can_move(relative_location)
 
+    @property
     def valid_spaces(self) -> Generator:
         """Yield all valid spaces in each direction.
 

@@ -82,6 +82,6 @@ class BoardSquare(Button):
         yield from shogi.test_spaces(
             current_board,
             self.board_position,
-            current_piece.valid_spaces(),
+            current_piece.valid_spaces,
             checking_spaces=checking_spaces
         )

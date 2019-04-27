@@ -29,7 +29,7 @@ def is_check(
 
     old_location, new_location = coordinates
     places_attacking: classes.CoordSet = set()
-    king_location: classes.AbsoluteCoord = current_board.get_king(king_color)
+    king_location: classes.AbsoluteCoord = current_board.king_loc(king_color)
     # If there is a dropped piece, delegate to dropping_to_check
     if dropped_piece is not None:
         return dropping_to_check(
@@ -111,7 +111,7 @@ def unmoved_can_check(
     # king's location, then the no pieces can go through that newly-
     # freed spot to attack the king, therefore the piece didn't unblock
     # anything, and therefore, no pieces can check the king.
-    if not relative_move.is_linear():
+    if not relative_move.is_linear:
         return places_attacking
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)

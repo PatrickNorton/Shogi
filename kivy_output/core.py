@@ -219,16 +219,16 @@ class AppCore(Widget):
             self.board.move(last_move.end, last_move.start)
             # Undo any capturing, if it happened
             if last_move.is_capture:
-                in_play = last_move.captured_piece.flip_sides()
-                if in_play.prom:
-                    in_play = in_play.demote()
+                in_play = last_move.captured_piece.other_side
+                if in_play.is_promoted:
+                    in_play = in_play.demoted
                 self.board.put_in_play(
                     in_play,
                     last_move.end,
                     player=last_move.captured_piece.color.other,
                     flip_sides=True
                 )
-                if last_move.captured_piece.prom:
+                if last_move.captured_piece.promoted:
                     self.board.promote(last_move.end)
             # Demote the piece, if it was promoted
             if last_move.is_promote:

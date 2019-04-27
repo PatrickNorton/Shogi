@@ -33,7 +33,7 @@ class ShogiBoard(App):
     :ivar self.board: current game board
     """
 
-    background_color = StringProperty("#1e2022")
+    background = StringProperty("#1e2022")
 
     def __init__(self, **kwargs):
         """Initialise instance of ShogiBoard.
@@ -48,11 +48,6 @@ class ShogiBoard(App):
         # initialisation
         Clock.schedule_once(self._keyboard_setup)
 
-    @staticmethod
-    def get_background_color():
-        """Get standard background color."""
-        return get_color_from_hex("#1e2022")
-
     def build(self):
         """Build and run the application.
 
@@ -62,6 +57,10 @@ class ShogiBoard(App):
         sm.add_widget(MainScreen(name="main"))
         sm.add_widget(HelpScreen(name='help'))
         return sm
+
+    @property
+    def background_color(self):
+        return get_color_from_hex(self.background)
 
     @property
     def core(self):
@@ -96,4 +95,4 @@ class ShogiBoard(App):
 
     def _keyboard_setup(self, _):
         self.keybindings = Keybindings(self)
-        Window.bind(on_keyboard=self.keybindings.get_key)
+        Window.bind(on_keyboard=self.keybindings.key_action)

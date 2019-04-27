@@ -76,7 +76,7 @@ def is_movable(
     # If the piece is moving different different amounts in the x and
     # y directions, then it's un-block-able, and we shouldn't test to
     # see if a piece is in the way (for example, knights)
-    elif not move.is_linear():
+    elif not move.is_linear:
         pass
     # If the piece is a king, and we are running king_check, check
     # whether or not the king can move
