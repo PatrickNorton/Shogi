@@ -110,9 +110,12 @@ class Board(Sequence):
         """
 
         # In case non-AbsoluteCoords are passed
-        if not (isinstance(current, AbsoluteCoord)
-                and isinstance(new, AbsoluteCoord)):
-            raise TypeError
+        if not isinstance(current, AbsoluteCoord):
+            raise TypeError(
+                f"current: Expected AbsoluteCoord, got {type(current)}"
+            )
+        if not isinstance(new, AbsoluteCoord):
+            raise TypeError(f"new: Expected AbsoluteCoord, got {type(new)}")
         # If there's a piece in the way, capture it
         if not isinstance(self[new], NoPiece):
             self.capture(new)

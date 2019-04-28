@@ -1,4 +1,4 @@
-import collections
+from collections.abc import Sequence
 from typing import Callable, Dict, Generator, Optional, Union
 
 from .exceptions import (
@@ -69,7 +69,9 @@ class Color:
             self.name = turn_num.name
         else:
             # If the input isn't what was expected, error out
-            raise TypeError(f"Expected {ColorLike}, got {type(turn_num)}")
+            raise TypeError(
+                f"turn_num: Expected {ColorLike}, got {type(turn_num)}"
+            )
         # Set the full name of the color
         self.full_name: str = ['White', 'Black'][self.int]
 
@@ -132,7 +134,7 @@ class Rank:
             else:
                 self.rank: str = rank.lower()
         else:
-            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
+            raise TypeError(f"rank: Expected {RankLike}, got {type(rank)}")
         self.name: str = info.name_info[self.rank]
 
     def __str__(self): return self.rank
@@ -159,7 +161,7 @@ class Rank:
         return Rank(self, is_promoted=False)
 
 
-class Moves(collections.abc.Sequence):
+class Moves(Sequence):
     """The class containing the set of moves the piece can do.
 
     This class contains a dictionary relating directions to the moves
@@ -233,7 +235,9 @@ class Moves(collections.abc.Sequence):
         elif isinstance(attr, int):
             return self.current[Direction(attr)]
         else:
-            raise TypeError
+            raise TypeError(
+                f"getitem: Expected Union[Direction, int], got {type(attr)}"
+            )
 
     def __iter__(self) -> Generator: yield from self.current.values()
 
