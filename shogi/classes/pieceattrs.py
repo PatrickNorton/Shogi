@@ -75,18 +75,13 @@ class Color:
 
     def __str__(self): return self.name
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.int})"
+    def __repr__(self): return f"{self.__class__.__name__}({self.int})"
 
     def __int__(self): return self.int
 
     def __eq__(self, other):
-        if not isinstance(other, Color):
-            try:
-                other = Color(other)
-            except TypeError:
-                return NotImplemented
-        return self.int == other.int
+        if isinstance(other, Color):
+            return self.int == other.int
 
     def __hash__(self): return hash((self.int, self.name))
 
@@ -148,9 +143,8 @@ class Rank:
                 f"({self.rank !r}, promoted={self.rank.isupper()})")
 
     def __eq__(self, other):
-        if not isinstance(other, Rank):
-            return NotImplemented
-        return self.name == other.name
+        if isinstance(other, Rank):
+            return self.name == other.name
 
     def __hash__(self): return hash((self.rank, self.name))
 
@@ -204,10 +198,8 @@ class Moves(collections.abc.Sequence):
         move_list = list(info.move_info[piece_name])
         # If the piece is black, rotate the piece moves around by
         # 180º, so that the moves are proper
-        if color == 'b':
-            for y, var in enumerate(move_list):
-                if var is not None:
-                    move_list[y] = var[4:] + var[:4]
+        if color.name == 'b':
+            move_list = [x and x[4:] + x[:4] for x in move_list]
         move_demoted = move_list[0]
         self.name: str = piece_name
         self.color: Color = color
@@ -282,7 +274,7 @@ class Moves(collections.abc.Sequence):
 
         if self.is_promoted:
             raise PromotedException
-        return Moves(self.name, self.color, True)
+        return Moves(self.name, self.color, promoted=True)
 
     @property
     def demoted(self) -> 'Moves':
@@ -294,4 +286,4 @@ class Moves(collections.abc.Sequence):
 
         if not self.is_promoted:
             raise DemotedException
-        return Moves(self.name, self.color, False)
+        return Moves(self.name, self.color, promoted=False)
