@@ -37,8 +37,6 @@ class Piece:
         :param color: 1-letter color of piece
         """
 
-        if promoted is None:  # For piece.promoted sending None
-            promoted = False
         self.rank: Rank = Rank(rank, is_promoted=promoted)
         self.moves: Moves = Moves(self.rank, Color(color), promoted=promoted)
         self.color: Color = Color(color)

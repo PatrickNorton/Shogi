@@ -242,10 +242,9 @@ class Moves(Sequence):
     def __iter__(self) -> Generator: yield from self.current.values()
 
     def __repr__(self):
-        # Using implicit string concatenation here, this is intended
         return (f"{self.__class__.__name__}"
-                f"({self.name !r}, {self.color !r}, "
-                f"promoted_moves={self.promoted_moves})")
+                + f"({self.name !r}, {self.color !r}, "
+                + f"promoted_moves={self.promoted_moves})")
 
     def __len__(self) -> int: return len(self.current)
 
@@ -260,12 +259,12 @@ class Moves(Sequence):
         abs_location = abs(relative_location)
         dist = max(abs_location)
         magic_var = self[vec]
-        if isinstance(magic_var, int) and not isinstance(magic_var, bool):
+        if isinstance(magic_var, bool):
+            return magic_var and relative_location.is_linear
+        elif isinstance(magic_var, int):
             return dist == magic_var and relative_location.is_linear
         elif isinstance(magic_var, list):
             return list(abs_location) == magic_var
-        elif isinstance(magic_var, bool):
-            return magic_var and relative_location.is_linear
         return False
 
     @property
