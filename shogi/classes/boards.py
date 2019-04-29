@@ -300,6 +300,12 @@ class Board(Sequence):
                 yield (x, y)
 
     @property
+    def current_spaces(self) -> Generator:
+        for x, y in self.pieces.items():
+            if y.is_color(self.current_player):
+                yield x
+
+    @property
     def enemy_pieces(self) -> Generator:
         """dict: Pieces of opposing player."""
 
