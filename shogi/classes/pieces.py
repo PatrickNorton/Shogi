@@ -62,8 +62,6 @@ class Piece:
     def __eq__(self, other):
         if isinstance(other, Piece):
             return self.tup == other.tup
-        else:
-            return NotImplemented
 
     def __bool__(self): return not isinstance(self, NoPiece)
 
@@ -213,11 +211,7 @@ class Piece:
             return str(self.rank) == rank
         return False
 
-    def is_piece(
-            self,
-            rank: RankLike,
-            color: ColorLike
-    ) -> bool:
+    def is_piece(self, rank: RankLike, color: ColorLike) -> bool:
         """Check if the piece is of a certain color and rank
 
         :param rank: rank to check
@@ -234,4 +228,4 @@ class NoPiece(Piece):
     def __init__(self):
         super().__init__('-', '-')
 
-    def __repr__(self): return 'NoPiece()'
+    def __repr__(self): return f'{self.__class__.__name__}()'
