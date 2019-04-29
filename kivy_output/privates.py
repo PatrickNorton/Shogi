@@ -13,7 +13,6 @@ def _open_help(file_name: str) -> IO[str]:
     :param file_name: relative path of file
     :return: opened help file
     """
-
     current_dir = pathlib.Path(__file__).parent.parent
     piece_path = current_dir / 'shogi' / 'helpfiles' / 'pieces' / file_name
     if piece_path.exists():

@@ -32,7 +32,6 @@ class ShogiBoard(App):
 
     :ivar self.board: current game board
     """
-
     background = StringProperty("#1e2022")
 
     def __init__(self, **kwargs):

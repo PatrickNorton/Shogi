@@ -14,7 +14,6 @@ class CapturedSquare(Button):
     :ivar occupant: occupant of the square
     :ivar position: position within grid
     """
-
     # Space's position in the grid of spaces
     position = NumericProperty(None)
     # Whether or not the space is highlighted

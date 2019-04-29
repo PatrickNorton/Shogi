@@ -26,7 +26,6 @@ def is_check(
     :param dropped_piece: piece to be dropped
     :return: set of coordinates attacking king
     """
-
     old_location, new_location = coordinates
     places_attacking: classes.CoordSet = set()
     king_location: classes.AbsoluteCoord = current_board.king_loc(king_color)
@@ -89,7 +88,6 @@ def unmoved_can_check(
     :param before_move: if move has yet been made
     :return: pieces checking king
     """
-
     # The logic behind the magic:
     # The only two spaces on the board that actually change are the
     # location the piece moved from and the place it moved to.

@@ -20,7 +20,6 @@ def mate_check(
     :param places_attacking:
     :return: if king is in checkmate
     """
-
     # How this works:
     # There are four ways to get out of check: move, drop, capture,
     # and block.

@@ -30,7 +30,6 @@ def is_movable(
     :param with_king_check: whether or not king_can_move should be run
     :return: error code
     """
-
     current, new = coordinates
     if isinstance(ignore_locations, classes.AbsoluteCoord):
         ignore_locations = {ignore_locations}
@@ -114,7 +113,6 @@ def path_clear(
     :param act_full: locations to pretend are full
     :return: whether or not hte path is clear
     """
-
     move_direction = classes.Direction(move_position)
     # For each square upto the move_position's maximum value:
     # Max is needed to get the actual amount of spaces the move
@@ -152,7 +150,6 @@ def king_can_move(
     :param ignore_locations:
     :param act_full:
     """
-
     old_location, new_location = coordinates
     old_occupant = current_board[old_location]
     # Test in each direction radiating out from the king, testing

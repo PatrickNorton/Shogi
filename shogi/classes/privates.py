@@ -18,10 +18,8 @@ class _InfoClass:
     :ivar error_info: errors.json
     :ivar help_index: helpindex.json
     """
-
     def __init__(self):
         """Initialise instance of Piece."""
-
         moves_type = Dict[str, List[List[Union[int, List[str], bool]]]]
 
         with _open_data('moves.json') as f:
@@ -47,7 +45,6 @@ def _open_data(file_name: str) -> TextIO:
     Returns:
         file -- opened file
     """
-
     import os
     cwd = os.path.dirname(__file__)
     file_path = os.path.join(cwd, f'../datafiles/{file_name}')

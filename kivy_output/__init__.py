@@ -1,7 +1,6 @@
 """Main module for app.
 
 """
-
 from .app import *
 from .bindings import *
 from .boardsquare import *

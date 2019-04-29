@@ -22,7 +22,6 @@ def test_spaces(
     :param checking_spaces: additional spaces attacking king to check
     :return: list of valid spaces
     """
-
     # Set defaults from None to their proper defaults
     if checking_spaces is None:
         checking_spaces = ()

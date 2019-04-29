@@ -24,7 +24,6 @@ class Piece:
     :ivar is_promotable: if piece is promotable
     :ivar auto_promote: where the piece must promote
     """
-
     def __init__(
             self,
             rank: RankLike,
@@ -36,7 +35,6 @@ class Piece:
         :param rank: 1-letter rank of piece
         :param color: 1-letter color of piece
         """
-
         self.rank: Rank = Rank(rank, is_promoted=promoted)
         self.moves: Moves = Moves(self.rank, Color(color), promoted=promoted)
         self.color: Color = Color(color)
@@ -78,7 +76,6 @@ class Piece:
         :raises PromotedException: piece is already promoted
         :return: promoted piece
         """
-
         if self.is_promoted is None:
             raise NotPromotableException
         elif self.is_promoted:
@@ -116,7 +113,6 @@ class Piece:
         :param relative_location: relative location of move
         :return: whether or not piece can move
         """
-
         return self.moves.can_move(relative_location)
 
     @property
@@ -134,7 +130,6 @@ class Piece:
         :param direct: direction to be checked
         :return: valid relative spaces in that direction
         """
-
         magic_var = self.moves[direct]
         if not magic_var:
             pass
@@ -163,7 +158,6 @@ class Piece:
         :param other: the piece to be compared
         :return: if they have the same color
         """
-
         return self.color == other.color
 
     def same_rank(self, other: 'Piece') -> bool:
@@ -172,7 +166,6 @@ class Piece:
         :param other: the piece to be compared
         :return: if they are the same rank
         """
-
         return self.rank == other.rank
 
     def is_color(self, color: ColorLike) -> bool:
@@ -185,7 +178,6 @@ class Piece:
         :param color: color to be compared to
         :return: if the piece is of that color
         """
-
         if isinstance(color, Color):
             return self.color == color
         elif isinstance(color, str):
@@ -204,7 +196,6 @@ class Piece:
         :param rank: rank to be tested
         :return: if the piece is of that rank
         """
-
         if isinstance(rank, Rank):
             return self.rank == rank
         elif isinstance(rank, str):
@@ -218,13 +209,11 @@ class Piece:
         :param color: color to check
         :return: if the piece is of the same rank and color
         """
-
         return self.is_rank(rank) and self.is_color(color)
 
 
 class NoPiece(Piece):
     """The "null" instance of a piece."""
-
     def __init__(self):
         super().__init__('-', '-')
 

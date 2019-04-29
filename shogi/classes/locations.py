@@ -27,7 +27,6 @@ class BaseCoord(collections.abc.Sequence):
     :ivar y: the y coordinate
     :ivar tup: the (x, y) tuple
     """
-
     def __init__(self, xy: Tuple[int, int]):
         """Initialise instance of BaseCoord.
 
@@ -101,7 +100,6 @@ class RelativeCoord(BaseCoord):
     If the addition or subtraction of a RelativeCoord takes the sum
     outside of the (-9, 9) range, a ValueError is raised.
     """
-
     def __init__(self, xy: CoordLike):
         """Initialise instance of RelativeCoord.
 
@@ -163,7 +161,6 @@ class AbsoluteCoord(BaseCoord):
     :ivar x_str: the x part of board notation
     :ivar y_str: the y part of board notation
     """
-
     def __init__(self, xy: CoordLike):
         """Initialise instance of AbsoluteCoord.
 
@@ -171,7 +168,6 @@ class AbsoluteCoord(BaseCoord):
 
         :param xy: the coordinates of the AbsoluteCoord
         """
-
         # Handle string inputs
         if isinstance(xy, str):
             coordinate_tuple = (
@@ -245,7 +241,6 @@ class Direction(RelativeCoord):
     :cvar direction_set: maps coordinate pair to direction number
     :cvar inverse_directions: inverse of direction_set
     """
-
     direction_set = {(0, -1): 0, (1, -1): 1, (1, 0): 2, (1, 1): 3,
                      (0, 1): 4, (-1, 1): 5, (-1, 0): 6, (-1, -1): 7,
                      (0, 0): 8}
@@ -299,7 +294,6 @@ class Direction(RelativeCoord):
         :param y_var: the y coordinate
         :return: the direction in which (x, y) points
         """
-
         return self.direction_set[(_sign(x_var), _sign(y_var))]
 
 
@@ -319,7 +313,6 @@ class NullCoord(Direction):
     :ivar x_str: the x part of board notation ('-')
     :ivar y_str: the y part of board notation ('-')
     """
-
     def __init__(self):
         """Initialise instance of NullCoord.
 

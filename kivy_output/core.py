@@ -31,7 +31,6 @@ class AppCore(Widget):
     :ivar main_board: Kivy widget representing the main board
     :ivar board_spaces: Dict of coords to each Kivy board space
     """
-
     def __init__(self, **kwargs):
         """Initialise instance of AppCore.
 
@@ -201,7 +200,6 @@ class AppCore(Widget):
 
     def undo_last_move(self):
         """Undo the last move made."""
-
         # If the game log does not exist (e.g. undoing before the
         # first move), don't do anything
         if not self.game_log:

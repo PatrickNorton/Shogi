@@ -18,7 +18,6 @@ class ChessBoard(GridLayout):
     :ivar move_from: space to move from
     :ivar in_check: list of pieces checking each king
     """
-
     def __init__(self, **kwargs):
         """Initialise instance of ChessBoard.
 

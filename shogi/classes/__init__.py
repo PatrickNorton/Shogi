@@ -3,7 +3,6 @@
 All classes necessary to play the game are located within this
 module.
 """
-
 from .aliases import *
 from .boards import *
 from .exceptions import *

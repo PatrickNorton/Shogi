@@ -31,7 +31,6 @@ class HelpScreen(Screen):
 
     :ivar text: text of help file
     """
-
     help_file = StringProperty("main")
     text = StringProperty(None)
 

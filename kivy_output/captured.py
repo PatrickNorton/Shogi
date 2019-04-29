@@ -13,7 +13,6 @@ __all__ = [
 
 class CapturedGrid(GridLayout):
     """Grid containing captured pieces."""
-
     def __init__(self, **kwargs):
         """Initialise instance of CapturedGrid.
 

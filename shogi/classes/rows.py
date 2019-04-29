@@ -15,14 +15,12 @@ class Row(collections.abc.Iterable):
     :ivar vector: direction of row
     :ivar spaces: set of spaces in row
     """
-
     def __init__(self, location: Sequence, vector: CoordLike):
         """Initialise instance of Row.
 
         :param location: location of original space
         :param vector: direction of row
         """
-
         location = AbsoluteCoord(location)
         vector = Direction(vector)
         self.first_space: AbsoluteCoord = location
@@ -67,7 +65,6 @@ class Row(collections.abc.Iterable):
 
         :return: set of spaces
         """
-
         for space in self.spaces:
             if space != self.first_space:
                 yield space

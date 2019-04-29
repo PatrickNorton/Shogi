@@ -36,14 +36,12 @@ class Color:
     :ivar full_name: the full name of the color
 
     """
-
     def __init__(self, turn_num: ColorLike):
         """Initialise instance of Color.
 
         :param turn_num: piece's color (w/b or 0/1)
         :raises TypeError: invalid rank
         """
-
         self.int: int
         self.name: str
         if isinstance(turn_num, int):
@@ -95,7 +93,6 @@ class Color:
     @property
     def other(self) -> 'Color':
         """Color: Opposite color from first"""
-
         return Color(1-self.int)
 
 
@@ -109,14 +106,12 @@ class Rank:
     :ivar rank: the short name of the piece -- see "help names"
     :ivar name: the full name of the piece
     """
-
     def __init__(self, rank: RankLike, is_promoted: bool = False):
         """Initialise instance of Rank.
 
         :param rank: rank of piece ('n', 'b', etc.)
         :param is_promoted: if piece is promoted
         """
-
         if isinstance(rank, Rank):
             # If rank is a rank, continue along your merry way
             if is_promoted:
@@ -176,7 +171,6 @@ class Moves(Sequence):
     :ivar is_promoted: if the piece is promoted
     :ivar current: current set of moves
     """
-
     def __init__(
             self,
             piece_name: RankLike,
@@ -190,7 +184,6 @@ class Moves(Sequence):
         :param promoted: if piece is promoted
         :raises NotPromotableException: if un-promotable is promoted
         """
-
         # Coerce all the vars to their respective types
         if not isinstance(piece_name, Rank):
             piece_name = Rank(piece_name)
@@ -254,7 +247,6 @@ class Moves(Sequence):
         :param relative_location: relative location of move
         :return: if move is legal
         """
-
         vec = Direction(relative_location)
         abs_location = abs(relative_location)
         dist = max(abs_location)
@@ -274,7 +266,6 @@ class Moves(Sequence):
         :raises PromotedException: already promoted
         :return: promoted version of self
         """
-
         if self.is_promoted:
             raise PromotedException
         return Moves(self.name, self.color, promoted=True)
@@ -286,7 +277,6 @@ class Moves(Sequence):
         :raises DemotedException: already demoted
         :return: demoted version of self
         """
-
         if not self.is_promoted:
             raise DemotedException
         return Moves(self.name, self.color, promoted=False)

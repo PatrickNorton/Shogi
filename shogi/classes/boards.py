@@ -34,13 +34,11 @@ class Board(Sequence):
     :ivar x_size: how wide the board is
     :ivar y_size: how tall the board is
     """
-
     def __init__(self, pieces: Optional[dict] = None):
         """Initialise board.
 
         :param pieces: for custom board setups
         """
-
         # Use the standard setup if nothing is given
         if pieces is None:
             pieces = info.board_info
@@ -92,14 +90,12 @@ class Board(Sequence):
     @property
     def spaces(self) -> Generator:
         """Yield from all possible board positions."""
-
         for y, x in product(range(self.y_size), range(self.x_size)):
             yield AbsoluteCoord((x, y))
 
     @property
     def occupied(self) -> Generator:
         """Yield from currently occupied spaces."""
-
         yield from self.pieces
 
     def move(self, current: AbsoluteCoord, new: AbsoluteCoord):
@@ -108,7 +104,6 @@ class Board(Sequence):
         :param current: location of piece
         :param new: location to move piece to
         """
-
         # In case non-AbsoluteCoords are passed
         if not isinstance(current, AbsoluteCoord):
             raise TypeError(
@@ -131,7 +126,6 @@ class Board(Sequence):
         :param king_color: color of king to check
         :return: location of piece
         """
-
         # Search through the pieces until the king is found
         for x, y in self.pieces.items():
             if y.is_piece('k', king_color):
@@ -142,7 +136,6 @@ class Board(Sequence):
 
         :param new: location of to-be-captured piece
         """
-
         piece = self[new]
         if piece.is_rank('k'):
             raise ValueError("Kings may not be captured. You win.")
@@ -164,34 +157,28 @@ class Board(Sequence):
         :param space: location to be checked
         :return: if piece is promotable
         """
-
         # Return whether or not the piece is far enough along the
         # board to promote
         promotion_zones = ((0, 1, 2), (8, 7, 6))
         return space.y in promotion_zones[int(self[space].color)]
 
-    def auto_promote(
-            self,
-            space: AbsoluteCoord,
-            piece: Piece = NoPiece()
-    ) -> bool:
+    def auto_promote(self, space: AbsoluteCoord, piece: Piece = None) -> bool:
         """Check if piece must be promoted.
 
         :param space: location to be checked
         :param piece: piece to check for auto-promotion
         :return: if piece must promote
         """
-
         # If the piece is not supplied, get it from the space
-        if isinstance(piece, NoPiece):
+        if not piece:
             piece = self[space]
         # See if the piece can promote, and get how far it is from the
         # edge of the board
-        promotion_zones = ((0, 1, 2), (8, 7, 6))
+        promotion_zone = ((0, 1, 2), (8, 7, 6))[int(piece.color)]
         try:
-            index = promotion_zones[int(piece.color)].index(space.y)
+            index = promotion_zone.index(space.y)
         # If the piece can't promote (it is not in the promotion_zones
-        # list, then it can't be promoted, and so will not
+        # list), then it can't be promoted, and so will not
         # automatically promote
         except ValueError:
             return False
@@ -205,7 +192,6 @@ class Board(Sequence):
 
         :param space: space to promote piece at
         """
-
         piece = self[space]
         piece = piece.promoted
         self.pieces[space] = piece
@@ -233,7 +219,6 @@ class Board(Sequence):
         :param player: color of piece to put in play
         :param flip_sides: if the piece should flip sides
         """
-
         # Figure out the color of the piece to put in play
         if player is None:
             player = piece.color
@@ -294,7 +279,6 @@ class Board(Sequence):
     @property
     def current_pieces(self) -> Generator:
         """dict: Pieces of the current player."""
-
         for x, y in self.pieces.items():
             if y.is_color(self.other_player):
                 yield (x, y)
@@ -308,7 +292,6 @@ class Board(Sequence):
     @property
     def enemy_pieces(self) -> Generator:
         """dict: Pieces of opposing player."""
-
         for x, y in self.pieces.items():
             if y.is_color(self.other_player):
                 yield (x, y)
@@ -329,7 +312,6 @@ class Board(Sequence):
         :param player: player to return
         :return: pieces of player
         """
-
         for x, y in self.pieces.items():
             if y.is_color(player):
                 yield (x, y)
