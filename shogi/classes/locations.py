@@ -58,6 +58,8 @@ class BaseCoord(collections.abc.Sequence):
                 return NotImplemented
         return self.__class__((self.x + other.x, self.y + other.y))
 
+    def __radd__(self, other): return self + other
+
     def __sub__(self, other):
         if not isinstance(other, BaseCoord):
             try:
@@ -66,6 +68,14 @@ class BaseCoord(collections.abc.Sequence):
                 return NotImplemented
         return self.__class__((self.x - other.x, self.y - other.y))
 
+    def __rsub__(self, other):
+        if not isinstance(other, BaseCoord):
+            try:
+                other = self.__class__(other)
+            except TypeError:
+                return NotImplemented
+        return self.__class__((other.x - self.x, other.y - self.y))
+
     def __mul__(self, other):
         if not isinstance(other, BaseCoord):
             try:
@@ -73,6 +83,8 @@ class BaseCoord(collections.abc.Sequence):
             except TypeError:
                 return NotImplemented
         return self.__class__((self.x * other.x, self.y * other.y))
+
+    def __rmul__(self, other): return self * other
 
     def __abs__(self): return self.__class__((abs(self.x), abs(self.y)))
 
