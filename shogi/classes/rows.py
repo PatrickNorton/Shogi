@@ -57,7 +57,9 @@ class Row(collections.abc.Iterable):
         else:
             return NotImplemented
 
-    def __repr__(self): return f"Row({self.first_space !r}, {self.vector !r})"
+    def __repr__(self):
+        return (f"{self.__class__.__name__}"
+                + f"({self.first_space !r}, {self.vector !r})")
 
     @property
     def not_original(self) -> Generator:

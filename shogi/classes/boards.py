@@ -85,7 +85,8 @@ class Board(Sequence):
 
     def __len__(self) -> int: return len(tuple(self))
 
-    def __repr__(self): return f"Board(pieces={self.pieces})"
+    def __repr__(self):
+        return f"{self.__class__.__name__}(pieces={self.pieces !r})"
 
     @property
     def spaces(self) -> Generator:

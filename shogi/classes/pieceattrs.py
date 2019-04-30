@@ -75,7 +75,7 @@ class Color:
 
     def __str__(self): return self.name
 
-    def __repr__(self): return f"{self.__class__.__name__}({self.int})"
+    def __repr__(self): return f"{self.__class__.__name__}({self.int !r})"
 
     def __int__(self): return self.int
 
