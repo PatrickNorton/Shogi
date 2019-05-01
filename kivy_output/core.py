@@ -137,26 +137,27 @@ class AppCore(Widget):
         is_a_capture = bool(captured_piece)
         if self.to_promote:
             self.board.promote(to)
-        is_in_check = shogi.is_check(
+        checking_spaces = shogi.is_check(
             self.board,
             move,
             self.board.other_player,
             dropped_piece=dropped_piece
         )
         # Run mate stuff, if there is a check
-        if is_in_check:
+        if checking_spaces:
             mate = shogi.mate_check(
                 self.board,
-                is_in_check
+                checking_spaces
             )
             if mate:
                 pops = MateWindow()
                 pops.open()
                 # TODO: run EOG when checkmate happens
         else:
-            mate = False
+            # Mate is set as None if check did not occur
+            mate = None
         # Update the spaces attacking the king
-        self.in_check[self.board.other_player] = is_in_check
+        self.in_check[self.board.other_player] = checking_spaces
         # Update the game log, but only if permitted
         # Not called when undoing a move, for example
         if update_game_log:
@@ -166,7 +167,7 @@ class AppCore(Widget):
                 captured_piece=captured_piece,
                 is_a_promote=self.to_promote,
                 is_a_drop=(dropped_piece is not None),
-                is_mate=(mate if is_in_check else None)
+                is_mate=mate
             )
         # Clear the undone moves log (prevents weird breakage with
         # redoing into a weird state)
