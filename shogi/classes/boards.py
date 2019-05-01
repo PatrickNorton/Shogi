@@ -281,7 +281,7 @@ class Board(Sequence):
     def current_pieces(self) -> Generator:
         """dict: Pieces of the current player."""
         for x, y in self.pieces.items():
-            if y.is_color(self.other_player):
+            if y.is_color(self.current_player):
                 yield (x, y)
 
     @property
