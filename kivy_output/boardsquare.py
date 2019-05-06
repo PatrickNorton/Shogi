@@ -1,4 +1,4 @@
-from typing import Iterable, Generator
+from typing import Iterable
 
 from kivy.uix.button import Button
 
@@ -65,7 +65,7 @@ class BoardSquare(Button):
             self,
             current_board: shogi.Board,
             checking_spaces: Iterable[shogi.AbsoluteCoord]
-    ) -> Generator:
+    ) -> shogi.CoordGen:
         """Get valid moves for square, given current board.
 
         This function takes an iterable of spaces checking the king

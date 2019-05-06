@@ -1,6 +1,6 @@
 import collections
 from itertools import product
-from typing import Sequence, Tuple, Union, Iterable
+from typing import Sequence, Tuple, Union, Iterable, Generator
 
 from .exceptions import NullCoordError
 
@@ -135,26 +135,38 @@ class RelativeCoord(BaseCoord):
             raise TypeError(f"xy: Expected {CoordLike}, got {type(xy)}.")
 
     @classmethod
-    def same_xy(cls):
-        """All pieces with the same x and y coordinate."""
+    def same_xy(cls) -> Generator['RelativeCoord', None, None]:
+        """All pieces with the same x and y coordinate.
+
+        :return: Generator of coordinates
+        """
         for x in range(-8, 9):
             yield cls(x)
 
     @classmethod
-    def positive_xy(cls):
-        """All pieces within same_xy with a positive coordinate."""
+    def positive_xy(cls) -> Generator['RelativeCoord', None, None]:
+        """All pieces within same_xy with a positive coordinate.
+
+        :return: Generator of coordinates
+        """
         for x in range(1, 9):
             yield cls(x)
 
     @classmethod
-    def negative_xy(cls):
-        """Same as positive_xy, but negative coordinates."""
+    def negative_xy(cls) -> Generator['RelativeCoord', None, None]:
+        """Same as positive_xy, but negative coordinates.
+
+        :return: Generator of coordinates
+        """
         for x in range(-1, -9, -1):
             yield cls(x)
 
     @classmethod
-    def one_away(cls):
-        """All the relative locations with a max value of 1. """
+    def one_away(cls) -> Generator['RelativeCoord', None, None]:
+        """All the relative locations with a max value of 1.
+
+        :return: Generator of coordinates
+        """
         for x in product((-1, 0, 1), repeat=2):
             if x != (0, 0):
                 yield cls(x)
@@ -209,11 +221,6 @@ class AbsoluteCoord(BaseCoord):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.y_str + self.x_str !r})"
-
-    @staticmethod
-    def same_xy():
-        for x in range(-8, 9):
-            yield RelativeCoord(x)
 
     def distance_to(self, other: 'AbsoluteCoord') -> RelativeCoord:
         """Get the distance to the other coordinate.
@@ -274,10 +281,14 @@ class Direction(RelativeCoord):
             )
         super().__init__(self.inverse_directions[self.direction])
 
-    @staticmethod
-    def valid():
+    @classmethod
+    def valid(cls) -> Generator['Direction', None, None]:
+        """Each valid direction a piece could move in
+
+        :return: Generator of Directions
+        """
         for x in range(8):
-            yield Direction(x)
+            yield cls(x)
 
     def scale(self, scalar: CoordLike) -> RelativeCoord:
         """Scale a coordinate in a direction.
@@ -349,5 +360,9 @@ class NullCoord(Direction):
     def __repr__(self): return f"{self.__class__.__name__}()"
 
     @classmethod
-    def valid(cls):
+    def valid(cls) -> Generator['NullCoord', None, None]:
+        """Each valid instance of NullCoord (there is only 1)
+
+        :return: Generator of the NullCoord
+        """
         yield cls()

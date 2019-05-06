@@ -116,7 +116,7 @@ class Piece:
         return self.moves.can_move(relative_location)
 
     @property
-    def valid_spaces(self) -> Generator:
+    def valid_spaces(self) -> Generator[Direction, None, None]:
         """Yield all valid spaces in each direction.
 
         :return: valid spaces to move to, relative to piece
@@ -124,7 +124,9 @@ class Piece:
         for direction in Direction.valid():
             yield from self.direction_valid(direction)
 
-    def direction_valid(self, direct: Direction) -> Generator:
+    def direction_valid(
+            self, direct: Direction,
+    ) -> Generator[Direction, None, None]:
         """Get spaces piece could move in a direction.
 
         :param direct: direction to be checked

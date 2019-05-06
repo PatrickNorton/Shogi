@@ -1,7 +1,7 @@
 from itertools import product
 from typing import Dict, Generator, List, Optional, Sequence
 
-from .aliases import PieceDict
+from .aliases import PieceDict, CoordGen, PieceDictGen
 from .exceptions import DemotedException
 from .information import info
 from .locations import AbsoluteCoord
@@ -73,7 +73,7 @@ class Board(Sequence):
         to_return += f"White pieces: {' '.join(captured_string)}\n"
         return to_return
 
-    def __iter__(self) -> Generator:
+    def __iter__(self) -> Generator[Piece, None, None]:
         # y and x reversed so that board doesn't come out sideways
         # Thanks, itertools
         for y, x in product(range(self.y_size), range(self.x_size)):
@@ -89,13 +89,13 @@ class Board(Sequence):
         return f"{self.__class__.__name__}(pieces={self.pieces !r})"
 
     @property
-    def spaces(self) -> Generator:
+    def spaces(self) -> CoordGen:
         """Yield from all possible board positions."""
         for y, x in product(range(self.y_size), range(self.x_size)):
             yield AbsoluteCoord((x, y))
 
     @property
-    def occupied(self) -> Generator:
+    def occupied(self) -> CoordGen:
         """Yield from currently occupied spaces."""
         yield from self.pieces
 
@@ -253,24 +253,24 @@ class Board(Sequence):
         """Flip the turn from one player to the other."""
         self.current_player = self.other_player
 
-    def row(self, row_num: int) -> Generator:
+    def row(self, row_num: int) -> Generator[Piece, None, None]:
         """The pieces at each space in a row of the board."""
         for y in range(self.y_size):
             yield self[AbsoluteCoord((row_num, y))]
 
-    def filled_row(self, row_num: int) -> Generator:
+    def filled_row(self, row_num: int) -> Generator[Piece, None, None]:
         """The occupied pieces from each space in a row."""
         for y in range(self.y_size):
             space = AbsoluteCoord((row_num, y))
             if self[space]:
                 yield self[space]
 
-    def column(self, col_num: int) -> Generator:
+    def column(self, col_num: int) -> Generator[Piece, None, None]:
         """The pieces at each space in a column of the board."""
         for x in range(self.x_size):
             yield self[AbsoluteCoord((x, col_num))]
 
-    def filled_column(self, col_num: int) -> Generator:
+    def filled_column(self, col_num: int) -> Generator[Piece, None, None]:
         """The occupied pieces from each space in a column."""
         for x in range(self.x_size):
             space = AbsoluteCoord((x, col_num))
@@ -278,27 +278,27 @@ class Board(Sequence):
                 yield self[space]
 
     @property
-    def current_pieces(self) -> Generator:
+    def current_pieces(self) -> PieceDictGen:
         """dict: Pieces of the current player."""
         for x, y in self.pieces.items():
             if y.is_color(self.current_player):
                 yield (x, y)
 
     @property
-    def current_spaces(self) -> Generator:
+    def current_spaces(self) -> CoordGen:
         for x, y in self.pieces.items():
             if y.is_color(self.current_player):
                 yield x
 
     @property
-    def enemy_pieces(self) -> Generator:
+    def enemy_pieces(self) -> PieceDictGen:
         """dict: Pieces of opposing player."""
         for x, y in self.pieces.items():
             if y.is_color(self.other_player):
                 yield (x, y)
 
     @property
-    def enemy_spaces(self) -> Generator:
+    def enemy_spaces(self) -> CoordGen:
         for x, y in self.pieces.items():
             if y.is_color(self.other_player):
                 yield x
@@ -307,7 +307,7 @@ class Board(Sequence):
     def other_player(self) -> Color:
         return self.current_player.other
 
-    def player_pieces(self, player: Color) -> Generator:
+    def player_pieces(self, player: Color) -> PieceDictGen:
         """Return generator yielding loc, piece pairs for player.
 
         :param player: player to return

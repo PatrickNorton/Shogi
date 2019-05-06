@@ -213,9 +213,9 @@ class Moves(Sequence):
                 d: move_promoted[x] for x, d in enumerate(Direction.valid())
             }
             self.promoted_moves[Direction(8)] = '-'
-        self.moves: tuple = (self.demoted_moves, self.promoted_moves)
+        self.all_moves: tuple = (self.demoted_moves, self.promoted_moves)
         self.is_promoted: bool = promoted
-        self.current: Dict[Direction, str] = self.moves[self.is_promoted]
+        self.current: Dict[Direction, str] = self.all_moves[self.is_promoted]
         # If the moves of the current promotion is None, then the
         # piece is not promotable, but was promoted anyways, so
         # something has gone wrong
@@ -232,7 +232,8 @@ class Moves(Sequence):
                 f"getitem: Expected Union[Direction, int], got {type(attr)}"
             )
 
-    def __iter__(self) -> Generator: yield from self.current.values()
+    def __iter__(self) -> Generator[Direction, None, None]:
+        yield from self.current.values()
 
     def __repr__(self):
         return (f"{self.__class__.__name__}"

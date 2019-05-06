@@ -1,6 +1,7 @@
 import collections
-from typing import Generator, Sequence
+from typing import Sequence
 
+from .aliases import CoordGen
 from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
 
 __all__ = [
@@ -62,7 +63,7 @@ class Row(collections.abc.Iterable):
                 + f"({self.first_space !r}, {self.vector !r})")
 
     @property
-    def not_original(self) -> Generator:
+    def not_original(self) -> CoordGen:
         """Get all non-original spaces in row.
 
         :return: set of spaces

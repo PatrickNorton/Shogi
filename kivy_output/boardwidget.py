@@ -68,7 +68,7 @@ class ChessBoard(GridLayout):
                 space.un_light()
 
     @property
-    def board(self):
+    def board(self) -> shogi.Board:
         return self.parent.board
 
     def set_up_squares(self, *_):
