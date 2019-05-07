@@ -135,9 +135,8 @@ class Rank:
     def __str__(self): return self.rank
 
     def __repr__(self):
-        # Implicit string concatenation
         return (f"{self.__class__.__name__}"
-                f"({self.rank !r}, promoted={self.rank.isupper()})")
+                + f"({self.rank !r}, promoted={self.rank.isupper()})")
 
     def __eq__(self, other):
         if isinstance(other, Rank):
