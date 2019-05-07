@@ -1,3 +1,4 @@
+from collections import Generator
 from itertools import product
 
 from shogi import classes
@@ -12,8 +13,8 @@ __all__ = [
 def is_movable(
         current_board: classes.Board,
         coordinates: classes.CoordTuple,
-        ignore_locations: classes.CoordOrIter = (),
-        act_full: classes.CoordOrIter = (),
+        ignore_locations: classes.CoordIter = (),
+        act_full: classes.CoordIter = (),
         piece_pretend: classes.Piece = None,
         act_full_pretend: classes.Piece = None,
         with_king_check: bool = True,
@@ -30,10 +31,10 @@ def is_movable(
     :return: error code
     """
     current, new = coordinates
-    if isinstance(ignore_locations, classes.AbsoluteCoord):
-        ignore_locations = {ignore_locations}
-    if isinstance(act_full, classes.AbsoluteCoord):
-        act_full = {act_full}
+    if isinstance(ignore_locations, Generator):
+        ignore_locations = set(ignore_locations)
+    if isinstance(act_full, Generator):
+        act_full = set(act_full)
     # Figure out what the moved piece is
     # If the place the piece is is in ignore_locations, then we
     # pretend the space is empty
@@ -113,6 +114,10 @@ def path_clear(
     :return: whether or not hte path is clear
     """
     move_direction = classes.Direction(move_position)
+    if isinstance(ignore_locations, Generator):
+        ignore_locations = set(ignore_locations)
+    if isinstance(act_full, Generator):
+        act_full = set(act_full)
     # For each square upto the move_position's maximum value:
     # Max is needed to get the actual amount of spaces the move
     # traverses, to test each space in between.
@@ -204,8 +209,8 @@ def king_can_move(
         if is_movable(
                 current_board,
                 (absolute_position, new_location),
-                ignore_locations=set(old_location),
-                act_full=set(new_location)
+                ignore_locations={old_location},
+                act_full={new_location}
         ):
             return False
     return True

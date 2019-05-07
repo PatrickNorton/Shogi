@@ -70,7 +70,7 @@ def dropping_to_check(
     if is_movable(
             current_board,
             (new_location, king_location),
-            act_full=new_location,
+            act_full={new_location},
             piece_pretend=piece_to_drop
     ):
         places_attacking.add(new_location)

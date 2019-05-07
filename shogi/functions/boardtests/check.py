@@ -43,8 +43,8 @@ def is_check(
         can_move = is_movable(
             current_board,
             (new_location, king_location),
-            ignore_locations=old_location,
-            act_full=new_location
+            ignore_locations={old_location},
+            act_full={new_location}
         )
     # If the move has been made, proceed as normal
     # Test if the piece moved can attack the king itself
@@ -122,8 +122,8 @@ def unmoved_can_check(
         if is_movable(
             current_board,
             (x, king_location),
-            ignore_locations=old_location if before_move else set(),
-            act_full=new_location if before_move else set()
+            ignore_locations={old_location} if before_move else set(),
+            act_full={new_location} if before_move else set()
         ):
             places_attacking.add(x)
             # Return the set of places attacking if break_early is True

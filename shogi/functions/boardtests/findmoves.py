@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Generator
 
 from shogi import classes
 from .fullmove import check_move
@@ -25,6 +25,8 @@ def test_spaces(
     # Set defaults from None to their proper defaults
     if checking_spaces is None:
         checking_spaces = ()
+    if isinstance(checking_spaces, Generator):
+        checking_spaces = tuple(checking_spaces)
     # Test each location in the given list
     for relative_location in to_test:
         # If the new location isn't in the board, it isn't valid,

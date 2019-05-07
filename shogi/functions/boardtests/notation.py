@@ -1,4 +1,4 @@
-from typing import Optional, Set
+from typing import Optional, Set, Generator
 
 from shogi import classes
 from .move import is_movable
@@ -106,6 +106,13 @@ def piece_can_move(
     :param act_full: locations to pretend are full
     :return: list of possible spaces
     """
+    # Because Generators are iterables, if a generator is passed to
+    # the function, it needs to be type-coerced, as it is iterated
+    # over multiple times
+    if isinstance(ignore_locations, Generator):
+        ignore_locations = set(ignore_locations)
+    if isinstance(act_full, Generator):
+        act_full = set(act_full)
     if piece in current_board.pieces.items():
         return {x for x, y in current_board.pieces.items()
                 if y == piece

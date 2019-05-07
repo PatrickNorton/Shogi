@@ -43,8 +43,8 @@ def check_move(
         if is_movable(
             current_board,
             (space, king_location if king_location != current else to),
-            ignore_locations=current,
-            act_full=to
+            ignore_locations={current},
+            act_full={to}
         ):
             return False
     return True
