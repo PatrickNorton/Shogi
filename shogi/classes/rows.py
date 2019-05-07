@@ -1,5 +1,4 @@
-import collections
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from .aliases import CoordGen
 from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
@@ -9,7 +8,7 @@ __all__ = [
 ]
 
 
-class Row(collections.abc.Iterable):
+class Row(Iterable):
     """The class representing a row of coordinates.
 
     :ivar first_space: original space added

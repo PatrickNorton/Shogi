@@ -10,6 +10,7 @@ __all__ = [
     "CoordSet",
     "CoordAndSet",
     "CoordOrSet",
+    "CoordIter",
     "CoordOrIter",
     "PieceDictMap",
     "CoordGen",
@@ -22,7 +23,8 @@ OptCoordTuple = Tuple[Optional[AbsoluteCoord], AbsoluteCoord]
 CoordSet = Set[AbsoluteCoord]
 CoordAndSet = Tuple[AbsoluteCoord, CoordSet]
 CoordOrSet = Union[AbsoluteCoord, Set[AbsoluteCoord]]
-CoordOrIter = Union[AbsoluteCoord, Iterable[AbsoluteCoord]]
+CoordIter = Iterable[AbsoluteCoord]
+CoordOrIter = Union[AbsoluteCoord, CoordIter]
 PieceDictMap = Tuple[AbsoluteCoord, Piece]
 CoordGen = Generator[AbsoluteCoord, None, None]
 PieceDictGen = Generator[PieceDictMap, None, None]

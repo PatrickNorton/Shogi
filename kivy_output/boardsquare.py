@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from kivy.uix.button import Button
 
 import shogi
@@ -64,7 +62,7 @@ class BoardSquare(Button):
     def valid_moves(
             self,
             current_board: shogi.Board,
-            checking_spaces: Iterable[shogi.AbsoluteCoord]
+            checking_spaces: shogi.CoordIter
     ) -> shogi.CoordGen:
         """Get valid moves for square, given current board.
 

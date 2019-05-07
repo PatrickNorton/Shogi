@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, Set
+from typing import Optional, Set
 
 from shogi import classes
 from .move import is_movable
@@ -93,8 +93,8 @@ def piece_can_move(
         current_board: classes.Board,
         piece: classes.Piece,
         to: classes.AbsoluteCoord,
-        ignore_locations: Iterable[classes.AbsoluteCoord] = (),
-        act_full: Iterable[classes.AbsoluteCoord] = (),
+        ignore_locations: classes.CoordIter = (),
+        act_full: classes.CoordIter = (),
 ) -> Set[classes.AbsoluteCoord]:
     """Get list of pieces of the same rank which can move
     to a certain location.

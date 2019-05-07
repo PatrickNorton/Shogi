@@ -12,7 +12,7 @@ def test_spaces(
         current_board: classes.Board,
         piece_location: classes.AbsoluteCoord,
         to_test: Iterable[classes.RelativeCoord],
-        checking_spaces: Iterable[classes.AbsoluteCoord] = None
+        checking_spaces: classes.CoordIter = None
 ) -> classes.CoordGen:
     """Test which spaces in a list are valid moves.
 
