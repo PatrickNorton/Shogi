@@ -208,7 +208,10 @@ class AppCore(Widget):
 
         :param space_to: space to drop piece at
         """
-        if shogi.is_legal_drop(self.board, self.to_add, space_to):
+        if shogi.is_legal_drop(
+                self.board, self.to_add, space_to,
+                checking_spaces=self.in_check[self.board.current_player]
+        ):
             self.board.put_in_play(self.to_add, space_to)
             self.update_board(space_to)
             self.update_captured(self.board)
@@ -346,7 +349,10 @@ class AppCore(Widget):
             self.un_light_all()
             # Light every legally-drop-able space
             for space, x in self.board_spaces.items():
-                if shogi.is_legal_drop(self.board, piece, space):
+                if shogi.is_legal_drop(
+                        self.board, piece, space,
+                        checking_spaces=self.in_check[self.board.current_player]
+                ):
                     x.light()
             # Set game-state variables to reflect the new developments
             self.make_move = True

@@ -1,3 +1,5 @@
+from typing import Iterable, Generator
+
 from shogi import classes
 
 from .mate import mate_check
@@ -12,14 +14,22 @@ __all__ = [
 def is_legal_drop(
         current_board: classes.Board,
         piece: classes.Piece,
-        move_location: classes.AbsoluteCoord
+        move_location: classes.AbsoluteCoord,
+        checking_spaces: Iterable[classes.AbsoluteCoord] = frozenset(),
 ):
     """Check if piece can be dropped in a location.
 
     :param current_board: current board state
     :param piece: piece to drop
     :param move_location: location to drop piece
+    :param checking_spaces: spaces checking the king
     """
+    if isinstance(checking_spaces, Generator):
+        checking_spaces = set(checking_spaces)
+    # If there is more than one piece checking the king, then they
+    # can't bw blocked, and thus the move is invalid
+    if len(checking_spaces) > 1:
+        return False
     # If there's a piece at the drop location, it's not valid
     if current_board[move_location]:
         return False
@@ -43,8 +53,19 @@ def is_legal_drop(
         )
         # If the pawn is dropping to cause checkmate, not legal
         if is_in_check:
-            if mate_check(current_board, is_in_check):
+            if mate_check(current_board, is_in_check,
+                          act_full=move_location,
+                          piece_pretend=piece):
                 return False
+    # If any of the checking spaces can check the king, then the
+    # drop is invalid
+    for space in checking_spaces:
+        if is_movable(
+            current_board,
+            (space, current_board.king_loc(piece.color)),
+            act_full={move_location}
+        ):
+            return False
     # Otherwise, yeah, it's fine
     return True
 

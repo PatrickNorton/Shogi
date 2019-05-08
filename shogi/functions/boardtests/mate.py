@@ -1,5 +1,7 @@
 from itertools import product
 
+from typing import Iterable, Generator
+
 from shogi import classes
 from .move import is_movable
 
@@ -12,12 +14,18 @@ def mate_check(
         current_board: classes.Board,
         places_attacking: classes.CoordSet,
         king_color: classes.Color = None,
+        ignore_locations: Iterable[classes.Piece] = frozenset(),
+        act_full: Iterable[classes.Piece] = frozenset(),
+        piece_pretend: classes.Piece = None,
 ) -> bool:
     """Test if king is in checkmate.
 
     :param current_board:
     :param king_color:
     :param places_attacking:
+    :param ignore_locations:
+    :param act_full:
+    :param piece_pretend:
     :return: if king is in checkmate
     """
     # How this works:
@@ -26,6 +34,10 @@ def mate_check(
     # This function tests if any is possible, in that order, as that
     # is the order of increasing difficulty,
 
+    if isinstance(ignore_locations, Generator):
+        ignore_locations = set(ignore_locations)
+    if isinstance(act_full, Generator):
+        act_full = set(act_full)
     # If the king isn't in check, it isn't in checkmate
     if not places_attacking:
         return False
@@ -49,7 +61,10 @@ def mate_check(
             continue
         # If the king can move to the new location, congrats! It's not
         # in check
-        if is_movable(current_board, (king_location, new_location)):
+        if is_movable(current_board, (king_location, new_location),
+                      ignore_locations=ignore_locations,
+                      act_full=act_full,
+                      piece_pretend=piece_pretend):
             return False
     # If there's more than one piece attacking, you can't block
     # or capture, so resistance is futile
@@ -74,7 +89,10 @@ def mate_check(
     for loc in current_board.enemy_spaces:
         # See if any piece can be moved to the attacking location,
         # to capture the piece
-        if is_movable(current_board, (loc, check_location)):
+        if is_movable(current_board, (loc, check_location),
+                      ignore_locations=ignore_locations,
+                      act_full=act_full,
+                      piece_pretend=piece_pretend):
             return False
     move = king_location - check_location
     move_direction = classes.Direction(move)
@@ -90,9 +108,12 @@ def mate_check(
         # The location the piece is moving from, plus
         # z times the move direction, e.g. z spaces away from
         # the check location in the direction of the move
-        new_location = (check_location + move_direction.scale(z))
+        new_location = check_location + move_direction.scale(z)
         # If you can move there and block, no checkmate
-        if is_movable(current_board, (pos, new_location)):
+        if is_movable(current_board, (pos, new_location),
+                      ignore_locations=ignore_locations,
+                      act_full=act_full,
+                      piece_pretend=piece_pretend):
             return False
     # If nothing says there isn't checkmate, then there is
     return True

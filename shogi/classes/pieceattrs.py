@@ -166,7 +166,6 @@ class Moves(Sequence):
     :ivar color: color of piece
     :ivar demoted_moves: direction -> move when not is_promoted
     :ivar promoted_moves: direction -> move when is_promoted
-    :ivar moves: (demoted, is_promoted)
     :ivar is_promoted: if the piece is promoted
     :ivar current: current set of moves
     """

@@ -7,10 +7,7 @@ __all__ = [
 ]
 
 
-def undo_move(
-        current_board: classes.Board,
-        move: classes.Move
-):
+def undo_move(current_board: classes.Board, move: classes.Move):
     """Undo given move.
 
     :param current_board: current board state
