@@ -20,12 +20,12 @@ def mate_check(
 ) -> bool:
     """Test if king is in checkmate.
 
-    :param current_board:
-    :param king_color:
-    :param places_attacking:
-    :param ignore_locations:
-    :param act_full:
-    :param piece_pretend:
+    :param current_board: Current board state
+    :param places_attacking: set of pieces attacking the king
+    :param king_color: Color of king to see if is in checkmate
+    :param ignore_locations: spaces to pretend are empty
+    :param act_full: spaces to pretend are full
+    :param piece_pretend: piece to pretend these spaces are
     :return: if king is in checkmate
     """
     # How this works:

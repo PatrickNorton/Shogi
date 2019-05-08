@@ -151,8 +151,8 @@ def king_can_move(
 
     :param current_board: current board state
     :param coordinates: current and new piece location
-    :param ignore_locations:
-    :param act_full:
+    :param ignore_locations: spaces to pretend are empty
+    :param act_full: spaces to pretend are full
     """
     old_location, new_location = coordinates
     old_occupant = current_board[old_location]
