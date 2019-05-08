@@ -148,7 +148,7 @@ class Board(Sequence):
         # Flip the side of the piece, so it belongs to the captors
         new_piece = piece.other_side
         # Add it to the captured pieces
-        self.captured[piece.color].append(new_piece)
+        self.captured[new_piece.color].append(new_piece)
         # Remove the piece from where it was
         del self.pieces[new]
 

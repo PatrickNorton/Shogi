@@ -430,6 +430,7 @@ class AppCore(Widget):
             if square.is_highlighted:
                 self.un_light_all()
                 self.make_move = False
+                self.to_add = shogi.NoPiece()
 
     def board_pressed(self, coordinate: shogi.AbsoluteCoord):
         """Board was clicked.
