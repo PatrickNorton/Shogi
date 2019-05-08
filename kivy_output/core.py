@@ -54,7 +54,22 @@ class AppCore(Widget):
         self.captured_spaces: Dict[shogi.Color, Widget] = {}
         self.main_board: ChessBoard = None
         self.board_spaces: Dict[shogi.AbsoluteCoord, BoardSquare] = {}
-        Clock.schedule_once(self._set_id_based, 0)
+
+        def _set_id_based(*_):
+            """Set id based variables.
+
+            This is used b/c Kivy needs to set up all the variables,
+            but it can't until it gets self.parent in order
+            """
+            self.captured_spaces = {
+                shogi.Color(0): self.parent.ids['0'],
+                shogi.Color(1): self.parent.ids['1']
+            }
+            self.main_board = self.parent.ids['board']
+            self.main_board.set_up_squares()
+            self.board_spaces = self.main_board.children_dict
+
+        Clock.schedule_once(_set_id_based, 0)
 
     def make_moves(
             self,
@@ -445,18 +460,3 @@ class AppCore(Widget):
         except ValueError:
             return
         self.board_pressed(coordinate)
-
-    def _set_id_based(self, _):
-        """Set id based variables.
-
-        This needs to exist, as self.parent.ids is not accessible during
-        __init__, but this should still be created then. **DO NOT USE
-        OUTSIDE OF __init__!!**
-        """
-        self.captured_spaces = {
-            shogi.Color(0): self.parent.ids['0'],
-            shogi.Color(1): self.parent.ids['1']
-        }
-        self.main_board = self.parent.ids['board']
-        self.main_board.set_up_squares()
-        self.board_spaces = self.main_board.children_dict
