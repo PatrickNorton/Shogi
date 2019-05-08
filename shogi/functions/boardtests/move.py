@@ -165,7 +165,7 @@ def king_can_move(
             # direction
             try:
                 current_test = new_location + direction.scale(distance)
-            except (ValueError, IndexError):
+            except ValueError:
                 break
             # If there's a piece on the path, and it has the same
             # color as the king, then stop testing in this direction
@@ -195,10 +195,8 @@ def king_can_move(
         relative_position = classes.RelativeCoord((move_x, 2 * move_y))
         # If the tested location isn't on the board, don't test it
         try:
-            absolute_position = classes.AbsoluteCoord(
-                new_location + relative_position
-            )
-        except (ValueError, IndexError):
+            absolute_position = new_location + relative_position
+        except ValueError:
             continue
         # If the piece at the tested location is the same color as the
         # king, then it can't move there
