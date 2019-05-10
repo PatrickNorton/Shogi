@@ -47,7 +47,14 @@ def mate_check(
         # This weird construct is needed because there's no way to
         # get an item from a set non-destructively, so this has to be
         # used instead. Sigh.
-        king_color = current_board[next(iter(places_attacking))].color.other
+        color_space = current_board[next(iter(places_attacking))]
+        if color_space in places_attacking:
+            if piece_pretend:
+                king_color = piece_pretend.color.other
+            else:
+                king_color = current_board.other_player
+        else:
+            king_color = color_space.color.other
     king_location = current_board.king_loc(king_color)
     # Test if the king can move out of check
     for king_move_tested in current_board[king_location].valid_spaces:
