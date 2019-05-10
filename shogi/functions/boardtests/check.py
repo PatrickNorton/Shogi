@@ -44,7 +44,8 @@ def is_check(
             current_board,
             (new_location, king_location),
             ignore_locations={old_location},
-            act_full={new_location}
+            act_full={new_location},
+            piece_pretend=current_board[old_location],
         )
     # If the move has been made, proceed as normal
     # Test if the piece moved can attack the king itself
@@ -114,18 +115,26 @@ def unmoved_can_check(
     king_direction = classes.Direction(relative_move)
     direction_of_attack = classes.Row(old_location, king_direction)
     attacking_color: classes.Color = current_board[king_location].color.other
-    pieces = (x for x in direction_of_attack
-              if current_board[x].is_color(attacking_color))
     # Iterate along the row between the original space and the king's,
     # checking if any pieces can move there.
-    for x in pieces:
+    for space in direction_of_attack:
+        # If the space is not of the attacking color, it cannot attack
+        # the king, and thus, we continue on
+        if not current_board[space].is_color(attacking_color):
+            continue
+        # If the piece hasn't been moved yet, and one of the pieces
+        # attacking the king is at the moved-to location, it will have
+        # been captured after the move, and thus can't capture the
+        # king, so we ignore it
+        if before_move and space == new_location:
+            continue
         if is_movable(
             current_board,
-            (x, king_location),
+            (space, king_location),
             ignore_locations={old_location} if before_move else set(),
             act_full={new_location} if before_move else set()
         ):
-            places_attacking.add(x)
+            places_attacking.add(space)
             # Return the set of places attacking if break_early is True
             if break_early:
                 return places_attacking
