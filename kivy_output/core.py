@@ -162,7 +162,8 @@ class AppCore(Widget):
         if checking_spaces:
             mate = shogi.mate_check(
                 self.board,
-                checking_spaces
+                checking_spaces,
+                king_color=self.board.other_player
             )
             if mate:
                 pops = MateWindow()

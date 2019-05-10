@@ -44,17 +44,25 @@ def mate_check(
     # If no king_color was specified, default to the other color of
     # the first piece in places_attacking
     if king_color is None:
-        # This weird construct is needed because there's no way to
-        # get an item from a set non-destructively, so this has to be
-        # used instead. Sigh.
-        color_space = current_board[next(iter(places_attacking))]
-        if color_space in places_attacking:
-            if piece_pretend:
-                king_color = piece_pretend.color.other
+        # Get the color of the attacking piece, but if there is not
+        # yet a piece at the space, for example, if the move hasn't
+        # happened yet, then we check if there is a piece at the
+        # pretended location.
+        # If there is, then we get its color, if specified.
+        # Otherwise, we move on to the next space.
+        for space in places_attacking:
+            piece = current_board[space]
+            if piece:
+                king_color = piece.color.other
+                break
             else:
-                king_color = current_board.other_player
+                if piece in ignore_locations and piece_pretend:
+                    king_color = piece_pretend.color.other
+                    break
+        # If no reasonable color is found, then something has gone
+        # badly wrong, and the program should fail.
         else:
-            king_color = color_space.color.other
+            raise ValueError("No color for the attacking king could be found")
     king_location = current_board.king_loc(king_color)
     # Test if the king can move out of check
     for king_move_tested in current_board[king_location].valid_spaces:

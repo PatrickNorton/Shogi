@@ -53,10 +53,11 @@ def is_legal_drop(
         )
         # If the pawn is dropping to cause checkmate, not legal
         if is_in_check:
-            if mate_check(current_board, is_in_check,
-                          act_full=move_location,
-                          piece_pretend=piece,
-                          king_color=current_board.other_player):
+            if mate_check(
+                    current_board, is_in_check,
+                    act_full=move_location,
+                    piece_pretend=piece,
+                    king_color=current_board.other_player):
                 return False
     # If any of the checking spaces can check the king, then the
     # drop is invalid
