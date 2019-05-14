@@ -1,4 +1,3 @@
-import collections
 from itertools import product
 from typing import Sequence, Tuple, Union, Iterable, Generator
 
@@ -17,7 +16,7 @@ __all__ = [
 CoordLike = Union[Sequence, int]
 
 
-class BaseCoord(collections.abc.Sequence):
+class BaseCoord(Sequence):
     """The base class for coordinates.
 
     A BaseCoord should not be used for actual games, but instead
@@ -368,6 +367,9 @@ class NullCoord(Direction, AbsoluteCoord):
         :return: Generator of the NullCoord
         """
         yield cls()
+
+    # These are all class methods that exist for subclasses, but don't
+    # make logical sense for NullCoords, so they raise an error instead
 
     @classmethod
     def negative_xy(cls): raise NullCoordError
