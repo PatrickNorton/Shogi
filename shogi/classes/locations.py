@@ -320,7 +320,7 @@ class Direction(RelativeCoord):
         return self.direction_set[(_sign(x_var), _sign(y_var))]
 
 
-class NullCoord(Direction):
+class NullCoord(Direction, AbsoluteCoord):
     """The "Null" instance of a coordinate.
 
     This is to be used when a coordinate does not point to any
@@ -359,6 +359,8 @@ class NullCoord(Direction):
 
     def __repr__(self): return f"{self.__class__.__name__}()"
 
+    def distance_to(self, other: 'AbsoluteCoord'): raise NullCoordError
+
     @classmethod
     def valid(cls) -> Generator['NullCoord', None, None]:
         """Each valid instance of NullCoord (there is only 1)
@@ -366,3 +368,15 @@ class NullCoord(Direction):
         :return: Generator of the NullCoord
         """
         yield cls()
+
+    @classmethod
+    def negative_xy(cls): raise NullCoordError
+
+    @classmethod
+    def positive_xy(cls): raise NullCoordError
+
+    @classmethod
+    def same_xy(cls): raise NullCoordError
+
+    @classmethod
+    def one_away(cls): raise NullCoordError

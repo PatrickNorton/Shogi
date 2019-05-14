@@ -227,7 +227,7 @@ class Moves(Sequence):
             return self.current[Direction(attr)]
         else:
             raise TypeError(
-                f"getitem: Expected Union[Direction, int], got {type(attr)}"
+                f"getitem: Expected {Union[Direction, int]}, got {type(attr)}"
             )
 
     def __iter__(self) -> Generator[Direction, None, None]:
