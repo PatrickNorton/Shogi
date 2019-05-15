@@ -1,7 +1,7 @@
-from typing import Iterable, Sequence
+from typing import Iterable
 
 from .aliases import CoordGen
-from .locations import AbsoluteCoord, CoordLike, Direction, RelativeCoord
+from .locations import AbsoluteCoord, Direction, RelativeCoord
 
 __all__ = [
     "Row",
@@ -15,14 +15,12 @@ class Row(Iterable):
     :ivar vector: direction of row
     :ivar spaces: set of spaces in row
     """
-    def __init__(self, location: Sequence, vector: CoordLike):
+    def __init__(self, location: AbsoluteCoord, vector: Direction):
         """Initialise instance of Row.
 
         :param location: location of original space
         :param vector: direction of row
         """
-        location = AbsoluteCoord(location)
-        vector = Direction(vector)
         self.first_space: AbsoluteCoord = location
         self.vector: Direction = vector
         self.spaces = set()
@@ -30,14 +28,14 @@ class Row(Iterable):
             # Add to the spaces the values in the direction of the
             # row, for as long as they are still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
+                self.spaces.add(location + vector.scale(x))
             except ValueError:
                 break
         for x in RelativeCoord.negative_xy():
             # Do the same for all the values in the opposite direction
             # as what was entered, while still in the board
             try:
-                self.spaces.add(AbsoluteCoord(location + vector.scale(x)))
+                self.spaces.add(location + vector.scale(x))
             except ValueError:
                 break
 

@@ -26,16 +26,19 @@ class BaseCoord(Sequence):
     :ivar y: the y coordinate
     :ivar tup: the (x, y) tuple
     """
-    def __init__(self, xy: Tuple[int, int]):
+    def __init__(self, x: int, y: int):
         """Initialise instance of BaseCoord.
 
-        :param xy: the the coordinates of the AbsoluteCoord.
+        :param x: the x-value of the coordinate.
+        :param y: the y-value of the coordinate
         """
-        if not (isinstance(xy, tuple) and all(isinstance(i, int) for i in xy)):
-            raise TypeError(f"xy: Expected Tuple[int, int], got {type(xy)}.")
-        self.x: int = xy[0]
-        self.y: int = xy[1]
-        self.tup: Tuple[int, int] = xy
+        if not isinstance(x, int):
+            raise TypeError(f"x: Expected {int}, got {type(x)}.")
+        if not isinstance(y, int):
+            raise TypeError(f"y: Expected {int}, got {type(y)}")
+        self.x: int = x
+        self.y: int = y
+        self.tup: Tuple[int, int] = (x, y)
 
     def __str__(self): return str(self.tup)
 
@@ -121,13 +124,17 @@ class RelativeCoord(BaseCoord):
         # Turn an integer input into a coordinate
         if isinstance(xy, int):
             if xy in range(-8, 9):
-                super().__init__((xy, xy))
+                super().__init__(xy, xy)
             else:
                 raise ValueError(f"{xy} not in correct range")
         # Otherwise, use the iterable to turn it into a RelCoord
         elif isinstance(xy, Iterable):
+            # If xy is a generator, turn it into something more
+            # permanent, so it can be iterated over twice
+            if isinstance(xy, Generator):
+                xy = tuple(xy)
             if all(x in range(-8, 9) for x in xy):
-                super().__init__(tuple(xy))
+                super().__init__(*xy)
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
@@ -193,21 +200,24 @@ class AbsoluteCoord(BaseCoord):
         """
         # Handle string inputs
         if isinstance(xy, str):
-            coordinate_tuple = (
+            super().__init__(
                 '123456789'.index(xy[1]),
                 8 - 'abcdefghi'.index(xy[0])
             )
-            super().__init__(coordinate_tuple)
         # Handle integer inputs
         elif isinstance(xy, int):
             if xy in range(9):
-                super().__init__((xy, xy))
+                super().__init__(xy, xy)
             else:
                 raise ValueError(f"{xy} not in correct range")
         # Handle iterable inputs
         elif isinstance(xy, Iterable):
+            # If xy is a generator, then turn it into a multi-iterable
+            # object
+            if isinstance(xy, Generator):
+                xy = tuple(xy)
             if all(x in range(9) for x in xy):
-                super().__init__(tuple(xy))
+                super().__init__(*xy)
             else:
                 raise ValueError(f"{xy} not in correct range")
         else:
