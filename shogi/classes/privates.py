@@ -39,13 +39,15 @@ class _InfoClass:
 def _open_data(file_name: str) -> TextIO:
     """Open data file.
 
-    Arguments:
-        file_name {str} -- name of file to be opened
+    :param file_name: name of file to be opened
 
-    Returns:
-        file -- opened file
+    :return: opened file
     """
-    import os
-    cwd = os.path.dirname(__file__)
-    file_path = os.path.join(cwd, f'../datafiles/{file_name}')
+    # import os
+    # cwd = os.path.dirname(__file__)
+    # file_path = os.path.join(cwd, f'../datafiles/{file_name}')
+    # return open(file_path)
+    import pathlib
+    cwd = pathlib.Path(__file__).resolve().parent
+    file_path = pathlib.Path(cwd, "..", "datafiles", file_name)
     return open(file_path)

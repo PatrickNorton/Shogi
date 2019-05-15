@@ -247,7 +247,7 @@ class AbsoluteCoord(BaseCoord):
         return RelativeCoord((other.x - self.x, other.y - self.y))
 
 
-def _sign(x): return int(x > 0) - int(x < 0)
+def _sign(x: int) -> int: return int(x > 0) - int(x < 0)
 
 
 class Direction(RelativeCoord):
@@ -329,7 +329,7 @@ class Direction(RelativeCoord):
         return self.direction_set[(_sign(x_var), _sign(y_var))]
 
 
-class NullCoord(Direction, AbsoluteCoord):
+class NullCoord(Direction):
     """The "Null" instance of a coordinate.
 
     This is to be used when a coordinate does not point to any
@@ -367,8 +367,6 @@ class NullCoord(Direction, AbsoluteCoord):
     def __abs__(self): raise NullCoordError
 
     def __repr__(self): return f"{self.__class__.__name__}()"
-
-    def distance_to(self, other: 'AbsoluteCoord'): raise NullCoordError
 
     @classmethod
     def valid(cls) -> Generator['NullCoord', None, None]:
