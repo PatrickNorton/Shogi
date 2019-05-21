@@ -44,20 +44,21 @@ def is_legal_drop(
         for x in current_board.column(move_location.y):
             if x.is_piece('p', player_int):
                 return False
-
-        is_in_check = dropping_to_check(
+        # Get all the spaces checking the king
+        is_checking = dropping_to_check(
             current_board,
             piece,
             move_location,
             current_board.current_player.other
         )
         # If the pawn is dropping to cause checkmate, not legal
-        if is_in_check:
+        if is_checking:
             if mate_check(
-                    current_board, is_in_check,
+                    current_board, {move_location},
                     act_full=move_location,
                     piece_pretend=piece,
-                    king_color=current_board.other_player):
+                    king_color=current_board.other_player,
+            ):
                 return False
     # If any of the checking spaces can check the king, then the
     # drop is invalid
@@ -94,7 +95,7 @@ def dropping_to_check(
             current_board,
             (new_location, king_location),
             act_full={new_location},
-            piece_pretend=piece_to_drop
+            piece_pretend=piece_to_drop,
     ):
         places_attacking.add(new_location)
     return places_attacking

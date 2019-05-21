@@ -186,14 +186,15 @@ class Piece:
             return str(self.color) == color
         elif isinstance(color, int):
             return int(self.color) == color
-        return False
+        else:
+            raise TypeError(f"Expected {ColorLike}, got {type(color)}")
 
     def is_rank(self, rank: RankLike) -> bool:
         """Check if piece is of a certain rank.
 
-        This can take either a Rank or a str object. It should
-        be used as a replacement for "instance.rank ==
-        Rank('x')", as that is more verbose than necessary.
+        This can take either a Rank or a str object. It should be used
+        as a replacement for "instance.rank == Rank(x)", as that is
+        more verbose than necessary.
 
         :param rank: rank to be tested
         :return: if the piece is of that rank
@@ -202,10 +203,11 @@ class Piece:
             return self.rank == rank
         elif isinstance(rank, str):
             return str(self.rank) == rank
-        return False
+        else:
+            raise TypeError(f"Expected {RankLike}, got {type(rank)}")
 
     def is_piece(self, rank: RankLike, color: ColorLike) -> bool:
-        """Check if the piece is of a certain color and rank
+        """Check if the piece is of a certain color and rank.
 
         :param rank: rank to check
         :param color: color to check
