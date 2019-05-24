@@ -3,9 +3,6 @@ __all__ = [
     "NotPromotableException",
     "PromotedException",
     "DemotedException",
-    "PlayerExit",
-    "OtherMove",
-    "OtherInput",
     "NullCoordError",
 ]
 
@@ -42,15 +39,6 @@ class DemotedException(PromotionError):
     def __init__(self):
         super().__init__(3)
 
-
-class PlayerExit(Exception):
-    """The player wishes to exit."""
-
-class OtherMove(Exception):
-    """An other move was made."""
-
-class OtherInput(Exception):
-    """A non-location input was entered."""
 
 class NullCoordError(Exception):
     """A null coordinate was referenced."""
