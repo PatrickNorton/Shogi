@@ -128,6 +128,8 @@ def unmoved_can_check(
         # king, so we ignore it
         if before_move and space == new_location:
             continue
+        # If the piece is movable to the king location, add it to the
+        # set of pieces attacking the king
         if is_movable(
             current_board,
             (space, king_location),

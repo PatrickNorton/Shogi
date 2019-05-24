@@ -26,9 +26,11 @@ class ChessBoard(GridLayout):
         # Temporary board passed at setup time.
         board = shogi.Board()
         super().__init__(cols=board.y_size, rows=board.x_size, **kwargs)
-        # Map of coordinates to screen squares
-        self.children_dict = {}
-        self.set_up = False
+        # self.children_dict is initialised to a sentinel value of
+        # NotImplemented until self.set_up_squares is called, at which
+        # point it will be normal again.
+        self.children_dict = NotImplemented
+        self.__set_up = False
         # IMPORTANT: self.set_up_squares should be called by AppCore
         # sometime during setup.
         # If something is going wrong during setup, try looking at
@@ -81,9 +83,9 @@ class ChessBoard(GridLayout):
 
         :param _: Whatever variables kivy passes to this thing
         """
-        if self.set_up:
+        if self.__set_up:
             raise RuntimeError("set_up_squares should not be run twice")
-        self.set_up = True
+        self.__set_up = True
         # Add a space for each square of the board, with occupant
         for x, y in self.parent.board.spaces:
             coordinate = shogi.AbsoluteCoord((x, y))
