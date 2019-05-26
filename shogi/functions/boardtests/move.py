@@ -70,7 +70,7 @@ def is_movable(
     # then you can't move there (no capturing your own piece), as long
     # as the space isn't one of the ones we're ignoring
     elif new_loc_piece.same_color(piece) and new not in ignore_locations:
-            return False
+        return False
     # If the piece is moving different different amounts in the x and
     # y directions, then it's un-block-able, and we shouldn't test to
     # see if a piece is in the way (for example, knights)

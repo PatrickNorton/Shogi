@@ -14,7 +14,7 @@ def is_check(
         king_color: classes.Color,
         break_early: bool = False,
         before_move: bool = False,
-        dropped_piece: classes.Piece = None
+        dropped_piece: classes.Piece = None,
 ) -> classes.CoordSet:
     """Find if king is in check.
 
@@ -37,23 +37,30 @@ def is_check(
             new_location,
             king_color
         )
-    # If the move hasn't been made yet, run is_movable with the old
-    # and new locations pretended as full/empty
-    if before_move:
-        can_move = is_movable(
-            current_board,
-            (new_location, king_location),
-            ignore_locations={old_location},
-            act_full={new_location},
-            piece_pretend=current_board[old_location],
-        )
-    # If the move has been made, proceed as normal
-    # Test if the piece moved can attack the king itself
+    # If the old location is the same as the king's, then we can move
+    # on, because otherwise we get that the king can attack itself,
+    # and that's not good
+    if old_location == king_location:
+        can_move = False
+    # Otherwise, life is good
     else:
-        can_move = is_movable(
-            current_board,
-            (new_location, king_location)
-        )
+        # If the move hasn't been made yet, run is_movable with the old
+        # and new locations pretended as full/empty
+        if before_move:
+            can_move = is_movable(
+                current_board,
+                (new_location, king_location),
+                ignore_locations={old_location},
+                act_full={new_location},
+                piece_pretend=current_board[old_location],
+            )
+        # If the move has been made, proceed as normal
+        # Test if the piece moved can attack the king itself
+        else:
+            can_move = is_movable(
+                current_board,
+                (new_location, king_location)
+            )
     # If the piece can attack the king, add its location to
     # pieces_attacking, and return if break_early is True
     if can_move:
