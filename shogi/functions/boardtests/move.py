@@ -35,7 +35,7 @@ def is_movable(
         ignore_locations = set(ignore_locations)
     if isinstance(act_full, Generator):
         act_full = set(act_full)
-    # Figure out what the moved piece is
+    # Figure out what the moved piece is:
     # If the place the piece is is in ignore_locations, then we
     # pretend the space is empty
     if current in ignore_locations:
@@ -47,8 +47,7 @@ def is_movable(
     # Otherwise, it's the piece we're pretending it is
     else:
         piece = piece_pretend
-    # Figure out what the piece in the location we're moving to
-    # is
+    # Figure out what the piece at the location we're moving to is
     # If act_full_pretend exists, and the new space is one of the ones
     # we're pretending is full, then the piece in the new location is
     # the one we're pretending it is
@@ -60,7 +59,7 @@ def is_movable(
     move = current.distance_to(new)
     move_direction = classes.Direction(move)
     # If the move is a null move, it's not valid
-    if move_direction == classes.Direction(8):
+    if move_direction == (0, 0):
         return False
     # If the move isn't in a legal direction for the piece, it's not
     # valid
@@ -99,7 +98,7 @@ def is_movable(
 def path_clear(
         current_board: classes.Board,
         current_position: classes.AbsoluteCoord,
-        move_position: classes.AbsoluteCoord,
+        move_amount: classes.RelativeCoord,
         ignore_locations: classes.CoordIter = (),
         act_full: classes.CoordIter = (),
 ) -> bool:
@@ -107,20 +106,25 @@ def path_clear(
 
     :param current_board: current board state
     :param current_position: current piece location
-    :param move_position: location to move piece to
+    :param move_amount: location to move piece to
     :param ignore_locations: locations to ignore in check
     :param act_full: locations to pretend are full
     :return: whether or not hte path is clear
     """
-    move_direction = classes.Direction(move_position)
+    move_direction = classes.Direction(move_amount)
+    # N.B. FOR FUTURE SELF:
+    # These generator guards are needed b/c membership is tested for
+    # each iteration within the loop, so, had generators not been
+    # properly filtered out, they would have been treated as empty for
+    # the second and further iterations
     if isinstance(ignore_locations, Generator):
         ignore_locations = set(ignore_locations)
     if isinstance(act_full, Generator):
         act_full = set(act_full)
-    # For each square upto the move_position's maximum value:
+    # For each square upto the move_amount's maximum value:
     # Max is needed to get the actual amount of spaces the move
     # traverses, to test each space in between.
-    for x in range(1, max(abs(move_position))):
+    for x in range(1, max(abs(move_amount))):
         # The relative move amount is the direction of the move
         # times the number of squares from the start that is being
         # tested this time
